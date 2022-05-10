@@ -14,7 +14,7 @@ const style = StyleSheet.create({
  temp : {flexDirection: "row"},
  temp01 : {alignContent:"center", flexDirection: "row"},
  temp02 : {backgroundColor:Colors.grey300, alignContent:"center", flexDirection: "row"},
- temp03 : {alignContent:"center", flexDirection: "row"},
+ temp03 : {backgroundColor:Colors.grey200, alignContent:"center", flexDirection: "row"},
  expireddate1 : {backgroundColor:Colors.green200, borderWidth:1, borderRadius: 10, margin: 10, fontSize: 18, padding:3},
  expireddate : {backgroundColor:Colors.grey300, borderWidth:1, borderRadius: 10, margin: 10, fontSize: 18, padding:3},
 
@@ -78,8 +78,9 @@ const [modalVisible, setModalVisible] = useState(false);
   <Text style={style.expireddate1}>돼지고기</Text>
   <Text style={style.expireddate1}>파</Text>
   </View>
-  <Icon name="edit" size={30} color={Colors.black} style={{margin:5}}/>
- 
+ <View style={style.temp02}>
+  <Icon name="pencil" size={30} color={Colors.black} style={{margin:5, position:"absolute", left:150, top:25}}/>
+ </View>
 </View>
 
   <View style={style.temp02}>  
@@ -129,10 +130,10 @@ const [modalVisible, setModalVisible] = useState(false);
   </View>
 
   <View style={style.temp03}> 
-  <Icon name="user" size={30} color={Colors.black} style={{margin:5}}/>
+  <Icon name="account" size={30} color={Colors.black} style={{margin:5}}/>
   <Text style = {{fontSize: 18, margin: 3}}>냉장고 털이범님</Text>  
   <Icon name="share" size={30} color={Colors.black} style={{margin:5}}/>
-  <Icon name="share-2" size={30} color={Colors.black} style={{margin:5}}/>
+  <Icon name="share-variant" size={30} color={Colors.black} style={{margin:5}}/>
 
 </View>
 </View>
