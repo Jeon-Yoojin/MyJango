@@ -4,7 +4,7 @@ import {useState} from 'react';
 import {SafeAreaView, View, Text, TextInput, ScrollView} from 'react-native';
 import {Colors} from "react-native-paper";
 import {StyleSheet, Modal, Pressable} from "react-native";
-
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const style = StyleSheet.create({
   mainViewStyle: {flex: 1, backgroundColor: "red", justifyContent:
@@ -103,8 +103,8 @@ const App = () => {
   <View style={style.temp03}> 
   <Icon name="user" size={30} color={Colors.black} style={{margin:5}}/>
   <Text style = {{fontSize: 18, margin: 3}}>냉장고 털이범님</Text>  
-  <Icon name="share" size={30} color={Colors.black} style={{margin:5, position: "left"}}/>
-  <Icon name="share-2" size={30} color={Colors.black} style={{margin:5, position: "left"}}/>
+  <Icon name="share" size={30} color={Colors.black} style={{margin:5}}/>
+  <Icon name="share-2" size={30} color={Colors.black} style={{margin:5}}/>
 </View>
 </View>
 
