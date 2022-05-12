@@ -4,6 +4,7 @@ import {useState, useCallback, useEffect} from 'react';
 import {SafeAreaView, View, Text, TextInput, ScrollView, Button, TouchableHighlight} from 'react-native';
 import {Colors} from "react-native-paper";
 import {StyleSheet, Modal, Pressable, TouchableOpacity, Alert} from "react-native";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const style = StyleSheet.create({
   mainViewStyle: {flex: 1, backgroundColor: "red", justifyContent:
@@ -24,7 +25,7 @@ const style = StyleSheet.create({
 
   TitleText: {textAlign : "left", fontWeight : 'bold', margin : 20, fontSize: 25},
   TitleTextip: {textAlign : "center", margin : 2, fontSize: 23},
-  sharetext: {position:"absolute", left:150},
+  sharetext: {position:"absolute", left:150, margin: 10},
   textInputStyle: {width : 210, height : 40, borderWidth: 1, backgroundColor: "white", margin:2}
  })
 
@@ -183,7 +184,7 @@ useEffect(()=>{
 </Modal>
   <Pressable
   onPress={() => setModalVisible2(true)}>  
-  <Text>수정</Text> 
+  <Icon name="pencil" size={30} color={Colors.black} style={style.sharetext}/>
   </Pressable>
 </View>
 </View>
@@ -215,9 +216,10 @@ useEffect(()=>{
 </View>
 
   <View style={style.temp03}> 
+  <Icon name="user" size={30} color={Colors.black} style={{margin: 10}}/>
   <Text style = {{fontSize: 18, margin: 10}}>냉장고 털이범님</Text>
   <TouchableOpacity onPress = {share}> 
-    <Text style = {style.sharetext}>공유</Text>  
+    <Icon name="share" size={30} color={Colors.black} style={style.sharetext}/>
   </TouchableOpacity> 
   </View>
 </View>
@@ -238,9 +240,10 @@ useEffect(()=>{
 </View>
 
   <View style={style.temp03}> 
+  <Icon name="user" size={30} color={Colors.black} style={{margin:5}}/>
   <Text style = {{fontSize: 18, margin: 10}}>냉장고 털이범님</Text>
   <TouchableOpacity onPress = {share}> 
-    <Text style = {style.sharetext}>공유</Text>  
+    <Icon name="share" size={30} color={Colors.black} style={style.sharetext}/>  
   </TouchableOpacity> 
   </View>
 </View>
