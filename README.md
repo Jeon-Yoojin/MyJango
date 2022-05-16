@@ -1,6 +1,10 @@
 # MyJango
 
 일단 제가 만든 거에서 설치해야 할 패키지 
+
+
+
+
 npm install --save react-native-calendars
 npm i @react-navigation/native
 npm i react-native-gesture-handler
