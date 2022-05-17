@@ -4,12 +4,12 @@ import {BottomNavigation, Colors} from "react-native-paper";
 import {StyleSheet, Pressable} from "react-native";
 import Icon from 'react-native-vector-icons/Entypo';
 import { NavigationContainer } from '@react-navigation/native';
-import Main from ./Main
-import Ingredients_1 from ./Ingredients_1
-import Ingredients_2 from ./Ingredients_2
-import Recipe_1 from ./Recipe_1
-import Recipe_2 from ./Recipe_2
-import Community from ./Community
+import Main from ./Main;
+import Ingredients_1 from ./Ingredients_1;
+import Ingredients_2 from ./Ingredients_2;
+import Recipe_1 from ./Recipe_1;
+import Recipe_2 from ./Recipe_2;
+import Community from ./Community;
 
 const Navigator = () => {
   return(
@@ -74,7 +74,7 @@ const style = StyleSheet.create({
 })
 
 
-const App = () => {
+const App = ({ navigation }) => {
  return (
  <SafeAreaView>
     <View style={style.mainViewStyle}>
@@ -87,7 +87,7 @@ const App = () => {
       onChangeText = {(text: string) => {console.log(text);}}
       onFocus = {() => {console.log("On Focus");}}
       onBlur = {() => {console.log("On Blur");}}
-      onEndEditing = {() => {navigation.navigate('Recipe_1')}}
+      onEndEditing = {() => {navigation.navigate('Recipe_1');}}
       keyboardType = "default"/> 
   </View>
 
