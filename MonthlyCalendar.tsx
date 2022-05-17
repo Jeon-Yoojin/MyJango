@@ -1,3 +1,4 @@
+// 없어도 되는데 혹시 몰라서
 import React from "react";
 import { View } from "react-native";
 import { Calendar } from "react-native-calendars";
