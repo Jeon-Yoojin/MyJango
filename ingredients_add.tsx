@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {createRef} from 'react';
+import DelayInput from 'react-native-debounce-input'; 
 import {SafeAreaView, View, Text, TextInput, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Colors} from "react-native-paper";
 import {StyleSheet} from "react-native";
 import { useState, useCallback, useMemo } from 'react';
-import {useNavigation} from "@react-navigation/native";
+import { Calendar } from 'react-native-calendars';
 
 const style = StyleSheet.create({
   mainViewStyle: {flex: 1, backgroundColor: "cyan", justifyContent:
@@ -23,6 +24,9 @@ cameraview : { width:300, height:300, backgroundColor:Colors.amber200},
   textInputStyle: {color: "green", width : 210, height : 50, borderWidth: 1, backgroundColor: "white", margin:10}
  })
 
+
+
+
 const Ingredients_add = () => {
 
   const [quantity, setQuantity] = useState<number>(1);
@@ -30,14 +34,55 @@ const Ingredients_add = () => {
   const quantityDown = useCallback(()=>setQuantity((quantity) => { 
     if(quantity >= 2 ) quantity = quantity-1;
     return quantity}), []);
+    
+    const inputRef = createRef();
 
-    const [text, setText] = useState<string>('');
-    const finalize = useCallback((final)=> setText((text) => { text = final; return text;}),[]);
-    const clearText = useCallback(()=> setText((text) => { text = ""; console.log("==========after clear "+text); return text;}),[]);
+    const [text, setText] = useState('');
+    const allClear = () => {
+      setText('');
+      inputRef.current.clear();
+    };
+  
 
-    const navigation = useNavigation();
- const openCalendar =
-useCallback(()=>navigation.navigate("MonthlyCalendar"),[]);
+
+const[showCalendar1,setShowCalendar1] = useState<boolean>(false);
+const changeShowCalendar1 = useCallback(()=>setShowCalendar1((showCalendar1) => {return !showCalendar1}),[]);
+
+const[showCalendar2,setShowCalendar2] = useState<boolean>(false);
+const changeShowCalendar2 = useCallback(()=>setShowCalendar2((showCalendar2) => {return !showCalendar2}),[]);
+
+const [startDate, setStartDate] = useState<string>('          ');
+const selectStartDate = useCallback((ssd)=>setStartDate((startDate) => {startDate = ssd; return startDate;}),[]);
+
+const [lastDate, setLastDate] = useState<string>('          ');
+const selectLastDate = useCallback((sld)=>setLastDate((lastDate) => {lastDate = sld; return lastDate;}),[]);
+
+let like = false;
+  const [starImage, updateStar] = useState<string>(like ? "star" : "star-outline");
+  const modifyLike = useCallback(() => {
+    if(like){
+    like = false;
+    updateStar("star-outline");
+    }
+    else{
+    like = true;
+    updateStar("star");
+    }
+    }, []);
+
+let alarm = false;
+  const [alarmImage, updateAlarm] = useState<string>(alarm ? "bell-badge" : "bell-badge-outline");
+  const modifyAlarm = useCallback(() => {
+    if(alarm){
+    alarm = false;
+    updateAlarm("bell-badge-outline");
+    }
+    else{
+    alarm = true;
+    updateAlarm("bell-badge");
+    }
+    }, []);
+
 
 
  return (
@@ -52,26 +97,23 @@ useCallback(()=>navigation.navigate("MonthlyCalendar"),[]);
     </View>
  
  <View style={style.temp02}> 
-    <TouchableOpacity>
-      <Icon name="bell-badge" size={30} color={Colors.grey500} style={{margin:5}}/>
+    <TouchableOpacity onPress={modifyAlarm}>
+      <Icon name={alarmImage} size={30} color={Colors.grey500} style={{margin:5}}/>
     </TouchableOpacity>
-    <TouchableOpacity>
-      <Icon name="star" size={30} color={Colors.yellow400} style={{margin:5}}/> 
+    <TouchableOpacity onPress={modifyLike}>
+      <Icon name={starImage} size={30} color={Colors.yellow400} style={{margin:5}}/> 
     </TouchableOpacity>
   </View>
  
   <View style={style.temp03}> 
     <Text style={style.TitleText}>이름</Text> 
-    <TextInput style={style.textInputStyle}
-      placeholder = "            "
-      onChangeText = {(Intext: string) => {console.log(Intext); finalize(Intext);}}
-      onFocus = {() => {console.log("On Focus");}}
-      onBlur = {() => {console.log("On Blur");}}
-      onEndEditing = {() => {console.log("Edit End!");}}
-      keyboardType = "default"
-     >
-      </TextInput>
-    <TouchableOpacity style = {{position:"absolute", right:25, top:21}} onPress = {clearText}> 
+    <DelayInput style={style.textInputStyle}
+        value={text}
+        onChangeText={setText}
+        onEndEditing={()=>console.log("onEndEditing     " +text)}
+        inputRef={inputRef}
+      />
+    <TouchableOpacity style = {{position:"absolute", right:25, top:21}} onPress = {allClear}> 
       <Icon name="close-circle" size={30} color={Colors.grey500} />  
     </TouchableOpacity>
   
@@ -97,18 +139,36 @@ useCallback(()=>navigation.navigate("MonthlyCalendar"),[]);
     <Text style={style.TitleText}>유통기한</Text> 
     <View>
       <View style={style.expireddate}>
-        <Text style = {{fontSize:20}}>2022.05.03</Text>
-        <TouchableOpacity onPress={openCalendar}>
+      
+        <Text style = {{fontSize:20}}>{startDate}</Text>
+        <TouchableOpacity onPress={changeShowCalendar1}>
+          <Icon name="calendar-range" size={30} color={Colors.grey500}/>
+        </TouchableOpacity>
+        
+
+          
+      </View>
+
+      <View>
+       {showCalendar1 && <Calendar
+        minDate={'2020-01-01'}
+        onDayPress={(day) => {console.log('selected day', day); selectStartDate(day.dateString)}}
+        />}
+      </View>
+
+      <View style={style.expireddate}>
+        <Text style = {{fontSize:20}}>{lastDate}</Text>
+        <TouchableOpacity onPress={changeShowCalendar2}>
           <Icon name="calendar-range" size={30} color={Colors.grey500}/>
         </TouchableOpacity>
           
       </View>
-      <View style={style.expireddate}>
-        <Text style = {{fontSize:20}}>2022.05.04</Text>
-        <TouchableOpacity onPress={openCalendar}>
-          <Icon name="calendar-range" size={30} color={Colors.grey500}/>
-        </TouchableOpacity>
-          
+
+      <View>
+       {showCalendar2 && <Calendar
+        minDate={'2020-01-01'}
+        onDayPress={(day) => {console.log('selected day', day); selectLastDate(day.dateString)}}
+        />}
       </View>
 
     </View>
@@ -131,5 +191,6 @@ useCallback(()=>navigation.navigate("MonthlyCalendar"),[]);
 
  </SafeAreaView>
  );
+
 };
 export default Ingredients_add;
