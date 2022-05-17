@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-const LackIngredients = (props)=>{
+const IngredientIcon = (props)=>{
     return (
         <View style={styles.ingredientElement}>
             <TouchableHighlight style={[styles.ingredientIcon, { backgroundColor: 'pink' }]}>
@@ -19,8 +19,9 @@ const styles = StyleSheet.create({
         flexDirection:'row'
       },
       ingredientElement:{
-        margin: 5,
-        alignItems:'center'
+        margin: 8,
+        alignItems:'center',
+        justifyContent:'center'
       },
       ingredientIcon:{
         height: 57,
@@ -31,7 +32,6 @@ const styles = StyleSheet.create({
       },
       ingredientText:{
         marginTop: 3,
-        margin: 14,
         fontWeight: '600',
         fontSize: 15,
         fontFamily: 'Noto Sans',
@@ -42,4 +42,4 @@ const styles = StyleSheet.create({
       },
     })
 
-export default LackIngredients;
+export default IngredientIcon;

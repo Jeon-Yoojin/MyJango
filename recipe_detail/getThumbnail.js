@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import YouTube from 'react-native-youtube';
 
 const GetThumbnail = ()=>{
-    const YOUTUBE_API_KEY = {YOUTUBE_API_KEY};
+    const YOUTUBE_API_KEY = '';
   async function _getThumbnail(query) {
     const optionParams = {
       q: query,
@@ -46,7 +46,7 @@ const GetThumbnail = ()=>{
   console.log('vID is ', vID);
 
   return (
-    <View style={{margin:15}}>
+    <View style={{margin:5}}>
       <YouTube
         videoId='HDI96vqOHG4'
         apiKey={YOUTUBE_API_KEY}
@@ -57,7 +57,7 @@ const GetThumbnail = ()=>{
         onChangeState={(e) => console.log('onChangeState:', e.state)}
         onChangeQuality={(e) => console.log('onChangeQuality: ', e.quality)}
         onError={(e) => console.log('onError: ', e.error)}
-        style={{ width: 160, height: 90 }}
+        style={{ width: 208, height: 117}}
       />
     </View>
   );

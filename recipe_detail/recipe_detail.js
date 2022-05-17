@@ -1,10 +1,11 @@
 import React, {useState, useCallback, useEffect} from 'react';
-import { ScrollView, Text, StyleSheet, View, TouchableHighlight, Dimensions } from 'react-native';
+import { ScrollView, Text, StyleSheet, View, TouchableHighlight, Dimensions, TouchableOpacity } from 'react-native';
 import SQLite from 'react-native-sqlite-storage';
 import Entypo from 'react-native-vector-icons/Entypo';
-import Foundation from 'react-native-vector-icons/Foundation';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import GetThumbnail from './getThumbnail';
-import LackIngredients from './LackIngredients';
+import IngredientIcon from './IngredientIcon';
 import StarRating from './StarRating';
 
 const recipeDetail = (recipeName) => {
@@ -56,7 +57,17 @@ const recipeDetail = (recipeName) => {
   return (
     <>
     <View style={styles.container}>
-
+    <View style={{flexDirection:'row', alignItems:'center', marginTop:20, paddingBottom:15, borderBottomColor:'rgba(0,0,0,0.05)', borderBottomWidth:1.5}}>
+    <TouchableOpacity>
+        <Ionicons name="chevron-back" size={25} color={'black'}></Ionicons>
+      </TouchableOpacity>
+    <View style={{flexDirection:'row', flex:1, alignContent:'center', justifyContent:'center' }}>
+      <Text style={[{fontSize:18, fontWeight:'600', textAlign:'center'}]}>레시피 추천</Text>
+    </View>
+    <TouchableOpacity>
+        <Ionicons name="chevron-back" size={25} color={'white'}></Ionicons>
+    </TouchableOpacity>
+    </View>
     <View style={{flexDirection:'row', margin:14}}>
     <View>
     <Text style={[styles.title, styles.text]}>{name}</Text>
@@ -77,8 +88,8 @@ const recipeDetail = (recipeName) => {
     </View>
     
     <View style={styles.ingredientContainer}>
-    <LackIngredients name={'당근'}/>
-    <LackIngredients name={'돼지고기'}/>
+    <IngredientIcon name={'당근'}/>
+    <IngredientIcon name={'돼지고기'}/>
     </View>
     </View>
 
@@ -86,7 +97,7 @@ const recipeDetail = (recipeName) => {
     <View style={styles.flexview}>
     <Text style={[styles.subtitle, styles.text, {marginRight:5}]}>레시피</Text>
     <TouchableHighlight style={[styles.roundshape, {backgroundColor:'#DADCFC'}]}>
-      <Foundation name="clipboard-notes" size={15} color={'#3A4EFE'} />
+      <MaterialCommunityIcons name="clipboard-text" size={15} color={'#3A4EFE'} />
     </TouchableHighlight>
     </View>
     <View style={{flex:1, width: Dimensions.get('window').width}}>
