@@ -10,6 +10,11 @@ npm i -D @types/react-native-vector-icons
 
 npx react-native link react-native-vector-icons
 
+npm install @react-navigation/native @react-navigation/native-stack
+
+npm install react-native-screens react-native-safe-area-context
+
+import { NavigationContainer } from '@react-navigation/native';
 
 
 불러올때
