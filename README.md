@@ -14,6 +14,10 @@ npm install @react-navigation/native @react-navigation/native-stack
 
 npm install react-native-screens react-native-safe-area-context
 
+npm install --save react-native-mail
+
+react-native link react-native-mail
+
 
 불러올때
 
@@ -23,4 +27,4 @@ import {Colors} from 'react-native-paper';
 
 import { NavigationContainer } from '@react-navigation/native';
 
-
+import Mailer from 'react-native-mail';
