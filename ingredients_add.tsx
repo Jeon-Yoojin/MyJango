@@ -6,6 +6,7 @@ import {Colors} from "react-native-paper";
 import {StyleSheet} from "react-native";
 import { useState, useCallback, useMemo } from 'react';
 import { Calendar } from 'react-native-calendars';
+import { Alert } from 'react-native';
 
 const style = StyleSheet.create({
   mainViewStyle: {flex: 1, backgroundColor: "cyan", justifyContent:
@@ -80,6 +81,11 @@ let alarm = false;
     else{
     alarm = true;
     updateAlarm("bell-badge");
+    Alert.alert("", "재고가 2개 미만일 경우 3일마다 알림 설정",
+    [
+      {text: "확인", onPress: ()=>{}},
+      {text: "취소", onPress: ()=> {alarm=false; updateAlarm("bell-badge-outline");}}
+    ]);
     }
     }, []);
 
@@ -152,7 +158,7 @@ let alarm = false;
       <View>
        {showCalendar1 && <Calendar
         minDate={'2020-01-01'}
-        onDayPress={(day) => {console.log('selected day', day); selectStartDate(day.dateString)}}
+        onDayPress={(day) => {selectStartDate(day.dateString)}}
         />}
       </View>
 
@@ -167,7 +173,7 @@ let alarm = false;
       <View>
        {showCalendar2 && <Calendar
         minDate={'2020-01-01'}
-        onDayPress={(day) => {console.log('selected day', day); selectLastDate(day.dateString)}}
+        onDayPress={(day) => {selectLastDate(day.dateString)}}
         />}
       </View>
 
