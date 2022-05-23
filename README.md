@@ -16,7 +16,7 @@ npm install react-native-screens react-native-safe-area-context
 
 npm install --save react-native-mail
 
-react-native link react-native-mail
+npx react-native link react-native-mail
 
 
 불러올때
