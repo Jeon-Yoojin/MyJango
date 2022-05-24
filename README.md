@@ -23,6 +23,8 @@ npx react-native link react-native-mail
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import Icon from 'react-native-vector-icons/Entypo';
+
 import {Colors} from 'react-native-paper';
 
 import { NavigationContainer } from '@react-navigation/native';
