@@ -37,6 +37,8 @@ const style = StyleSheet.create({
   edittext: {position:"absolute", left:0, margin: 8},
   textInputStyle: {width : 210, height : 40, borderWidth: 1, backgroundColor: "white", margin:2},
   navbar:{
+    position:"relative", top:-50,
+    backgroundColor:Colors.white,
     justifyContent:'space-between',
     flexDirection:'row',
     paddingLeft: 20,
