@@ -34,10 +34,8 @@ npm i react-native-debounce-input
 // 아이콘이랑 컬러즈
 
 
-// 캘린더
+// 캘린더, 
 
 // 일단 스택 네비게이션으로 하긴 했음
 
 // 아직 임시로 만든거라 recipe_list에서 이미지를 그냥 로컬에서 가져오는 걸로 만들었어요 004.png를 images 폴더를 넣어주셔야
-
-// 그냥 수업 때 피피티 따라하다가 만든 거라 index, topbar, text, view 를 theme 폴더에 저장하시고 넣어주세요
