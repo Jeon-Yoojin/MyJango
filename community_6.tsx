@@ -6,12 +6,7 @@ import {Colors} from "react-native-paper";
 import {StyleSheet, Modal, Pressable, TouchableOpacity, Alert} from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Mailer from 'react-native-mail';
-
-
-const ChatFillPath = require('./android/app/src/main/assets/images/chat-fill.png');
-const FridgeFillPath = require('./android/app/src/main/assets/images/fridge-fill.png');
-const HomeFillPath = require('./android/app/src/main/assets/images/home-fill.png');
-const LightbulbFillPath = require('./android/app/src/main/assets/images/lightbulb-fill.png');
+import NavBar from './Navbar';
 
 
 const style = StyleSheet.create({
@@ -317,33 +312,8 @@ useEffect(()=>{
   </TouchableOpacity> 
   </View>
 </View>
+  <NavBar></NavBar>
 </ScrollView>
-<View style={style.navbar}>
-<TouchableOpacity>
-            <View style={style.navbarElement}>
-            <Image style={style.Img} source={HomeFillPath}/>
-            <Text style={style.text}>홈</Text>
-            </View>
-            </TouchableOpacity>
-            <TouchableOpacity>
-            <View style={style.navbarElement}>
-            <Image style={style.Img} source={FridgeFillPath}/>
-            <Text style={style.text}>재료 관리</Text>
-            </View>
-            </TouchableOpacity>
-            <TouchableOpacity>
-            <View style={style.navbarElement}>
-            <Image style={style.Img} source={LightbulbFillPath}/>
-            <Text style={style.text}>레시피 추천</Text>
-            </View>
-            </TouchableOpacity>
-            <TouchableOpacity>
-            <View style={style.navbarElement}>
-            <Image style={style.Img} source={ChatFillPath}/>
-            <Text style={style.text}>커뮤니티</Text>
-            </View>
-            </TouchableOpacity>
-</View>
 </SafeAreaView>
  );
 };
