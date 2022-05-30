@@ -1,12 +1,13 @@
 import React, {createRef} from 'react';
 import DelayInput from 'react-native-debounce-input'; 
-import {SafeAreaView, View, Text, TextInput, TouchableOpacity} from 'react-native';
+import {SafeAreaView, View, Text, TouchableOpacity, Modal, TextInput, Button} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Colors} from "react-native-paper";
 import {StyleSheet} from "react-native";
 import { useState, useCallback, useMemo } from 'react';
 import { Calendar } from 'react-native-calendars';
-import { Alert } from 'react-native';
+import Day from 'react-native-calendars/src/calendar/day';
+import { todayString } from 'react-native-calendars/src/expandableCalendar/commons';
 
 const style = StyleSheet.create({
   mainViewStyle: {flex: 1, backgroundColor: "cyan", justifyContent:
@@ -22,7 +23,8 @@ const style = StyleSheet.create({
 
 cameraview : { width:300, height:300, backgroundColor:Colors.amber200},
   TitleText: {textAlign : "center", fontWeight : 'bold', margin : 20, fontSize: 20},
-  textInputStyle: {color: "green", width : 210, height : 50, borderWidth: 1, backgroundColor: "white", margin:10}
+  textInputStyle: {color: "green", width : 210, height : 50, borderWidth: 1, backgroundColor: "white", margin:10},
+  ModaltextInputStyle: {width : 50, height : 50, borderWidth: 1, backgroundColor: "white", margin:10}
  })
 
 
@@ -43,6 +45,9 @@ const Ingredients_add = () => {
       setText('');
       inputRef.current.clear();
     };
+
+    const [alarmCycle, setAlarmCycle] = useState('');
+    const [min, setMin] = useState('');
   
 
 
@@ -57,6 +62,14 @@ const selectStartDate = useCallback((ssd)=>setStartDate((startDate) => {startDat
 
 const [lastDate, setLastDate] = useState<string>('          ');
 const selectLastDate = useCallback((sld)=>setLastDate((lastDate) => {lastDate = sld; return lastDate;}),[]);
+
+const [modalVisible, setModalVisible] = useState(false);
+const Confirm = () => {
+  setModalVisible(!modalVisible);
+};
+const Cancel = () => {
+  setModalVisible(!modalVisible);
+}
 
 let like = false;
   const [starImage, updateStar] = useState<string>(like ? "star" : "star-outline");
@@ -77,15 +90,11 @@ let alarm = false;
     if(alarm){
     alarm = false;
     updateAlarm("bell-badge-outline");
+    //나중에 알람 취소하는 무언가
     }
     else{
     alarm = true;
     updateAlarm("bell-badge");
-    Alert.alert("", "재고가 2개 미만일 경우 3일마다 알림 설정",
-    [
-      {text: "확인", onPress: ()=>{}},
-      {text: "취소", onPress: ()=> {alarm=false; updateAlarm("bell-badge-outline");}}
-    ]);
     }
     }, []);
 
@@ -96,6 +105,40 @@ let alarm = false;
   
     <View style={style.temp01}>
       <Text style = {style.TitleText} >추가 및 수정 </Text>
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+        onShow={()=>console.log("onShow")}
+>
+<View>
+  <Text style = {{fontSize: 23, fontWeight: 'bold', margin: 20}}>알림 설정</Text>
+  </View>
+  <View style={{flexDirection:'row'}}>
+    <Text style={{fontSize:20, textAlignVertical:"center"}}>재고가 </Text>
+    <TextInput style={style.ModaltextInputStyle}
+        onChangeText={(yourMin)=>setMin(yourMin)}
+      />
+    <Text style={{fontSize:20, textAlignVertical:"center"}}>개 미만일 경우,    </Text>
+
+  </View>
+  <View style={{flexDirection:'row'}}>
+    
+  <TextInput style={style.ModaltextInputStyle}
+     onChangeText={(period)=>setAlarmCycle(period)}
+   />
+    <Text style={{fontSize:20, textAlignVertical:"center"}}>일 마다 알림 설정 </Text>
+
+  </View>
+  <Button title="확인" onPress={Confirm}></Button>
+  <Button title="취소" onPress={Cancel}></Button>
+
+
+
+</Modal>
       <TouchableOpacity style = {{position:"absolute", right:12, top:25}}>
         <Text style = {{fontSize : 17}}>저장</Text>
       </TouchableOpacity>
@@ -103,7 +146,7 @@ let alarm = false;
     </View>
  
  <View style={style.temp02}> 
-    <TouchableOpacity onPress={modifyAlarm}>
+    <TouchableOpacity onPress={()=>{setModalVisible(true); modifyAlarm;}}>
       <Icon name={alarmImage} size={30} color={Colors.grey500} style={{margin:5}}/>
     </TouchableOpacity>
     <TouchableOpacity onPress={modifyLike}>
@@ -157,7 +200,7 @@ let alarm = false;
 
       <View>
        {showCalendar1 && <Calendar
-        minDate={'2020-01-01'}
+        minDate={Date()}
         onDayPress={(day) => {selectStartDate(day.dateString)}}
         />}
       </View>
@@ -172,7 +215,7 @@ let alarm = false;
 
       <View>
        {showCalendar2 && <Calendar
-        minDate={'2020-01-01'}
+        minDate={startDate}
         onDayPress={(day) => {selectLastDate(day.dateString)}}
         />}
       </View>
