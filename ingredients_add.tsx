@@ -1,13 +1,14 @@
-import React, {createRef} from 'react';
+import React, {createRef, useEffect} from 'react';
 import DelayInput from 'react-native-debounce-input'; 
-import {SafeAreaView, View, Text, TouchableOpacity, Modal, TextInput, Button} from 'react-native';
+import {SafeAreaView, View, Text, TouchableOpacity, Modal, TextInput, Button, Alert, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Colors} from "react-native-paper";
 import {StyleSheet} from "react-native";
 import { useState, useCallback, useMemo } from 'react';
 import { Calendar } from 'react-native-calendars';
-import Day from 'react-native-calendars/src/calendar/day';
-import { todayString } from 'react-native-calendars/src/expandableCalendar/commons';
+import SQLite from 'react-native-sqlite-storage';
+
+var db = SQLite.openDatabase({ name: 'recipe.db', createFromLocation: '~/recipe.db', });
 
 const style = StyleSheet.create({
   mainViewStyle: {flex: 1, backgroundColor: "cyan", justifyContent:
@@ -17,7 +18,7 @@ const style = StyleSheet.create({
  infoView: {borderWidth: 1, width:400},
  temp01 : {backgroundColor:Colors.indigo200, alignContent:"center", flexDirection: "row", justifyContent:"center"},
  temp02 : {backgroundColor:Colors.red200, alignItems: 'flex-end', flexDirection: "row-reverse", padding:5},
- temp03 : {backgroundColor:Colors.yellow400, alignContent:"center", flexDirection: "row"},
+ temp03 : {alignContent:"center", flexDirection: "row"},
  expireddate : {flexDirection: 'row', justifyContent: 'space-between', padding:3, marginTop: 15, width:260},
  
 
@@ -32,7 +33,7 @@ cameraview : { width:300, height:300, backgroundColor:Colors.amber200},
 
 const Ingredients_add = () => {
 
-  const [quantity, setQuantity] = useState<number>(1);
+  const [quantity, setQuantity] = useState(1);
   const quantityUp = useCallback(()=>setQuantity((quantity) => {return quantity+1}), []);
   const quantityDown = useCallback(()=>setQuantity((quantity) => { 
     if(quantity >= 2 ) quantity = quantity-1;
@@ -46,21 +47,22 @@ const Ingredients_add = () => {
       inputRef.current.clear();
     };
 
-    const [alarmCycle, setAlarmCycle] = useState('');
+    const [alarmCycle, setAlarmCycle] = useState(0);
     const [min, setMin] = useState('');
   
+const [category,setCategory] = useState('');
+const selectCategory = useCallback((cg)=>setCategory((category) => {category = cg; return category;}),[]);
 
-
-const[showCalendar1,setShowCalendar1] = useState<boolean>(false);
+const[showCalendar1,setShowCalendar1] = useState(false);
 const changeShowCalendar1 = useCallback(()=>setShowCalendar1((showCalendar1) => {return !showCalendar1}),[]);
 
-const[showCalendar2,setShowCalendar2] = useState<boolean>(false);
+const[showCalendar2,setShowCalendar2] = useState(false);
 const changeShowCalendar2 = useCallback(()=>setShowCalendar2((showCalendar2) => {return !showCalendar2}),[]);
 
-const [startDate, setStartDate] = useState<string>('          ');
+const [startDate, setStartDate] = useState('          ');
 const selectStartDate = useCallback((ssd)=>setStartDate((startDate) => {startDate = ssd; return startDate;}),[]);
 
-const [lastDate, setLastDate] = useState<string>('          ');
+const [lastDate, setLastDate] = useState('          ');
 const selectLastDate = useCallback((sld)=>setLastDate((lastDate) => {lastDate = sld; return lastDate;}),[]);
 
 const [modalVisible, setModalVisible] = useState(false);
@@ -72,20 +74,24 @@ const Cancel = () => {
 }
 
 let like = false;
-  const [starImage, updateStar] = useState<string>(like ? "star" : "star-outline");
+  const [DbBookmark, setDbBookmark] = useState(0);
+  const [starImage, updateStar] = useState(like ? "star" : "star-outline");
   const modifyLike = useCallback(() => {
     if(like){
     like = false;
     updateStar("star-outline");
+    setDbBookmark(0);
     }
     else{
     like = true;
     updateStar("star");
+    setDbBookmark(1);
+    console.log("DBLike is ",DbBookmark);
     }
     }, []);
 
 let alarm = false;
-  const [alarmImage, updateAlarm] = useState<string>(alarm ? "bell-badge" : "bell-badge-outline");
+  const [alarmImage, updateAlarm] = useState(alarm ? "bell-badge" : "bell-badge-outline");
   const modifyAlarm = useCallback(() => {
     if(alarm){
     alarm = false;
@@ -97,6 +103,82 @@ let alarm = false;
     updateAlarm("bell-badge");
     }
     }, []);
+
+    /*function DeleteIngredient(name){
+      let db = SQLite.openDatabase({ name: 'recipe.db' });
+      db.transaction((tx) => {
+          tx.executeSql(
+              'DELETE FROM ingredients where name=?',
+              [name],
+              (tx, results) => {
+                  console.log('Results', results.rowsAffected);
+                  if (results.rowsAffected > 0) {
+                      Alert.alert(
+                          '완료',
+                          '성공적으로 삭제되었습니다',
+                          [
+                              {
+                                  text: 'Ok',
+                              },
+                          ],
+                          { cancelable: false }
+                      );
+                  }
+              }
+          );
+      });
+  }*/
+  
+
+   const insertData = () => {
+ 
+      db.transaction(function (tx) {
+        tx.executeSql(
+          'INSERT INTO ingredients (name, qty, expiration, category, bookmark, notify) VALUES (?,?,?,?,?,?)',
+          [text, quantity, lastDate, category ,DbBookmark, alarmCycle],
+          (tx, results) => {
+            console.log('Results', results.rowsAffected);
+           
+            if (results.rowsAffected > 0) {
+              Alert.alert('Data Inserted Successfully....');
+            } else Alert.alert('Failed....');
+
+
+          }
+        );
+      });
+
+      viewIng();
+  
+      setCategory('');
+      setQuantity(1);
+      setStartDate('          ');
+      setLastDate('          ');            
+      allClear; 
+      setDbBookmark(0);
+      setShowCalendar1(false);
+      setShowCalendar2(false);
+      setAlarmCycle(0);
+      like = false;
+      updateStar("star-outline");
+    }
+
+    const viewIng = () => {
+ 
+      db.transaction((tx) => {
+        tx.executeSql(
+          'SELECT * FROM ingredients',
+          [],
+          (tx, results) => {
+            var temp = [];
+            for (let i = 0; i < results.rows.length; ++i)
+              temp.push(results.rows.item(i));
+            console.log(temp);
+          }
+        );
+      });
+   
+    }
 
 
 
@@ -140,7 +222,7 @@ let alarm = false;
 
 </Modal>
       <TouchableOpacity style = {{position:"absolute", right:12, top:25}}>
-        <Text style = {{fontSize : 17}}>저장</Text>
+        <Text style = {{fontSize : 17}} onPress={insertData}>저장</Text>
       </TouchableOpacity>
          
     </View>
@@ -153,6 +235,8 @@ let alarm = false;
       <Icon name={starImage} size={30} color={Colors.yellow400} style={{margin:5}}/> 
     </TouchableOpacity>
   </View>
+
+  <ScrollView>
  
   <View style={style.temp03}> 
     <Text style={style.TitleText}>이름</Text> 
@@ -168,6 +252,20 @@ let alarm = false;
   
   </View>
  
+  <View style={style.temp03}> 
+    <Text style={style.TitleText}>보관         </Text> 
+    <TouchableOpacity onPress={()=>{selectCategory('fridge')}}>
+      <Text style={style.TitleText}>냉장</Text>
+    </TouchableOpacity>
+    <TouchableOpacity onPress={()=>{selectCategory('freezer')}}>
+      <Text style={style.TitleText}>냉동</Text>
+    </TouchableOpacity>
+    <TouchableOpacity onPress={()=>{selectCategory('room')}}>
+      <Text style={style.TitleText}>실온</Text>
+    </TouchableOpacity>
+    
+  </View>
+
   <View style={style.temp03}> 
     <Text style={style.TitleText}>수량                 </Text> 
     <TouchableOpacity onPress={quantityDown}>
@@ -229,13 +327,13 @@ let alarm = false;
 
 
  <View style={style.temp03}> 
-    <Text style={style.TitleText}>이미지</Text> 
+    <Text style={style.TitleText} onPress={()=>{console.log("current DBbookmark is  ",DbBookmark,"  current AlarmCycle is   ",alarmCycle)}}>이미지</Text> 
     <View style={style.cameraview}> 
       <Icon name="camera" size={30} color={Colors.grey500}  style = {{position:"absolute", left:140, top:120}} />  
     </View>
  </View>
 
- 
+ </ScrollView>
 
 
  </SafeAreaView>
