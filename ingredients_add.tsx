@@ -239,8 +239,22 @@ let alarm = false;
 
                  if(results.rows.item(i).category=='fridge') {
                    updateFridge(Colors.grey400);
+                   updateFreezer(Colors.white);
+                   updateRoom(Colors.white);
                    setCategory('fridge');
                  }
+                else if(results.rows.item(i).category=='freezer') {
+                  updateFridge(Colors.white);
+                  updateFreezer(Colors.grey400);
+                  updateRoom(Colors.white);
+                  setCategory('freezer');
+                }
+                else if(results.rows.item(i).category=='room') {
+                  updateFridge(Colors.white);
+                  updateFreezer(Colors.white);
+                  updateRoom(Colors.grey400);
+                  setCategory('room');
+                }
                  setQuantity(results.rows.item(i).qty);
                  setDbBookmark(results.rows.item(i).bookmark);
                  setAlarmCycle(results.rows.item(i).notify);
