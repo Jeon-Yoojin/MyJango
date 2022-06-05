@@ -104,6 +104,63 @@ let alarm = false;
     }
     }, []);
 
+    let fridge = false;
+    const [fridgeSelect, updateFridge] = useState(fridge ? Colors.grey400 : Colors.white);
+    const modifyFridge = useCallback(() => {
+      if(fridge){
+      fridge = false;
+      updateFridge(Colors.white);
+      selectCategory(' ');
+      }
+      else{
+      fridge = true;
+      freezer = false;
+      room = false;
+      updateFridge(Colors.grey400);
+      updateFreezer(Colors.white);
+      updateRoom(Colors.white);
+      selectCategory('fridge');
+      }
+      }, []);
+
+      let freezer = false;
+    const [freezerSelect, updateFreezer] = useState(freezer ? Colors.grey400 : Colors.white);
+    const modifyFreezer = useCallback(() => {
+      if(freezer){
+      freezer = false;
+      updateFreezer(Colors.white);
+      selectCategory(' ');
+      }
+      else{
+      freezer = true;
+      fridge = false;
+      room = false;
+      updateFreezer(Colors.grey400);
+      updateFridge(Colors.white);
+      updateRoom(Colors.white);
+      selectCategory('freezer');
+      }
+      }, []);
+
+      let room = false;
+      const [roomSelect, updateRoom] = useState(room ? Colors.grey400 : Colors.white);
+      const modifyRoom = useCallback(() => {
+        if(room){
+        room = false;
+        updateRoom(Colors.white);
+        selectCategory(' ');
+        }
+        else{
+        room = true;
+        fridge = false;
+        freezer = false;
+        updateRoom(Colors.grey400);
+        updateFridge(Colors.white);
+        updateFreezer(Colors.white);
+        selectCategory('room');
+        }
+        }, []);
+
     /*function DeleteIngredient(name){
       let db = SQLite.openDatabase({ name: 'recipe.db' });
       db.transaction((tx) => {
@@ -128,7 +185,7 @@ let alarm = false;
           );
       });
   }*/
-  
+
 
    const insertData = () => {
  
@@ -163,6 +220,8 @@ let alarm = false;
       updateStar("star-outline");
     }
 
+    const [users, setUsers] = useState([]);
+
     const viewIng = () => {
  
       db.transaction((tx) => {
@@ -171,15 +230,38 @@ let alarm = false;
           [],
           (tx, results) => {
             var temp = [];
-            for (let i = 0; i < results.rows.length; ++i)
-              temp.push(results.rows.item(i));
+            let users = [];
+            for (let i = 0; i < results.rows.length; ++i) {
+               temp.push(results.rows.item(i));
+               users.push(results.rows.item(i));
+               if(results.rows.item(i).name==text) {
+                 console.log("matched with    ",text); 
+
+                 if(results.rows.item(i).category=='fridge') {
+                   updateFridge(Colors.grey400);
+                   setCategory('fridge');
+                 }
+                 setQuantity(results.rows.item(i).qty);
+                 setDbBookmark(results.rows.item(i).bookmark);
+                 setAlarmCycle(results.rows.item(i).notify);
+                 setLastDate(results.rows.item(i).expiration);
+                 setStartDate(Date.dayString);
+                
+                }
+            }
+            
             console.log(temp);
+            setUsers(users);
+          
+
+
           }
+          
         );
       });
    
     }
-
+ 
 
 
  return (
@@ -244,8 +326,8 @@ let alarm = false;
         value={text}
         onChangeText={setText}
         onEndEditing={()=>console.log("onEndEditing     " +text)}
-        inputRef={inputRef}
-      />
+        inputRef={inputRef}>
+        </DelayInput>
     <TouchableOpacity style = {{position:"absolute", right:25, top:21}} onPress = {allClear}> 
       <Icon name="close-circle" size={30} color={Colors.grey500} />  
     </TouchableOpacity>
@@ -253,14 +335,14 @@ let alarm = false;
   </View>
  
   <View style={style.temp03}> 
-    <Text style={style.TitleText}>보관         </Text> 
-    <TouchableOpacity onPress={()=>{selectCategory('fridge')}}>
+    <Text style={style.TitleText} onPress={()=>{console.log("current category is    ",category);}}>보관         </Text> 
+    <TouchableOpacity style={{backgroundColor: fridgeSelect}} onPress={modifyFridge}>
       <Text style={style.TitleText}>냉장</Text>
     </TouchableOpacity>
-    <TouchableOpacity onPress={()=>{selectCategory('freezer')}}>
+    <TouchableOpacity style={{backgroundColor: freezerSelect}} onPress={modifyFreezer}>
       <Text style={style.TitleText}>냉동</Text>
     </TouchableOpacity>
-    <TouchableOpacity onPress={()=>{selectCategory('room')}}>
+    <TouchableOpacity style={{backgroundColor: roomSelect}} onPress={modifyRoom}>
       <Text style={style.TitleText}>실온</Text>
     </TouchableOpacity>
     
@@ -329,7 +411,7 @@ let alarm = false;
  <View style={style.temp03}> 
     <Text style={style.TitleText} onPress={()=>{console.log("current DBbookmark is  ",DbBookmark,"  current AlarmCycle is   ",alarmCycle)}}>이미지</Text> 
     <View style={style.cameraview}> 
-      <Icon name="camera" size={30} color={Colors.grey500}  style = {{position:"absolute", left:140, top:120}} />  
+      <Icon name="camera" size={30} color={Colors.grey500}  style = {{position:"absolute", left:140, top:120}} onPress={viewIng}/>
     </View>
  </View>
 
