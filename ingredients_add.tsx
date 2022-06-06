@@ -67,7 +67,12 @@ const selectLastDate = useCallback((sld)=>setLastDate((lastDate) => {lastDate = 
 
 const [modalVisible, setModalVisible] = useState(false);
 const Confirm = () => {
-  setModalVisible(!modalVisible);
+  if(alarmCycle>0&& min>0){
+    setModalVisible(!modalVisible);
+    alarm = true;
+    updateAlarm("bell-badge");
+  }
+  
 };
 const Cancel = () => {
   setModalVisible(!modalVisible);
@@ -86,7 +91,6 @@ let like = false;
     like = true;
     updateStar("star");
     setDbBookmark(1);
-    console.log("DBLike is ",DbBookmark);
     }
     }, []);
 
@@ -161,7 +165,7 @@ let alarm = false;
         }
         }, []);
 
-    /*function DeleteIngredient(name){
+    function DeleteIngredient(name){
       let db = SQLite.openDatabase({ name: 'recipe.db' });
       db.transaction((tx) => {
           tx.executeSql(
@@ -184,7 +188,7 @@ let alarm = false;
               }
           );
       });
-  }*/
+  }
 
 
    const insertData = () => {
@@ -205,9 +209,13 @@ let alarm = false;
         );
       });
 
-      viewIng();
-  
       setCategory('');
+      room = false;
+      fridge = false;
+      freezer = false;
+      updateRoom(Colors.white);
+      updateFridge(Colors.white);
+      updateFreezer(Colors.white);
       setQuantity(1);
       setStartDate('          ');
       setLastDate('          ');            
@@ -257,7 +265,15 @@ let alarm = false;
                 }
                  setQuantity(results.rows.item(i).qty);
                  setDbBookmark(results.rows.item(i).bookmark);
+                 if(results.rows.item(i).bookmark==1) {
+                  like = true;
+                  updateStar("star");
+                 }
                  setAlarmCycle(results.rows.item(i).notify);
+                 if(results.rows.item(i).notify>0){
+                  alarm = true;
+                  updateAlarm("bell-badge");
+                 }
                  setLastDate(results.rows.item(i).expiration);
                  setStartDate(Date.dayString);
                 
@@ -275,8 +291,27 @@ let alarm = false;
       });
    
     }
- 
 
+   
+    const updateData = () => {
+ 
+      db.transaction(function (tx) {
+        tx.executeSql(
+          'UPDATE ingredients SET qty=?, expiration=?, category=?, bookmark=?, notify=? where name=?',
+          [quantity, lastDate, category ,DbBookmark, alarmCycle, text],
+          (tx, results) => {
+            console.log('Results', results.rowsAffected);
+           
+            if (results.rowsAffected > 0) {
+              Alert.alert('Data Updated Successfully....');
+            } else Alert.alert('Failed....');
+
+
+          }
+        );
+      });
+
+    }
 
  return (
  <SafeAreaView>
@@ -317,8 +352,11 @@ let alarm = false;
 
 
 </Modal>
-      <TouchableOpacity style = {{position:"absolute", right:12, top:25}}>
-        <Text style = {{fontSize : 17}} onPress={insertData}>저장</Text>
+      <TouchableOpacity style = {{position:"absolute", right:50, top:25}}  onPress={insertData}>
+        <Text style = {{fontSize : 15}}>저장</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style = {{position:"absolute", right:12, top:25}}  onPress={updateData}>
+        <Text style = {{fontSize : 15}}>수정</Text>
       </TouchableOpacity>
          
     </View>
