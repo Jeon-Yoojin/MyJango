@@ -4,7 +4,8 @@ import {Colors} from "react-native-paper";
 import {StyleSheet, Pressable} from "react-native";
 import Icon from 'react-native-vector-icons/Entypo';
 import Icon2 from 'react-native-vector-icons/Feather';
-import { useEffect } from 'react';
+import SQLite from 'react-native-sqlite-storage';
+import { useEffect, useState} from 'react';
 
 const MainLogo = require('../../android/app/src/main/assets/images/MainLogo.png');
 
@@ -46,14 +47,18 @@ const style = StyleSheet.create({
 }
 )
 
+const Main = ({ navigation }) => {
+
+  
 const [ItemList, setItemList] = useState([]);
 const [RecipeList, setRecipeList] = useState([]);
+let a;
 
 let db = SQLite.openDatabase({ name: 'recipe.db' });
     useEffect(() => {
         db.transaction((tx) => {
             tx.executeSql('SELECT name FROM ingredients ORDER BY expiration;',
-            //유통기한 임박순으로 정렬함
+            //재료이름 가져오기
                 [],
                 (tx, results) => {
                     var temp = [];
@@ -66,23 +71,24 @@ let db = SQLite.openDatabase({ name: 'recipe.db' });
     }, []);
     
     let db2 = SQLite.openDatabase({ name: 'recipe.db' });
+    function Recipelist (r_index: number) {
     useEffect(() => {
         db2.transaction((tx) => {
-            tx.executeSql('SELECT name FROM recipe where ingredient = "두부";',
-            //유통기한 임박순으로 정렬함
-                [],
+            tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,
+            //레시피 가져오기
+                [ItemList[r_index]],
                 (tx, results) => {
                     var temp = [];
-                    for (let i = 0; i < 3; ++i)
+                    for (let i = 0; i < 2; ++i)
                         temp.push(results.rows.item(i));
                     setRecipeList(temp);
                 }
             );
         });
     }, []);
+  }
 
 
-const Main = ({ navigation }) => {
  return (
 
  <SafeAreaView>
@@ -116,8 +122,44 @@ const Main = ({ navigation }) => {
   <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.TitleText2}>유통기한 임박{'>'}</Text></Pressable>
   </View>
 
-<View style={style.temp04}> 
-<ScrollView horizontal={true} showsHorizontalScrollIndicator = {false}>
+<ScrollView horizontal={true} showsHorizontalScrollIndicator = {false} style={style.temp04}>
+  <View style={style.expireddate4} onAccessibilityAction={() => Recipelist(0)}>
+    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[0]}</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
+  </View>
+  
+  <View style={style.expireddate4_2} onAccessibilityAction={() => Recipelist(1)}>
+    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[1]}</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
+  </View>
+  <View style={style.expireddate4_3}  onAccessibilityAction={() => Recipelist(2)}>
+    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[2]}</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
+  </View>
+  <View style={style.expireddate4}  onAccessibilityAction={() => Recipelist(3)}>
+    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[3]}</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
+  </View>
+</ScrollView>
+
+
+  <View style={style.temp04}> 
+  <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.TitleText2}>즐겨찾는 재료{'>'}</Text></Pressable>
+  </View>
+
+  <ScrollView horizontal={true} showsHorizontalScrollIndicator = {false} style={style.temp04}>
   <View style={style.expireddate4}>
     <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
     <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
@@ -127,51 +169,27 @@ const Main = ({ navigation }) => {
   </View>
   
   <View style={style.expireddate4_2}>
-    <Text style={style.expireddate4_1}>마파 두부</Text>
-    <Text style={style.expireddate4_1}>두부조림</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[1]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4_3}>
-    <Text style={style.expireddate4_1}>미나리</Text>
-    <Text style={style.expireddate4_1}>미나리국</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[2]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
-</ScrollView>
-</View>
-
-
-  <View style={style.temp04}> 
-  <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.TitleText2}>즐겨찾는 재료{'>'}</Text></Pressable>
-  </View>
-
-<View style={style.temp04}> 
   <View style={style.expireddate4}>
-    <Text style={style.expireddate4_1}>마파 두부</Text>
-    <Text style={style.expireddate4_1}>두부조림</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>돼지고기</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[3]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
-  
-  <View style={style.expireddate4_2}>
-    <Text style={style.expireddate4_1}>마파 두부</Text>
-    <Text style={style.expireddate4_1}>두부조림</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>두부</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
-    <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
-  </View>
-  <View style={style.expireddate4_3}>
-    <Text style={style.expireddate4_1}>미나리</Text>
-    <Text style={style.expireddate4_1}>미나리국</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>미나리</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
-    <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
-  </View>
-</View>
+</ScrollView>
 
   <View style = {{position:"absolute", right:20, top:650}}>
   <Pressable onPress={() => navigation.navigate('INGREDIENTS_ADD')}><Text style={style.expireddate5}>+</Text></Pressable>
