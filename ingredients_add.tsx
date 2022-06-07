@@ -53,25 +53,25 @@ const Ingredients_add = () => {
 const [category,setCategory] = useState('');
 const selectCategory = useCallback((cg)=>setCategory((category) => {category = cg; return category;}),[]);
 
-const[showCalendar1,setShowCalendar1] = useState(false);
-const changeShowCalendar1 = useCallback(()=>setShowCalendar1((showCalendar1) => {return !showCalendar1}),[]);
 
-const[showCalendar2,setShowCalendar2] = useState(false);
-const changeShowCalendar2 = useCallback(()=>setShowCalendar2((showCalendar2) => {return !showCalendar2}),[]);
-
-const [startDate, setStartDate] = useState('          ');
-const selectStartDate = useCallback((ssd)=>setStartDate((startDate) => {startDate = ssd; return startDate;}),[]);
+const[showCalendar,setShowCalendar] = useState(false);
+const changeShowCalendar = useCallback(()=>setShowCalendar((showCalendar) => {return !showCalendar}),[]);
 
 const [lastDate, setLastDate] = useState('          ');
 const selectLastDate = useCallback((sld)=>setLastDate((lastDate) => {lastDate = sld; return lastDate;}),[]);
 
 const [modalVisible, setModalVisible] = useState(false);
 const Confirm = () => {
-  if(alarmCycle>0&& min>0){
+  if(alarmCycle>0 && min>0){
     setModalVisible(!modalVisible);
     alarm = true;
     updateAlarm("bell-badge");
   }
+  else {
+    setModalVisible(!modalVisible);
+    alarm = false;
+    updateAlarm("bell-badge-outline");
+  } 
   
 };
 const Cancel = () => {
@@ -217,15 +217,15 @@ let alarm = false;
       updateFridge(Colors.white);
       updateFreezer(Colors.white);
       setQuantity(1);
-      setStartDate('          ');
       setLastDate('          ');            
-      allClear; 
+      allClear;
       setDbBookmark(0);
-      setShowCalendar1(false);
-      setShowCalendar2(false);
+      setShowCalendar(false);
       setAlarmCycle(0);
       like = false;
       updateStar("star-outline");
+      alarm = false;
+      updateAlarm("bell-badge-outline");
     }
 
     const [users, setUsers] = useState([]);
@@ -275,7 +275,6 @@ let alarm = false;
                   updateAlarm("bell-badge");
                  }
                  setLastDate(results.rows.item(i).expiration);
-                 setStartDate(Date.dayString);
                 
                 }
             }
@@ -373,7 +372,7 @@ let alarm = false;
   <ScrollView>
  
   <View style={style.temp03}> 
-    <Text style={style.TitleText}>이름</Text> 
+    <Text style={style.TitleText} onPress={()=>{console.log("current text is   ",text)}}>이름</Text> 
     <DelayInput style={style.textInputStyle}
         value={text}
         onChangeText={setText}
@@ -419,35 +418,21 @@ let alarm = false;
   <View style={style.temp03}> 
     <Text style={style.TitleText}>유통기한</Text> 
     <View>
-      <View style={style.expireddate}>
       
-        <Text style = {{fontSize:20}}>{startDate}</Text>
-        <TouchableOpacity onPress={changeShowCalendar1}>
-          <Icon name="calendar-range" size={30} color={Colors.grey500}/>
-        </TouchableOpacity>
-        
 
-          
-      </View>
-
-      <View>
-       {showCalendar1 && <Calendar
-        minDate={Date()}
-        onDayPress={(day) => {selectStartDate(day.dateString)}}
-        />}
-      </View>
+   
 
       <View style={style.expireddate}>
         <Text style = {{fontSize:20}}>{lastDate}</Text>
-        <TouchableOpacity onPress={changeShowCalendar2}>
+        <TouchableOpacity onPress={changeShowCalendar}>
           <Icon name="calendar-range" size={30} color={Colors.grey500}/>
         </TouchableOpacity>
           
       </View>
 
       <View>
-       {showCalendar2 && <Calendar
-        minDate={startDate}
+       {showCalendar && <Calendar
+        minDate={Date()}
         onDayPress={(day) => {selectLastDate(day.dateString)}}
         />}
       </View>
