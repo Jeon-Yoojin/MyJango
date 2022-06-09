@@ -104,13 +104,18 @@ const [modalVisible, setModalVisible] = useState(false);
 const [modalVisible2, setModalVisible2] = useState(false);
 
 const share1 = () => {
+  Alert.alert("공유","친구에게 재료를 공유했습니다.",
+  [{text: "확인", onPress: ()=>{console.log("share")}}]);
   setcolor1("lightgray");
   setcolor2("lightgray");
   setcolor3("lightgray");
   setcolor4("lightgray");
   setcolor5("lightgray");
 }
+
 const share2 = () => {
+  Alert.alert("공유","친구에게 재료를 공유했습니다.",
+  [{text: "확인", onPress: ()=>{console.log("share")}}]);
   setcolor6("lightgray");
   setcolor7("lightgray");
   setcolor8("lightgray");
@@ -120,25 +125,25 @@ const action1 = () => {
   setcolor1("skyblue");
 };
 const action2 = () => {
-  setcolor1("skyblue");
+  setcolor2("skyblue");
 };
 const action3 = () => {
-  setcolor1("skyblue");
+  setcolor3("skyblue");
 };
 const action4 = () => {
-  setcolor1("skyblue");
+  setcolor4("skyblue");
 };
 const action5 = () => {
-  setcolor1("skyblue");
+  setcolor5("skyblue");
 };
 const action6 = () => {
-  setcolor1("skyblue");
+  setcolor6("skyblue");
 };
 const action7 = () => {
-  setcolor1("skyblue");
+  setcolor7("skyblue");
 };
 const action8 = () => {
-  setcolor1("skyblue");
+  setcolor8("skyblue");
 };
 
 const save = () => {
@@ -338,16 +343,16 @@ useEffect(()=>{
 
   <View style={style.temp03}>  
   <Text>  </Text>
-  <TouchableHighlight style={style.expireddate2_1} onPress={action1} underlayColor='skyblue'>
+  <TouchableHighlight style={style.expireddate2_1} onPress={action1}>
     <Text style={style.expireddate0}>감자</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_2} onPress={action2} underlayColor='skyblue'>
+  <TouchableHighlight style={style.expireddate2_2} onPress={action2}>
     <Text style={style.expireddate0}>당근</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_3} onPress={action3} underlayColor='skyblue'>
+  <TouchableHighlight style={style.expireddate2_3} onPress={action3}>
     <Text style={style.expireddate0}>김</Text></TouchableHighlight>
 <Text>    </Text>
-  <TouchableHighlight style={style.expireddate2_4} onPress={action4} underlayColor='skyblue'>
+  <TouchableHighlight style={style.expireddate2_4} onPress={action4}>
     <Text style={style.expireddate0}>돼지고기</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_5} onPress={action5} underlayColor='skyblue'>
+  <TouchableHighlight style={style.expireddate2_5} onPress={action5}>
     <Text style={style.expireddate0}>파</Text></TouchableHighlight>
 </View>
 
@@ -367,11 +372,11 @@ useEffect(()=>{
 
   <View style={style.temp03}>  
   <Text>  </Text>
-  <TouchableHighlight style={style.expireddate2_6} onPress={action6} underlayColor='skyblue'>
+  <TouchableHighlight style={style.expireddate2_6} onPress={action6}>
     <Text style={style.expireddate0}>감자</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_7} onPress={action7} underlayColor='skyblue'>
+  <TouchableHighlight style={style.expireddate2_7} onPress={action7}>
     <Text style={style.expireddate0}>당근</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_8} onPress={action8} underlayColor='skyblue'>
+  <TouchableHighlight style={style.expireddate2_8} onPress={action8}>
     <Text style={style.expireddate0}>김</Text></TouchableHighlight>
 </View>
 
