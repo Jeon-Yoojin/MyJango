@@ -103,17 +103,18 @@ const App = () => {
 const [modalVisible, setModalVisible] = useState(false);
 const [modalVisible2, setModalVisible2] = useState(false);
 
-const share1 = useCallback(()=> Alert.alert("공유","친구에게 재료를 공유했습니다.",
-[
-{text: "확인", onPress: ()=>{console.log("Yes")}}
-]
-),[setcolor1("lightgray"), setcolor2("lightgray"), setcolor3("lightgray"), setcolor4("lightgray"), setcolor5("lightgray")]);
-
-const share2 = useCallback(()=> Alert.alert("공유","친구에게 재료를 공유했습니다.",
-[
-{text: "확인", onPress: ()=>{console.log("Yes")}}
-]
-),[setcolor6("lightgray"), setcolor7("lightgray"), setcolor8("lightgray")]);
+const share1 = () => {
+  setcolor1("lightgray");
+  setcolor2("lightgray");
+  setcolor3("lightgray");
+  setcolor4("lightgray");
+  setcolor5("lightgray");
+}
+const share2 = () => {
+  setcolor6("lightgray");
+  setcolor7("lightgray");
+  setcolor8("lightgray");
+}
 
 const action1 = () => {
   setcolor1("skyblue");
