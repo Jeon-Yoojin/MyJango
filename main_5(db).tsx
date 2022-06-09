@@ -50,44 +50,129 @@ const style = StyleSheet.create({
 const Main = ({ navigation }) => {
 
   
-const [ItemList, setItemList] = useState([]);
-const [RecipeList, setRecipeList] = useState([]);
+const [ItemList1, setItemList1] = useState([]);
+const [ItemList2, setItemList2] = useState([]);
+const [RecipeList1_1, setRecipeList1_1] = useState([]);
+const [RecipeList1_2, setRecipeList1_2] = useState([]);
+const [RecipeList1_3, setRecipeList1_3] = useState([]);
+const [RecipeList1_4, setRecipeList1_4] = useState([]);
+const [RecipeList2_1, setRecipeList2_1] = useState([]);
+const [RecipeList2_2, setRecipeList2_2] = useState([]);
+const [RecipeList2_3, setRecipeList2_3] = useState([]);
+const [RecipeList2_4, setRecipeList2_4] = useState([]);
 let a;
 
 let db = SQLite.openDatabase({ name: 'recipe.db' });
-    useEffect(() => {
-        db.transaction((tx) => {
-            tx.executeSql('SELECT name FROM ingredients ORDER BY expiration;',
-            //재료이름 가져오기
-                [],
-                (tx, results) => {
-                    var temp = [];
-                    for (let i = 0; i < 4; ++i)
-                        temp.push(results.rows.item(i));
-                    setItemList(temp);
-                }
-            );
-        });
-    }, []);
-    
-    let db2 = SQLite.openDatabase({ name: 'recipe.db' });
-    function Recipelist (r_index: number) {
-    useEffect(() => {
-        db2.transaction((tx) => {
-            tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,
-            //레시피 가져오기
-                [ItemList[r_index]],
-                (tx, results) => {
-                    var temp = [];
-                    for (let i = 0; i < 2; ++i)
-                        temp.push(results.rows.item(i));
-                    setRecipeList(temp);
-                }
-            );
-        });
-    }, []);
-  }
-
+//1
+useEffect(() => {
+  db.transaction((tx) => {
+    tx.executeSql('SELECT name FROM ingredients ORDER BY expiration;',
+    [], //유통기한 재료
+    (tx, results) => {
+      var temp = [];
+      for (let i = 0; i < 4; ++i)
+      temp.push(results.rows.item(i));
+      setItemList1(temp);
+    } ); }); }, []);
+//1_1                
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    [ItemList1[0]], //유통기한 레시피                
+    (tx, results) => {                    
+      var temp = [];                    
+      for (let i = 0; i < 2; ++i)                        
+      temp.push(results.rows.item(i));                    
+      setRecipeList1_1(temp);                
+    } ); }); }, []);
+//1_2               
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    [ItemList1[1]], //유통기한 레시피                
+    (tx, results) => {                    
+      var temp = [];                    
+      for (let i = 0; i < 2; ++i)                        
+      temp.push(results.rows.item(i));                    
+      setRecipeList1_2(temp);                
+    } ); }); }, []);
+//1_3             
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    [ItemList1[2]], //유통기한 레시피                
+    (tx, results) => {                    
+      var temp = [];                    
+      for (let i = 0; i < 2; ++i)                        
+      temp.push(results.rows.item(i));                    
+      setRecipeList1_3(temp);                
+    } ); }); }, []);
+//1_4               
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    [ItemList1[3]], //유통기한 레시피                
+    (tx, results) => {                    
+      var temp = [];                    
+      for (let i = 0; i < 2; ++i)                        
+      temp.push(results.rows.item(i));                    
+      setRecipeList1_4(temp);                
+    } ); }); }, []);
+//2
+useEffect(() => {
+  db.transaction((tx) => {
+    tx.executeSql('SELECT name FROM ingredients where bookmark = 1;',
+    [], //즐찾 재료
+    (tx, results) => {
+      var temp = [];
+      for (let i = 0; i < 4; ++i)
+      temp.push(results.rows.item(i));
+      setItemList2(temp);
+    } ); }); }, []);
+//2_1                
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    [ItemList2[0]], //즐찾 레시피                
+    (tx, results) => {                    
+      var temp = [];                    
+      for (let i = 0; i < 2; ++i)                        
+      temp.push(results.rows.item(i));                    
+      setRecipeList2_1(temp);                
+    } ); }); }, []);
+//2_2               
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    [ItemList2[1]], //즐찾 레시피                
+    (tx, results) => {                    
+      var temp = [];                    
+      for (let i = 0; i < 2; ++i)                        
+      temp.push(results.rows.item(i));                    
+      setRecipeList2_2(temp);                
+    } ); }); }, []);
+//2_3             
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    [ItemList2[2]], //즐찾 레시피                
+    (tx, results) => {                    
+      var temp = [];                    
+      for (let i = 0; i < 2; ++i)                        
+      temp.push(results.rows.item(i));                    
+      setRecipeList2_3(temp);                
+    } ); }); }, []);
+//2_4               
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    [ItemList2[3]], //즐찾 레시피                
+    (tx, results) => {                    
+      var temp = [];                    
+      for (let i = 0; i < 2; ++i)                        
+      temp.push(results.rows.item(i));                    
+      setRecipeList2_4(temp);                
+    } ); }); }, []);
 
  return (
 
@@ -123,32 +208,31 @@ let db = SQLite.openDatabase({ name: 'recipe.db' });
   </View>
 
 <ScrollView horizontal={true} showsHorizontalScrollIndicator = {false} style={style.temp04}>
-  <View style={style.expireddate4} onAccessibilityAction={() => Recipelist(0)}>
-    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
-    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[0]}</Text>
+  <View style={style.expireddate4}>
+    <Text style={style.expireddate4_1}>{RecipeList1_1[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList1_1[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList1[0]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
-  
-  <View style={style.expireddate4_2} onAccessibilityAction={() => Recipelist(1)}>
-    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
-    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[1]}</Text>
+  <View style={style.expireddate4_2}>
+    <Text style={style.expireddate4_1}>{RecipeList1_2[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList1_2[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList1[1]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
-  <View style={style.expireddate4_3}  onAccessibilityAction={() => Recipelist(2)}>
-    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
-    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[2]}</Text>
+  <View style={style.expireddate4_3}>
+    <Text style={style.expireddate4_1}>{RecipeList1_3[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList1_3[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList1[2]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
-  <View style={style.expireddate4}  onAccessibilityAction={() => Recipelist(3)}>
-    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
-    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[3]}</Text>
+  <View style={style.expireddate4}>
+    <Text style={style.expireddate4_1}>{RecipeList1_4[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList1_4[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList1[3]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
@@ -159,33 +243,32 @@ let db = SQLite.openDatabase({ name: 'recipe.db' });
   <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.TitleText2}>즐겨찾는 재료{'>'}</Text></Pressable>
   </View>
 
-  <ScrollView horizontal={true} showsHorizontalScrollIndicator = {false} style={style.temp04}>
+  <ScrollView horizontal={true} showsHorizontalScrollIndicator = {true} style={style.temp04}>
   <View style={style.expireddate4}>
-    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
-    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList2_1[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList2_1[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList2[0]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
-  
   <View style={style.expireddate4_2}>
-    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
-    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[1]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList2_2[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList2_2[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList2[1]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4_3}>
-    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
-    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[2]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList2_3[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList2_3[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList2[2]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4}>
-    <Text style={style.expireddate4_1}>{RecipeList[0]}</Text>
-    <Text style={style.expireddate4_1}>{RecipeList[1]}</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList[3]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList2_4[0]}</Text>
+    <Text style={style.expireddate4_1}>{RecipeList2_4[1]}</Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList2[3]}</Text>
     <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
