@@ -60,7 +60,19 @@ const [RecipeList2_1, setRecipeList2_1] = useState([]);
 const [RecipeList2_2, setRecipeList2_2] = useState([]);
 const [RecipeList2_3, setRecipeList2_3] = useState([]);
 const [RecipeList2_4, setRecipeList2_4] = useState([]);
+
+const [Item1_1_d, setItem1_1_d] = useState(Number);
+const [Item1_2_d, setItem1_2_d] = useState(Number);
+const [Item1_3_d, setItem1_3_d] = useState(Number);
+const [Item1_4_d, setItem1_4_d] = useState(Number);
+const [Item2_1_d, setItem2_1_d] = useState(Number);
+const [Item2_2_d, setItem2_2_d] = useState(Number);
+const [Item2_3_d, setItem2_3_d] = useState(Number);
+const [Item2_4_d, setItem2_4_d] = useState(Number);
 let a;
+
+const date = new Date();
+const day = date.getDate();
 
 let db = SQLite.openDatabase({ name: 'recipe.db' });
 //1
@@ -173,6 +185,118 @@ useEffect(() => {
       temp.push(results.rows.item(i));                    
       setRecipeList2_4(temp);                
     } ); }); }, []);
+//1_1_d    
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT expiration FROM ingredients where name = ?;`,                
+    [ItemList1[0]], //유통기한                
+    (tx, results) => {                    
+      var temp = [];  
+      for (let i = 0; i < 1; ++i)                    
+      temp.push(results.rows.item(i));
+      temp[0].slice(8,9);
+      var tem = 0;
+      tem = day - parseInt(temp[0]);
+      setItem1_1_d(tem);                
+    } ); }); }, []);
+//1_2_d    
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT expiration FROM ingredients where name = ?;`,                
+    [ItemList1[1]], //유통기한                
+    (tx, results) => {                    
+      var temp = [];  
+      for (let i = 0; i < 1; ++i)                    
+      temp.push(results.rows.item(i));
+      temp[0].slice(8,9);
+      var tem = 0;
+      tem = day - parseInt(temp[0]);
+      setItem1_2_d(tem);                
+    } ); }); }, []);
+//1_3_d    
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT expiration FROM ingredients where name = ?;`,                
+    [ItemList1[2]], //유통기한                
+    (tx, results) => {                    
+      var temp = [];  
+      for (let i = 0; i < 1; ++i)                    
+      temp.push(results.rows.item(i));
+      temp[0].slice(8,9);
+      var tem = 0;
+      tem = day - parseInt(temp[0]);
+      setItem1_3_d(tem);                
+    } ); }); }, []);
+//1_4_d    
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT expiration FROM ingredients where name = ?;`,                
+    [ItemList1[3]], //유통기한                
+    (tx, results) => {                    
+      var temp = [];  
+      for (let i = 0; i < 1; ++i)                    
+      temp.push(results.rows.item(i));
+      temp[0].slice(8,9);
+      var tem = 0;
+      tem = day - parseInt(temp[0]);
+      setItem1_4_d(tem);                
+    } ); }); }, []);
+//2_1_d    
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT expiration FROM ingredients where name = ?;`,                
+    [ItemList2[0]], //유통기한                
+    (tx, results) => {                    
+      var temp = [];  
+      for (let i = 0; i < 1; ++i)                    
+      temp.push(results.rows.item(i));
+      temp[0].slice(8,9);
+      var tem = 0;
+      tem = day - parseInt(temp[0]);
+      setItem2_1_d(tem);                
+    } ); }); }, []);
+//2_2_d    
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT expiration FROM ingredients where name = ?;`,                
+    [ItemList2[1]], //유통기한                
+    (tx, results) => {                    
+      var temp = [];  
+      for (let i = 0; i < 1; ++i)                    
+      temp.push(results.rows.item(i));
+      temp[0].slice(8,9);
+      var tem = 0;
+      tem = day - parseInt(temp[0]);
+      setItem2_2_d(tem);                
+    } ); }); }, []);
+//2_3_d    
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT expiration FROM ingredients where name = ?;`,                
+    [ItemList2[2]], //유통기한                
+    (tx, results) => {                    
+      var temp = [];  
+      for (let i = 0; i < 1; ++i)                    
+      temp.push(results.rows.item(i));
+      temp[0].slice(8,9);
+      var tem = 0;
+      tem = day - parseInt(temp[0]);
+      setItem2_3_d(tem);                
+    } ); }); }, []);
+//2_4_d    
+useEffect(() => {        
+  db.transaction((tx) => {
+    tx.executeSql(`SELECT expiration FROM ingredients where name = ?;`,                
+    [ItemList2[3]], //유통기한                
+    (tx, results) => {                    
+      var temp = [];  
+      for (let i = 0; i < 1; ++i)                    
+      temp.push(results.rows.item(i));
+      temp[0].slice(8,9);
+      var tem = 0;
+      tem = day - parseInt(temp[0]);
+      setItem2_4_d(tem);                
+    } ); }); }, []);
 
  return (
 
@@ -212,28 +336,28 @@ useEffect(() => {
     <Text style={style.expireddate4_1}>{RecipeList1_1[0]}</Text>
     <Text style={style.expireddate4_1}>{RecipeList1_1[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList1[0]}</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{Item1_1_d}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4_2}>
     <Text style={style.expireddate4_1}>{RecipeList1_2[0]}</Text>
     <Text style={style.expireddate4_1}>{RecipeList1_2[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList1[1]}</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{Item1_2_d}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4_3}>
     <Text style={style.expireddate4_1}>{RecipeList1_3[0]}</Text>
     <Text style={style.expireddate4_1}>{RecipeList1_3[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList1[2]}</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{Item1_3_d}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4}>
     <Text style={style.expireddate4_1}>{RecipeList1_4[0]}</Text>
     <Text style={style.expireddate4_1}>{RecipeList1_4[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList1[3]}</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{Item1_4_d}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
 </ScrollView>
@@ -248,28 +372,28 @@ useEffect(() => {
     <Text style={style.expireddate4_1}>{RecipeList2_1[0]}</Text>
     <Text style={style.expireddate4_1}>{RecipeList2_1[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList2[0]}</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{Item2_1_d}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4_2}>
     <Text style={style.expireddate4_1}>{RecipeList2_2[0]}</Text>
     <Text style={style.expireddate4_1}>{RecipeList2_2[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList2[1]}</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{Item2_2_d}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4_3}>
     <Text style={style.expireddate4_1}>{RecipeList2_3[0]}</Text>
     <Text style={style.expireddate4_1}>{RecipeList2_3[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList2[2]}</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{Item2_3_d}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4}>
     <Text style={style.expireddate4_1}>{RecipeList2_4[0]}</Text>
     <Text style={style.expireddate4_1}>{RecipeList2_4[1]}</Text>
     <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{ItemList2[3]}</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{Item2_4_d}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
 </ScrollView>
