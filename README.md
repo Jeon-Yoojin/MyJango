@@ -1,5 +1,7 @@
 # MyJango
 
+recipe_list.js 에서 searchWithSimpler searchWith 부분 봐주세요 DB가 연결이 안 된 건 아니고요 제 눈에는 아무리 봐도 맞는데 안돼서 유진님께서 찾아주신 참고한 블로그 링크랑 그분이 사용하신 db 파일 올립니다. https://chobikim.tistory.com/8?category=1022187 
+
 일단 제가 만든 거에서 설치해야 할 패키지 
 
 
@@ -35,7 +37,3 @@ npm i react-native-debounce-input
 
 
 // 캘린더, 
-
-// 일단 스택 네비게이션으로 하긴 했음
-
-// 아직 임시로 만든거라 recipe_list에서 이미지를 그냥 로컬에서 가져오는 걸로 만들었어요 004.png를 images 폴더를 넣어주셔야
