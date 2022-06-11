@@ -7,7 +7,8 @@ import {StyleSheet} from "react-native";
 import YouTube from 'react-native-youtube';
 import SQLite from 'react-native-sqlite-storage';
 
-var db = SQLite.openDatabase({ name: 'recipe.db', createFromLocation: '~/db.sqlite', });
+var db = SQLite.openDatabase({ name: 'db.sqlite', createFromLocation: '~/db.sqlite', });
+var db2 = SQLite.openDatabase({ name: 'recipe.db', createFromLocation: '~/recipe.db', });
 
 const Recipe_youtube_list = ()=>{
   let searchLike = false;
@@ -16,10 +17,16 @@ const Recipe_youtube_list = ()=>{
     if(searchLike){
     searchLike = false;
     updateSL(Colors.white);
+    setFinalIngList([]);
     }
     else{
     searchLike = true;
+    searchDate = false;
+    updateSD(Colors.white);
     updateSL(Colors.red200);
+    getbookmark;
+    setFinalIngList(BMlist);
+    searchWith;
     }
     }, []);
 
@@ -29,20 +36,22 @@ const Recipe_youtube_list = ()=>{
     if(searchDate){
     searchDate = false;
     updateSD(Colors.white);
+    setFinalIngList([]);
     }
     else{
     searchDate = true;
+    searchLike = false;
+    updateSL(Colors.white);
     updateSD(Colors.red200);
+    getExpired;
+    setFinalIngList(expired);
+    searchWith;
     }
     }, []);
 
     const inputRef = createRef();
 
     const [text, setText] = useState('');
-    const allClear = () => {
-      setText('');
-      inputRef.current.clear();
-    };
   
     
     //const YOUTUBE_API_KEY = 'AIzaSyBBRIw7wYh9bXZhMOietmQgERKZZMwMzmU';
@@ -76,7 +85,7 @@ const Recipe_youtube_list = ()=>{
     let res = await fetch(url, options);
     let resOk = res && res.ok;
     
-    if (resOk) {
+    if (resOk && finalFoodList.length!=0) {
       console.log("resOK");
       const resData = await res.json();
       for(var i=0;i<10;i++){
@@ -92,9 +101,9 @@ const Recipe_youtube_list = ()=>{
   }
  
 
-  var finalList =['마라탕', '컵케이크'];
 
-  const videolist = _getThumbnail(finalList);
+
+  const videolist = _getThumbnail(finalFoodList);
   const getData = () => {
     videolist.then((val) => {
         setthumbnailList(val);
@@ -103,11 +112,9 @@ const Recipe_youtube_list = ()=>{
 
   useEffect(() => {
     getData();
-  },[]);
+  },[finalFoodList]);
 
   console.log('thumbnailList', thumbnailList);
-
-  const [ttemp,setTTemp]=useState([]);
 
   const viewRecipe = () => {
 
@@ -127,10 +134,11 @@ const Recipe_youtube_list = ()=>{
  
   }
 
+
 const [BMlist, setBMlist] = useState([]);
   const getbookmark = () => {
 
-    db.transaction((tx) => {
+    db2.transaction((tx) => {
       tx.executeSql(
         'SELECT name FROM ingredients WHERE bookmark=1', //쿼리문 갈아엎든가
         [],
@@ -149,21 +157,15 @@ const [BMlist, setBMlist] = useState([]);
 
   const getExpired = () => {
 
-    db.transaction((tx) => {
+    db2.transaction((tx) => {
       tx.executeSql(
-        'SELECT * FROM ingredients',
-        [],
+        'SELECT * FROM ingredients WHERE expiration = ?',
+        [Date+8],
         (tx, results) => {
-          var temp = [];
-          let expired = [];
+          var expired = [];
           for (let i = 0; i < results.rows.length; ++i) {
-             temp.push(results.rows.item(i));
-             
-             if(results.rows.item(i)) {
-               expired.push(results.rows.item(i));
-              }
+             expired.push(results.rows.item(i));
           }
-          console.log(temp);
           setExpired(expired);
           
         }
@@ -171,54 +173,35 @@ const [BMlist, setBMlist] = useState([]);
     });
   }
 
+  const [finalFoodList, setFinalFoodList]=useState([]);
+  const [finalIngList, setFinalIngList]=useState([]);
 
   const searchWith = () => {
 
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT B.name, C.recipe_count'+
-        'FROM recipe B, (SELECT A.recipe_id, count(A.ingredient_name) AS recipe_count' +
-        'FROM recipe_ingredients A' +
-        'WHERE A.ingredient_name =? OR A.ingredient_name = ? OR A.ingredient_name = ? OR A.ingredient_name = ?' +
-        'GROUP BY A.recipe_id HAVING count(A.ingredient_name) >= 3' + 
-        'ORDER BY count(A.ingredient_name) DESC) C' + 
-        'WHERE B.id=C.recipe_id' +
-        'ORDER BY C.recipe_count DESC',
-        ["단호박","샐러리","당근","양파"],
+        'SELECT B.name, C.recipe_count FROM recipe B, (SELECT A.recipe_id, count(A.ingredient_name) AS recipe_count FROM recipe_ingredients A WHERE trim(A.ingredient_name) =? OR trim(A.ingredient_name) =? OR trim(A.ingredient_name) =? OR trim(A.ingredient_name) =? GROUP BY A.recipe_id HAVING count(A.ingredient_name) >= 3 ORDER BY count(A.ingredient_name) DESC) C WHERE B.id=C.recipe_id ORDER BY C.recipe_count DESC'
+        ,
+        finalIngList,
         (tx, results) => {
           var temp = [];
           for (let i = 0; i < results.rows.length; ++i) {
-             temp.push(results.rows.item(i));
+             temp.push(results.rows.item(i).name);
           }
           console.log("------------------------------------------------------------------ ",temp);
+          setFinalFoodList(temp);
         }
       );
     });
-    console.log("------------------------------------------------");
+
   }
 
-  const searchWithSimpler = () => {
+  const tlqkf = () => {
+    const today = new Date();
+    const duedate = new Date();
+    console.log(duedate.setDate(today.getDate+7));
+  } 
 
-    db.transaction((tx) => {
-      tx.executeSql(
-        'SELECT recipe_id, count(ingredient_name)' +
-        'FROM recipe_ingredients' +
-        'WHERE ingredient_name ="마늘" OR ingredient_name = "파" OR ingredient_name = "베이컨" OR ingredient_name = "양파"' +
-        'GROUP BY recipe_id HAVING count(ingredient_name) >= 3' + 
-        'ORDER BY count(ingredient_name) DESC) C',        [],
-        (tx, results) => {
-          var temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-             temp.push(results.rows.item(i));
-          }
-          console.log("----------------------------------------------------------------- ",temp);
-        }
-      );
-    });
-    console.log("-----------------------------------simpler------------------------------ ");
-  }
-
- 
   
  return(
   <View style={styles.view}>
@@ -226,10 +209,11 @@ const [BMlist, setBMlist] = useState([]);
   <DelayInput style={styles.textInputStyle}
   value={text}
   onChangeText={setText}
-  onEndEditing={()=>console.log("onEndEditing     " +text)}
+  onEndEditing={()=>{console.log("onEndEditing     " +text); setFinalIngList([text, text, text, text]); searchWith;}}
   inputRef={inputRef}
 />
-    <TouchableOpacity onPress={viewRecipe}>
+
+    <TouchableOpacity onPress={searchWith}>
       <Icon name="magnify" size={30} color={Colors.grey500} style={{margin:7}} />
     </TouchableOpacity>
     
@@ -242,16 +226,12 @@ const [BMlist, setBMlist] = useState([]);
     <TouchableOpacity style={[styles.button, {backgroundColor: SLselect}]} onPress={modifySL}>
       <Text>즐겨찾기</Text>
     </TouchableOpacity>
-    <TouchableOpacity style={styles.button} onPress={searchWithSimpler}>
-      <Text>searchWithSimpler</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.button} onPress={searchWith}>
-      <Text>searchWith</Text>
-    </TouchableOpacity>
+    
   </View>
 
 
   <ScrollView style={styles.scroll}>
+    <Text onPress={tlqkf}>일단 날짜 먼저</Text>
 {thumbnailList.map((thumbnail, index)=>{
                  return(thumbnailList[index] ? <Image source={{uri: thumbnail}} key={index} style={{width:380, height:216, margin:5}}/> : <Text>Loading</Text>)
              })
