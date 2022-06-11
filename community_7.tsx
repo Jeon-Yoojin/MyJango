@@ -343,16 +343,16 @@ useEffect(()=>{
 
   <View style={style.temp03}>  
   <Text>  </Text>
-  <TouchableHighlight style={style.expireddate2_1} onPress={action1}>
+  <TouchableHighlight style={style.expireddate2_1} onPress={action1} underlayColor='skyblue'>
     <Text style={style.expireddate0}>감자</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_2} onPress={action2}>
+  <TouchableHighlight style={style.expireddate2_2} onPress={action2} underlayColor='skyblue'>
     <Text style={style.expireddate0}>당근</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_3} onPress={action3}>
+  <TouchableHighlight style={style.expireddate2_3} onPress={action3} underlayColor='skyblue'>
     <Text style={style.expireddate0}>김</Text></TouchableHighlight>
 <Text>    </Text>
-  <TouchableHighlight style={style.expireddate2_4} onPress={action4}>
+  <TouchableHighlight style={style.expireddate2_4} onPress={action4} underlayColor='skyblue'>
     <Text style={style.expireddate0}>돼지고기</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_5} onPress={action5}>
+  <TouchableHighlight style={style.expireddate2_5} onPress={action5} underlayColor='skyblue'>
     <Text style={style.expireddate0}>파</Text></TouchableHighlight>
 </View>
 
@@ -372,11 +372,11 @@ useEffect(()=>{
 
   <View style={style.temp03}>  
   <Text>  </Text>
-  <TouchableHighlight style={style.expireddate2_6} onPress={action6}>
+  <TouchableHighlight style={style.expireddate2_6} onPress={action6} underlayColor='skyblue'>
     <Text style={style.expireddate0}>감자</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_7} onPress={action7}>
+  <TouchableHighlight style={style.expireddate2_7} onPress={action7} underlayColor='skyblue'>
     <Text style={style.expireddate0}>당근</Text></TouchableHighlight>
-  <TouchableHighlight style={style.expireddate2_8} onPress={action8}>
+  <TouchableHighlight style={style.expireddate2_8} onPress={action8} underlayColor='skyblue'>
     <Text style={style.expireddate0}>김</Text></TouchableHighlight>
 </View>
 
