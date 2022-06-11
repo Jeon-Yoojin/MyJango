@@ -89,18 +89,18 @@ useEffect(() => {
 //1_1                
 useEffect(() => {        
   db.transaction((tx) => {
-    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
-    [ItemList1[0]], //유통기한 레시피                
-    (tx, results) => {                    
-      var temp = [];                    
-      for (let i = 0; i < 2; ++i)                        
-      temp.push(results.rows.item(i));                    
+    tx.executeSql(`SELECT B.name FROM recipe B, recipe_ingredients A WHERE A.ingredient_name =? AND B.id=A.recipe_id`,
+      [ItemList1[0]],
+      (tx, results) => {
+        var temp = [];
+        for (let i = 0; i < results.rows.length; ++i) 
+           temp.push(results.rows.item(i));                   
       setRecipeList1_1(temp);                
     } ); }); }, []);
 //1_2               
 useEffect(() => {        
   db.transaction((tx) => {
-    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    tx.executeSql(`SELECT B.name FROM recipe B, recipe_ingredients A WHERE A.ingredient_name =? AND B.id=A.recipe_id`,              
     [ItemList1[1]], //유통기한 레시피                
     (tx, results) => {                    
       var temp = [];                    
@@ -111,7 +111,7 @@ useEffect(() => {
 //1_3             
 useEffect(() => {        
   db.transaction((tx) => {
-    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    tx.executeSql(`SELECT B.name FROM recipe B, recipe_ingredients A WHERE A.ingredient_name =? AND B.id=A.recipe_id`,                
     [ItemList1[2]], //유통기한 레시피                
     (tx, results) => {                    
       var temp = [];                    
@@ -122,7 +122,7 @@ useEffect(() => {
 //1_4               
 useEffect(() => {        
   db.transaction((tx) => {
-    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    tx.executeSql(`SELECT B.name FROM recipe B, recipe_ingredients A WHERE A.ingredient_name =? AND B.id=A.recipe_id`,
     [ItemList1[3]], //유통기한 레시피                
     (tx, results) => {                    
       var temp = [];                    
@@ -144,7 +144,7 @@ useEffect(() => {
 //2_1                
 useEffect(() => {        
   db.transaction((tx) => {
-    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    tx.executeSql(`SELECT B.name FROM recipe B, recipe_ingredients A WHERE A.ingredient_name =? AND B.id=A.recipe_id`,
     [ItemList2[0]], //즐찾 레시피                
     (tx, results) => {                    
       var temp = [];                    
@@ -155,7 +155,7 @@ useEffect(() => {
 //2_2               
 useEffect(() => {        
   db.transaction((tx) => {
-    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    tx.executeSql(`SELECT B.name FROM recipe B, recipe_ingredients A WHERE A.ingredient_name =? AND B.id=A.recipe_id`,
     [ItemList2[1]], //즐찾 레시피                
     (tx, results) => {                    
       var temp = [];                    
@@ -166,7 +166,7 @@ useEffect(() => {
 //2_3             
 useEffect(() => {        
   db.transaction((tx) => {
-    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    tx.executeSql(`SELECT B.name FROM recipe B, recipe_ingredients A WHERE A.ingredient_name =? AND B.id=A.recipe_id`,
     [ItemList2[2]], //즐찾 레시피                
     (tx, results) => {                    
       var temp = [];                    
@@ -177,7 +177,7 @@ useEffect(() => {
 //2_4               
 useEffect(() => {        
   db.transaction((tx) => {
-    tx.executeSql(`SELECT name FROM recipe where ingredient = ?;`,                
+    tx.executeSql(`SELECT B.name FROM recipe B, recipe_ingredients A WHERE A.ingredient_name =? AND B.id=A.recipe_id`,
     [ItemList2[3]], //즐찾 레시피                
     (tx, results) => {                    
       var temp = [];                    
