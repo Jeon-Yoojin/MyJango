@@ -176,13 +176,22 @@ const [BMlist, setBMlist] = useState([]);
   const [finalFoodList, setFinalFoodList]=useState([]);
   const [finalIngList, setFinalIngList]=useState([]);
 
-  const searchWith = () => {
+   const searchWith = () => {
+
+    let query = 'SELECT B.name, C.recipe_count FROM recipe B, (SELECT A.recipe_id, count(A.ingredient_name) AS recipe_count FROM recipe_ingredients A WHERE';
+    for (let i = 0; i < finalIngList.length; ++i) {
+      query = query + " trim(A.ingredient_name) = "+ String(finalIngList[i].name);
+      testing = testing + String(finalIngList[i].name);
+      if (i != finalIngList.length - 1) {
+        query = query + " OR";
+      }
+    }
+    query = query + " GROUP BY A.recipe_id HAVING count(A.ingredient_name) >= 3 ORDER BY count(A.ingredient_name) DESC) C WHERE B.id=C.recipe_id ORDER BY C.recipe_count DESC";
+
 
     db.transaction((tx) => {
-      tx.executeSql(
-        'SELECT B.name, C.recipe_count FROM recipe B, (SELECT A.recipe_id, count(A.ingredient_name) AS recipe_count FROM recipe_ingredients A WHERE trim(A.ingredient_name) =? OR trim(A.ingredient_name) =? OR trim(A.ingredient_name) =? OR trim(A.ingredient_name) =? GROUP BY A.recipe_id HAVING count(A.ingredient_name) >= 3 ORDER BY count(A.ingredient_name) DESC) C WHERE B.id=C.recipe_id ORDER BY C.recipe_count DESC'
-        ,
-        finalIngList,
+    
+      tx.executeSql(query,[],
         (tx, results) => {
           var temp = [];
           for (let i = 0; i < results.rows.length; ++i) {
@@ -195,12 +204,6 @@ const [BMlist, setBMlist] = useState([]);
     });
 
   }
-
-  const tlqkf = () => {
-    const today = new Date();
-    const duedate = new Date();
-    console.log(duedate.setDate(today.getDate+7));
-  } 
 
   
  return(
