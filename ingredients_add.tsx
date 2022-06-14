@@ -228,22 +228,18 @@ let alarm = false;
       updateAlarm("bell-badge-outline");
     }
 
-    const [users, setUsers] = useState([]);
 
     const viewIng = () => {
  
       db.transaction((tx) => {
         tx.executeSql(
-          'SELECT * FROM ingredients',
-          [],
+          'SELECT * FROM ingredients WHERE name=?',
+          [text],
           (tx, results) => {
             var temp = [];
-            let users = [];
+           
             for (let i = 0; i < results.rows.length; ++i) {
                temp.push(results.rows.item(i));
-               users.push(results.rows.item(i));
-               if(results.rows.item(i).name==text) {
-                 console.log("matched with    ",text); 
 
                  if(results.rows.item(i).category=='fridge') {
                    updateFridge(Colors.grey400);
@@ -276,13 +272,8 @@ let alarm = false;
                  }
                  setLastDate(results.rows.item(i).expiration);
                 
-                }
+                
             }
-            
-            console.log(temp);
-            setUsers(users);
-          
-
 
           }
           
