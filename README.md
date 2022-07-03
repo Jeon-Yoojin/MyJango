@@ -6,7 +6,7 @@
 
 
 
-npm install --save react-native-calendars
+npm install --save react-native-calendars //캘린더
 
 npm i @react-navigation/native
 
@@ -33,6 +33,3 @@ npx react-native link react-native-vector-icons
 npm i react-native-debounce-input
 
 // 아이콘이랑 컬러즈
-
-
-// 캘린더, 
