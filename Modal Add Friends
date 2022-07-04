@@ -1,0 +1,111 @@
+import React, { useState } from "react";
+import { Button, Text, View, TouchableOpacity,StyleSheet } from "react-native";
+import Modal from "react-native-modal";
+import {Colors} from "react-native-paper";
+
+function ModalTester() {
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Button title="Show modal" onPress={toggleModal} />
+    
+      <Modal isVisible={isModalVisible}>
+        <View style={styles.View}>
+          <Text style={ [styles.title, {left:14, top:90}]}>친구 관리</Text>
+
+          <View style={[styles.grey, {left:14, top:136}]}/>
+            <Text style={[styles.fr_mg, {left:38, top:146}]}>냉장고 털이범</Text>
+            <Text style={[styles.fr_mg, {left:156, top:146}]}>abcd1234</Text>
+            <TouchableOpacity style={[styles.delete, {left:293, top:136}]}/>
+              <Text style={[styles.fr_mg, {left:301, top:146}]}>삭제</Text>
+
+          <View style={[styles.grey, {left:14, top:186}]}/>
+            <Text style={[styles.fr_mg, {left:38, top:196}]}>skaksdml</Text>
+            <Text style={[styles.fr_mg, {left:156, top:196}]}>sodwkdrh</Text>
+            <TouchableOpacity style={[styles.delete, {left:293, top:186}]}/>
+              <Text style={[styles.fr_mg, {left:301, top:196}]}>삭제</Text>
+
+          <View style={[styles.grey, {left:14, top:235}]}/>
+            <Text style={[styles.fr_mg, {left:38, top:245}]}>냉장고 털이범</Text>
+            <Text style={[styles.fr_mg, {left:156, top:245}]}>abcd1234</Text>
+            <TouchableOpacity style={{width:40, height:38,borderRadius:10, position:"absolute", left:293, top:235, backgroundColor: '#FFCCAF'}}/>
+              <Text style={[styles.fr_mg, {left:301, top:245}]}>삭제</Text>
+        
+          
+          <Text style={[styles.title, {left:14, top:315}]}>친구 추가</Text>
+
+          <View style={[styles.grey, {left:14, top:371}]}/>
+          <Text style={[styles.idname, {left:35, top:378}]}>mav9876</Text>
+          <TouchableOpacity style={[styles.red, {left:259, top:373}]}/>
+              <Text style={[styles.white, {left:280, top:379}]}>검색</Text>
+          
+          <Text style={[styles.seventeen, {left:26, top:432}]}>검색 결과</Text>
+          <Text style={[styles.seventeen, {left:26, top:442}]}>________________________________________</Text>
+          <Text style={[styles.fourteen, {left:26, top:477}]}>닉네임</Text>
+          <Text style={[styles.fourteen, {left:138, top:477}]}>아이디</Text>
+
+          <View style={[styles.grey, {left:18, top:500}]}/>
+          <Text style={[styles.idname, {left:26, top:507}]}>김송이</Text>
+          <Text style={[styles.idname, {left:138, top:507}]}>mav9876</Text>
+          
+         
+       
+
+
+          <TouchableOpacity style={[styles.red, {left:191, top:558}]} onPress={toggleModal}/>
+            <Text style={[styles.white, {left:200, top:564}]}>추가하기</Text>
+          <TouchableOpacity style={styles.cancelO}  onPress={toggleModal}/>
+            <Text style={[styles.fourteen, {left:293, top:565}]}>취소</Text>
+        </View>
+      </Modal>
+
+      
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  View: {
+    height:'100%', backgroundColor:'white'
+  },
+  title: {
+    fontSize:22, position:"absolute", fontWeight:'bold', color:'#121214'
+  },
+  grey: {
+    width:319, height:38,borderRadius:10,position:"absolute", backgroundColor: '#FCFCFC' 
+  },
+  fr_mg: {
+    fontSize:13,position:"absolute", fontWeight:'500', color:'#121214'
+  },
+  delete: {
+    width:40, height:38,borderRadius:10, position:"absolute", backgroundColor: '#FFCCAF'
+  },
+  red: {
+    width:71, height:31,borderRadius:5, position:"absolute", backgroundColor: '#FF5454'
+  },
+  white: {
+    color:'white', fontSize:14, position:"absolute"
+  },
+  idname: {
+    fontSize:17, position:"absolute", color:'#545454'
+  },
+  seventeen: {
+    fontSize:17, position:"absolute", color:'#121214'
+  },
+  fourteen: {
+    fontSize:14, position:"absolute", color:'#121214'
+  },
+  cancelO: {
+    width:50, height:31,borderRadius:5, position:"absolute", left:281, top:558, backgroundColor: '#EFEFEF'
+  }
+ });
+
+export default ModalTester;
+
+
+
