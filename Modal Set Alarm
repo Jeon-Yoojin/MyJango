@@ -1,0 +1,53 @@
+import React, { useState } from "react";
+import { Button, Text, View, TouchableOpacity } from "react-native";
+import Modal from "react-native-modal";
+import PeriodDropDown from "./PeriodDropDown";
+
+function ModalTester() {
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedValue, setSelectedValue] = useState();
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  const setSelectValue = (selectvalue)=>{
+    setSelectedValue(selectvalue);
+}
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Button title="Show modal" onPress={toggleModal} />
+      
+
+      <Modal isVisible={isModalVisible}>
+        <View style={{ height:'82%', backgroundColor:'white' }}>
+          <Text style={{fontSize:22, position:"absolute", left:22, top:100}}>알림 설정</Text>
+          <Text style={{fontSize:17, position:"absolute", left:37, top:135, width:278}}>재고가 몇 개 미만 일때 며칠마다 알림을 받을지 설정합니다.</Text>
+          <Text style={{fontSize:17, position:"absolute", left:22, top:215}}>재고 개수</Text>
+            
+       
+          <Text style={{fontSize:17, position:"absolute", left:22, top:285}}>기간</Text>
+          <View style={{position:"absolute", left:111, top:285, backgroundColor:'red'}}>
+            <PeriodDropDown setSelectValue={setSelectValue}></PeriodDropDown>
+
+            <Text>ㅣ감ㄴ이러민아럼니</Text>
+          </View>
+         
+         
+       
+
+
+          <TouchableOpacity style={{margin:5, padding:5, position:"absolute", left:195, top:470}}  onPress={toggleModal}>
+            <Text>저장하기</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{margin:5, padding:5, position:"absolute", left:285, top:470}}  onPress={toggleModal}>
+            <Text>취소</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+export default ModalTester;
