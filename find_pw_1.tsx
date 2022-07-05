@@ -62,6 +62,8 @@ const App = () => {
             height: 45,
             borderRadius: 10,
             textAlign: 'center',
+            position:'relative',
+            left: 230,
             padding: 10,
             width: '25%',
             marginTop: 10
@@ -90,6 +92,7 @@ const App = () => {
       <Text style={styles.find_pw}>확인</Text>
       </Pressable>
 
+    <Text style={styles.Text}>비밀번호</Text>
     <Text style={styles.input_1}>{pw}</Text>
 
 </View>
