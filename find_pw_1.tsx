@@ -63,7 +63,7 @@ const App = () => {
             borderRadius: 10,
             textAlign: 'center',
             padding: 10,
-            width: '30%',
+            width: '25%',
             marginTop: 10
         }
      })
