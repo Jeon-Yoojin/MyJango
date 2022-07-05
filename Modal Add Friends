@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Text, View, TouchableOpacity,StyleSheet } from "react-native";
+import { Button, Text, View, TouchableOpacity,StyleSheet, ScrollView, TextInput } from "react-native";
 import Modal from "react-native-modal";
 import {Colors} from "react-native-paper";
 
@@ -8,7 +8,17 @@ function ModalTester() {
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+    setShowResult(false);
+    setSearchId(" ");
   };
+
+  const[showResult,setShowResult] = useState(false);
+
+  const toggleShowResult = () => {
+    setShowResult(!showResult);
+  };
+
+  const [searchId,setSearchId] = useState();
 
   return (
     <View style={{ flex: 1 }}>
@@ -17,54 +27,74 @@ function ModalTester() {
       <Modal isVisible={isModalVisible}>
         <View style={styles.View}>
           <Text style={ [styles.title, {left:14, top:90}]}>친구 관리</Text>
-
-          <View style={[styles.grey, {left:14, top:136}]}/>
-            <Text style={[styles.fr_mg, {left:38, top:146}]}>냉장고 털이범</Text>
-            <Text style={[styles.fr_mg, {left:156, top:146}]}>abcd1234</Text>
-            <TouchableOpacity style={[styles.delete, {left:293, top:136}]}/>
-              <Text style={[styles.fr_mg, {left:301, top:146}]}>삭제</Text>
-
-          <View style={[styles.grey, {left:14, top:186}]}/>
-            <Text style={[styles.fr_mg, {left:38, top:196}]}>skaksdml</Text>
-            <Text style={[styles.fr_mg, {left:156, top:196}]}>sodwkdrh</Text>
-            <TouchableOpacity style={[styles.delete, {left:293, top:186}]}/>
-              <Text style={[styles.fr_mg, {left:301, top:196}]}>삭제</Text>
-
-          <View style={[styles.grey, {left:14, top:235}]}/>
-            <Text style={[styles.fr_mg, {left:38, top:245}]}>냉장고 털이범</Text>
-            <Text style={[styles.fr_mg, {left:156, top:245}]}>abcd1234</Text>
-            <TouchableOpacity style={{width:40, height:38,borderRadius:10, position:"absolute", left:293, top:235, backgroundColor: '#FFCCAF'}}/>
-              <Text style={[styles.fr_mg, {left:301, top:245}]}>삭제</Text>
-        
-          
-          <Text style={[styles.title, {left:14, top:315}]}>친구 추가</Text>
-
-          <View style={[styles.grey, {left:14, top:371}]}/>
-          <Text style={[styles.idname, {left:35, top:378}]}>mav9876</Text>
-          <TouchableOpacity style={[styles.red, {left:259, top:373}]}/>
-              <Text style={[styles.white, {left:280, top:379}]}>검색</Text>
-          
-          <Text style={[styles.seventeen, {left:26, top:432}]}>검색 결과</Text>
-          <Text style={[styles.seventeen, {left:26, top:442}]}>________________________________________</Text>
-          <Text style={[styles.fourteen, {left:26, top:477}]}>닉네임</Text>
-          <Text style={[styles.fourteen, {left:138, top:477}]}>아이디</Text>
-
-          <View style={[styles.grey, {left:18, top:500}]}/>
-          <Text style={[styles.idname, {left:26, top:507}]}>김송이</Text>
-          <Text style={[styles.idname, {left:138, top:507}]}>mav9876</Text>
-          
-         
-       
-
-
-          <TouchableOpacity style={[styles.red, {left:191, top:558}]} onPress={toggleModal}/>
-            <Text style={[styles.white, {left:200, top:564}]}>추가하기</Text>
-          <TouchableOpacity style={styles.cancelO}  onPress={toggleModal}/>
-            <Text style={[styles.fourteen, {left:293, top:565}]}>취소</Text>
+          <ScrollView style={styles.ScrollView}>
+            <View style={styles.grey}>
+              <Text style={styles.fr_mg}>냉장고 털이범</Text>
+              <Text style={styles.fr_mg}>abcd1234</Text>
+              <TouchableOpacity style={styles.delete}>
+                <Text style={styles.fr_mg}>삭제</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.grey}>
+              <Text style={styles.fr_mg}>냉장고 털이범</Text>
+              <Text style={styles.fr_mg}>abcd1234</Text>
+              <TouchableOpacity style={styles.delete}>
+                <Text style={styles.fr_mg}>삭제</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.grey}>
+              <Text style={styles.fr_mg}>냉장고 털이범</Text>
+              <Text style={styles.fr_mg}>abcd1234</Text>
+              <TouchableOpacity style={styles.delete}>
+                <Text style={styles.fr_mg}>삭제</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.grey}>
+              <Text style={styles.fr_mg}>냉장고 털이범</Text>
+              <Text style={styles.fr_mg}>abcd1234</Text>
+              <TouchableOpacity style={styles.delete}>
+                <Text style={styles.fr_mg}>삭제</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.grey}>
+              <Text style={styles.fr_mg}>냉장고 털이범</Text>
+              <Text style={styles.fr_mg}>abcd1234</Text>
+              <TouchableOpacity style={styles.delete}>
+                <Text style={styles.fr_mg}>삭제</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+          <Text style={[styles.title, {left:14, top:155}]}>친구 추가</Text>
+          <View style={[styles.grey, {left:14, top:175}]}>
+            <TextInput style={[styles.idname, {width:250}]} 
+            onEndEditing={toggleShowResult}
+            onChangeText = {(text) => {console.log(text); setSearchId(text);}} ></TextInput>
+            <TouchableOpacity style={styles.red} onPress={toggleShowResult}>
+              <Text style={styles.white}>검색</Text>
+            </TouchableOpacity>
+          </View>
+          {showResult && <View style={styles.ResultView}>
+            <Text style={styles.seventeen}>검색 결과</Text>
+            <Text style={styles.seventeen}>_________________________________________</Text>
+            <View style={styles.idnameView}>
+              <Text style={styles.fourteen}>닉네임</Text>
+              <Text style={[styles.fourteen, {position:'relative', left:110}]}>아이디</Text>
+            </View>
+            <View style={styles.grey02}>
+              <Text style={styles.idname}>김송이</Text>
+              <Text style={[styles.idname, {position:'relative', left:104}]}>{searchId}</Text>
+            </View>
+            <View style={styles.addcan}>
+              <TouchableOpacity style={styles.red} onPress={toggleModal}>
+                <Text style={styles.white}>추가하기</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.cancelO}  onPress={toggleModal}>
+                <Text style={styles.fourteen}>취소</Text>
+              </TouchableOpacity>
+            </View>
+          </View> }
         </View>
       </Modal>
-
-      
     </View>
   );
 }
@@ -73,35 +103,50 @@ const styles = StyleSheet.create({
   View: {
     height:'100%', backgroundColor:'white'
   },
+  ScrollView: {
+    left:14, top:110, width:320, maxHeight:150, position:'relative'
+  },
   title: {
-    fontSize:22, position:"absolute", fontWeight:'bold', color:'#121214'
+    fontSize:22, position:"relative", fontWeight:'bold', color:'#121214'
   },
   grey: {
-    width:319, height:38,borderRadius:10,position:"absolute", backgroundColor: '#FCFCFC' 
+    marginVertical:6, width:319, height:38, borderRadius:10, backgroundColor: '#FCFCFC', flexDirection:"row", justifyContent:"space-between" 
+  },
+  grey02: {
+   paddingLeft:5, marginVertical:6, width:319, height:38, borderRadius:10, backgroundColor: '#FCFCFC', flexDirection:"row"
   },
   fr_mg: {
-    fontSize:13,position:"absolute", fontWeight:'500', color:'#121214'
+    fontSize:13, fontWeight:'600', color:'#121214', margin:7
   },
   delete: {
-    width:40, height:38,borderRadius:10, position:"absolute", backgroundColor: '#FFCCAF'
+    width:38, height:38,borderRadius:10, backgroundColor: '#FFCCAF', paddingTop:1
   },
   red: {
-    width:71, height:31,borderRadius:5, position:"absolute", backgroundColor: '#FF5454'
+    width:71, height:38, borderRadius:5, position:'relative', backgroundColor: '#FF5454', padding:8
   },
   white: {
-    color:'white', fontSize:14, position:"absolute"
+    color:'white', fontSize:14, textAlign:"center"
   },
   idname: {
-    fontSize:17, position:"absolute", color:'#545454'
+    fontSize:17, color:'#545454'
+  },
+  idnameView: {
+    flexDirection:'row', margin:6
   },
   seventeen: {
-    fontSize:17, position:"absolute", color:'#121214'
+    fontSize:17, color:'#121214'
   },
   fourteen: {
-    fontSize:14, position:"absolute", color:'#121214'
+    fontSize:14, color:'#121214', textAlign:"center"
   },
   cancelO: {
-    width:50, height:31,borderRadius:5, position:"absolute", left:281, top:558, backgroundColor: '#EFEFEF'
+    width:50, height:38,borderRadius:5, backgroundColor: '#EFEFEF', paddingTop:8, marginLeft:20
+  },
+  ResultView: {
+    position:'relative', left:14, top:195, width:320
+  },
+  addcan: {
+    flexDirection:'row',marginLeft:178, marginTop:20
   }
  });
 
