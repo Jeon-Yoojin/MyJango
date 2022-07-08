@@ -22,12 +22,12 @@ const App = () => {
             fontSize: 18,
             fontWeight: 'bold',
             color: '#000000',
-            marginTop: 15
+            marginTop: 5
         },
         input: {
             backgroundColor: Colors.grey100,
             width: '90%',
-            marginTop:10,
+            marginTop:5,
             height: 48,
             borderRadius: 5,
         },
@@ -70,6 +70,13 @@ const App = () => {
       
     <Text style={styles.Text}>닉네임</Text>
     <TextInput  style={styles.input} placeholder="  닉네임을 입력하세요"/>
+    <Pressable
+        onPress={() => console.log("delete")}>
+      <Text style={styles.deleteinput}>X</Text>
+      </Pressable>
+
+      <Text style={styles.Text}>이메일</Text>
+    <TextInput  style={styles.input} placeholder="  이메일을 입력하세요"/>
     <Pressable
         onPress={() => console.log("delete")}>
       <Text style={styles.deleteinput}>X</Text>
