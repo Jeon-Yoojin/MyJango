@@ -4,28 +4,33 @@ import SQLite from 'react-native-sqlite-storage';
 import DropDown from './DropDown';
 import IngredientClickIcon from './IngredientClickIcon';
 import IngredientList from './IngredientList';
+import { useIsFocused } from '@react-navigation/native';
 
-const user_name = 'Username'
+const user_name = '마이장고'
 
-const ManagePage = ()=>{
+const ManagePage = ({navigation})=>{
+    const isFocused = useIsFocused()
     const [selectedValue, setSelectedValue] = useState();
     const [ItemList, setItemList] = useState([]);
 
-    let db = SQLite.openDatabase({ name: 'recipe.db' });
+    let db = SQLite.openDatabase({ name: 'recipe.db'});
     useEffect(() => {
+        if(isFocused){
         db.transaction((tx) => {
             tx.executeSql(`SELECT * FROM ingredients ORDER BY expiration;`,
             //유통기한 임박순으로 정렬함
                 [],
                 (tx, results) => {
                     var temp = [];
-                    for (let i = 0; i < results.rows.length; ++i)
+                    for (let i = 0; i < results.rows.length; ++i){
                         temp.push(results.rows.item(i));
+                    }
                     setItemList(temp);
                 }
             );
         });
-    }, []);
+    }
+    }, [isFocused]);
     
     const setSelectValue = (selectvalue)=>{
         setSelectedValue(selectvalue);
@@ -35,29 +40,40 @@ const ManagePage = ()=>{
     return(
         <View>
             <View style={{marginTop:32}}>
-                <Text style={styles.guide}>{user_name}님{"\n"}식품을 확인해보세요!👀</Text>
+                <Text style={styles.guide}>{user_name}님,{"\n"}식품을 확인해보세요!👀</Text>
             </View>
             <ScrollView horizontal={true} style={styles.ingredeintContainer}>
             {ItemList.map((Item, index)=>{
-                    return(ItemList[index] ? <IngredientClickIcon name={Item.name} key={index} index={index}/> : <Text>Loading</Text>)
+                    return(ItemList[index] ? <TouchableOpacity key={index} onPress={()=>{
+                        navigation.navigate('INGREDIENTS_MODIFY', {
+                        name: Item.name
+                      });
+                    }}><IngredientClickIcon name={Item.name} key={index} index={index}/></TouchableOpacity> : <Text>Loading</Text>)
                 })
             }
             </ScrollView>
 
             <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
             <DropDown setSelectValue={setSelectValue}></DropDown>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>navigation.navigate('INGREDIENTS_ADD')}>
                 <Text style={{fontSize:15, marginRight:20}}>추가</Text>
             </TouchableOpacity>
             </View>
             <ScrollView>
             {ItemList.map((Item, index)=>{
                     if(selectedValue==undefined||selectedValue=='all'){
-                        return(ItemList[index]? <IngredientList name={Item.name} expiration={Item.expiration} category={Item.category} key={index}/> :<Text>Loading</Text>)
+                        return(ItemList[index]? <TouchableOpacity key={index} onPress={()=>{
+                            navigation.navigate('INGREDIENTS_MODIFY', {
+                            name: Item.name
+                          })}}><IngredientList name={Item.name} expiration={Item.expiration} category={Item.category} key={index}/></TouchableOpacity> :<Text>Loading</Text>)
                     }
                     else{
                         if(Item.category==selectedValue){
-                            return(ItemList[index]? <IngredientList name={Item.name} expiration={Item.expiration} category={Item.category} key={index}/> :<Text>Loading</Text>)
+                            return(ItemList[index]? <TouchableOpacity key={index} onPress={()=>{
+                                navigation.navigate('INGREDIENTS_MODIFY', {
+                                name: Item.name
+                              })}}>
+                            <IngredientList name={Item.name} expiration={Item.expiration} category={Item.category} key={index}/></TouchableOpacity> :<Text>Loading</Text>)
                         }
                     }
                 })

@@ -1,9 +1,14 @@
 import * as React from 'react';
-import {SafeAreaView, View, Image, Text, TextInput} from 'react-native';
+import {SafeAreaView, View, Image, Text, TextInput, ScrollView} from 'react-native';
+import SQLite from 'react-native-sqlite-storage';
 import {Colors} from "react-native-paper";
 import {StyleSheet, Pressable} from "react-native";
 import Icon from 'react-native-vector-icons/Entypo';
 import Icon2 from 'react-native-vector-icons/Feather';
+import { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FindRecipe from '../recipe_list/FindRecipe';
 
 const MainLogo = require('../../android/app/src/main/assets/images/MainLogo.png');
 
@@ -24,10 +29,10 @@ const style = StyleSheet.create({
  expireddate2 : {textAlign : "center", backgroundColor: Colors.yellow50, width: 100, height: 65, margin:10, borderRadius:20},
  expireddate3 : {textAlign : "center", backgroundColor: Colors.purple50, width: 100, height: 65, margin:10, borderRadius:20},
  expireddate4 : {backgroundColor: Colors.yellow600, width: 140, height: 150, borderRadius:20, padding: 10, marginRight: 10},
- expireddate4_1 : {color:"white", borderColor: "white",textAlign : "center", width: 65, borderRadius:15,borderWidth: 1, margin: 2, padding:3},
+ expireddate4_1 : {textAlign : "center", width: 65, margin: 2, padding:3},
  expireddate4_2 : {backgroundColor: Colors.red400, width: 140, height: 150, borderRadius:20, padding: 10, marginRight: 10},
  expireddate4_3 : {backgroundColor: Colors.green500, width: 140, height: 150, borderRadius:20, padding: 10, marginRight: 10},
- expireddate5 : {color:"red", fontSize:45, textAlign : "center", backgroundColor: "white", shadowColor: Colors.black,
+ expireddate5 : {color:"red", fontSize:45, textAlign : "center", backgroundColor: "white", shadowColor: Colors.black, alignContent:'center', alignItems:'center',
  shadowOffset: {
    width: 0,
    height: 2,
@@ -46,7 +51,99 @@ const style = StyleSheet.create({
 )
 
 
+
 const Main = ({ navigation }) => {
+  const isFocused = useIsFocused()
+
+  const [NearItemList, setNearItemList] = useState([]);
+  const [BMItemList, setBMItemList] = useState([]);
+
+  const [RecipeList, setRecipeList] = useState([]);
+
+  let db = SQLite.openDatabase({ name: 'recipe.db'});
+    useEffect(() => {
+        db.transaction((tx) => {
+            tx.executeSql(`SELECT * FROM ingredients ORDER BY expiration;`,
+            //유통기한 임박순으로 정렬함
+                [],
+                (tx, results) => {
+                    var temp = [];
+                    for (let i = 0; i < results.rows.length; ++i){
+                        temp.push(results.rows.item(i));
+                    }
+                    setNearItemList(temp);
+                }
+            );
+        });
+        db.transaction((tx) => {
+          tx.executeSql(`SELECT * FROM ingredients WHERE bookmark=1;`,
+              [],
+              (tx, results) => {
+                  var temp = [];
+                  for (let i = 0; i < results.rows.length; ++i){
+                      temp.push(results.rows.item(i));
+                  }
+                  setBMItemList(temp);
+              }
+          );
+      });
+    }, [isFocused]);
+
+    /*
+    let db2 = SQLite.openDatabase({ name: 'recipe.db' });
+    useEffect(() => {
+        db2.transaction((tx) => {
+            tx.executeSql('SELECT name FROM recipe where ingredient = "두부";',
+            //유통기한 임박순으로 정렬함
+                [],
+                (tx, results) => {
+                    var temp = [];
+                    for (let i = 0; i < 3; ++i)
+                        temp.push(results.rows.item(i));
+                    setRecipeList(temp);
+                }
+            );
+        });
+    }, []);
+    */
+    var recipe_db = SQLite.openDatabase({ name: 'db.sqlite'});
+
+    /*
+  const searchWith = (IngList) => {
+    let query = 'SELECT B.name, C.recipe_count FROM recipe B, (SELECT A.recipe_id, count(A.ingredient_name) AS recipe_count FROM recipe_ingredients A WHERE';
+      query = query + " trim(A.ingredient_name) = "+"\'"+ String(IngList)+"\'";
+    query = query + " GROUP BY A.recipe_id HAVING count(A.ingredient_name) >= 1 ORDER BY count(A.ingredient_name) DESC) C WHERE B.id=C.recipe_id ORDER BY C.recipe_count DESC";
+
+    recipe_db.transaction((tx) => {
+      tx.executeSql(
+        query,
+        [],
+        (tx, results) => {
+          var temp = [];
+          for (let i = 0; i < 2; ++i) {
+             temp.push(results.rows.item(i).name);
+          }
+          setRecipeList(temp)
+        }       
+      );
+    });
+    
+  }
+  useState(()=>{searchWith('미나리')},[])
+  console.log(RecipeList)
+  */
+
+    function getDday(expiration) {
+      if(expiration==0) return 0;
+      var today = new Date();
+      today = new Date(today.getFullYear(), (today.getMonth()+1), today.getDate())
+      //console.log('month: ', today.getMonth(), 'day: ', today.getDate())
+      var dday = new Date(expiration.split('-')[0], expiration.split('-')[1], expiration.split('-')[2]);
+      var gap = dday.getTime()-today.getTime();
+      var day = Math.ceil(gap/(1000*60*60*24));
+
+      return day;
+  }
  return (
 
  <SafeAreaView>
@@ -81,62 +178,69 @@ const Main = ({ navigation }) => {
   </View>
 
 <View style={style.temp04}> 
+<ScrollView horizontal={true} showsHorizontalScrollIndicator = {false}>
   <View style={style.expireddate4}>
-    <Text style={style.expireddate4_1}>마파 두부</Text>
-    <Text style={style.expireddate4_1}>두부조림</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>돼지고기</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={style.expireddate4_1}></Text>
+    <Text style={style.expireddate4_1}></Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{NearItemList[0]? NearItemList[0].name:''}</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{getDday(NearItemList[0]?NearItemList[0].expiration:0)}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   
   <View style={style.expireddate4_2}>
-    <Text style={style.expireddate4_1}>마파 두부</Text>
-    <Text style={style.expireddate4_1}>두부조림</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>두부</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={style.expireddate4_1}></Text>
+    <Text style={style.expireddate4_1}></Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{NearItemList[1]? NearItemList[1].name:''}</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{getDday(NearItemList[1]?NearItemList[1].expiration:0)}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
   <View style={style.expireddate4_3}>
-    <Text style={style.expireddate4_1}>미나리</Text>
-    <Text style={style.expireddate4_1}>미나리국</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>미나리</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
+    <Text style={style.expireddate4_1}></Text>
+    <Text style={style.expireddate4_1}></Text>
+    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>{NearItemList[2]? NearItemList[2].name:''}</Text>
+    <Text style={{fontSize: 18, color:"white"}}>D-{getDday(NearItemList[2]?NearItemList[2].expiration:0)}</Text>
     <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
   </View>
+</ScrollView>
 </View>
 
 
   <View style={style.temp04}> 
   <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.TitleText2}>즐겨찾는 재료{'>'}</Text></Pressable>
   </View>
+     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+       <View style={style.temp04}>
+         <View style={style.expireddate4}>
+           <Text style={style.expireddate4_1}></Text>
+           <Text style={style.expireddate4_1}></Text>
+           <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{BMItemList[0]? BMItemList[0].name:''}</Text>
+           <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(BMItemList[0]?BMItemList[0].expiration:0)}</Text>
+           <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
+         </View>
 
-<View style={style.temp04}> 
-  <View style={style.expireddate4}>
-    <Text style={style.expireddate4_1}>마파 두부</Text>
-    <Text style={style.expireddate4_1}>두부조림</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>돼지고기</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
-    <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
-  </View>
-  
-  <View style={style.expireddate4_2}>
-    <Text style={style.expireddate4_1}>마파 두부</Text>
-    <Text style={style.expireddate4_1}>두부조림</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>두부</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
-    <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
-  </View>
-  <View style={style.expireddate4_3}>
-    <Text style={style.expireddate4_1}>미나리</Text>
-    <Text style={style.expireddate4_1}>미나리국</Text>
-    <Text style={{fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10}}>미나리</Text>
-    <Text style={{fontSize: 18, color:"white"}}>D-2</Text>
-    <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle}/>
-  </View>
-</View>
+
+         <View style={style.expireddate4_2}>
+           <Text style={style.expireddate4_1}></Text>
+           <Text style={style.expireddate4_1}></Text>
+           <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{BMItemList[1]? BMItemList[1].name:''}</Text>
+           <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(BMItemList[1]?BMItemList[1].expiration:0)}</Text>
+           <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
+         </View>
+         <View style={style.expireddate4_3}>
+           <Text style={style.expireddate4_1}></Text>
+           <Text style={style.expireddate4_1}></Text>
+           <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{BMItemList[2]? BMItemList[2].name:''}</Text>
+           <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(BMItemList[2]?BMItemList[2].expiration:0)}</Text>
+           <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
+         </View>
+       </View>
+     </ScrollView>
 
   <View style = {{position:"absolute", right:20, top:650}}>
   <Pressable onPress={() => navigation.navigate('INGREDIENTS_ADD')}><Text style={style.expireddate5}>+</Text></Pressable>
+  </View> 
+  <View style = {{position:"absolute", right:20, top:580}}>
+  <Pressable onPress={() => navigation.navigate('TESSERACT')}><MaterialCommunityIcons name="camera" style={[style.expireddate5]}/></Pressable>
   </View> 
 
  </SafeAreaView>

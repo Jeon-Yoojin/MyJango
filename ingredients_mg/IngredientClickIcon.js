@@ -6,9 +6,9 @@ const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA'
 const IngredientClickIcon = (props)=>{
     return (
         <View style={styles.ingredientElement}>
-            <TouchableOpacity style={[styles.ingredientIcon, { backgroundColor: colors[(props.index)%11] }]}>
+            <View style={[styles.ingredientIcon, { backgroundColor: colors[(props.index)%11] }]}>
                 <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 23}} >{props.name[0]}</Text>
-            </TouchableOpacity>
+            </View>
             <Text style={[styles.ingredientText, {flexShrink:1, maxWidth:60}]}>{props.name}</Text>
         </View>
     )

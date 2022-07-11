@@ -58,6 +58,18 @@ function DeleteIngredient(name){
 const IngredientList = (props) => {
     const [color, setColor] = useState('#EFEFEF');
 
+    function getDday(expiration) {
+        var today = new Date();
+        today = new Date(today.getFullYear(), (today.getMonth()+1), today.getDate())
+        //console.log('month: ', today.getMonth(), 'day: ', today.getDate())
+        var dday = new Date(expiration.split('-')[0], expiration.split('-')[1], expiration.split('-')[2]);
+        var gap = dday.getTime()-today.getTime();
+        var day = Math.ceil(gap/(1000*60*60*24));
+
+        return day;
+    }
+
+    const Dday = getDday(props.expiration)
     const AlertMessage = ()=>{
         
         Alert.alert(
@@ -90,7 +102,7 @@ const IngredientList = (props) => {
                     <Text style={[styles.text, styles.name]}>{props.name}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <TouchableHighlight style={[styles.rectshape, { backgroundColor: '#E1615B' }]}>
-                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14, fontWeight: '400', textAlign: 'center' }}>임박</Text>
+                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14, fontWeight: '400', textAlign: 'center' }}>{Dday<5? '임박':'D-'+Dday}</Text>
                         </TouchableHighlight>
                         <Text style={[styles.text, styles.expDate]}>{props.expiration}까지</Text>
                     </View>
@@ -98,7 +110,7 @@ const IngredientList = (props) => {
             </View>
             <View style={{marginRight:20}}>
                 <TouchableOpacity onPress={AlertMessage}>
-                <FontAwesome name="circle-o" color={color} size={25} style={{ shadowColor: 'rgba(0, 0, 0, 0.1)' }} />
+                <FontAwesome name="circle-o" color={color} size={25} style={{ shadowColor: 'rgba(0, 0, 0, 0.1)', color: '#DCDCDC' }} />
                 </TouchableOpacity>
             </View>
         </View>
