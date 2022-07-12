@@ -1,0 +1,5 @@
+npm i react-native-modal
+npm i styled-components prop-types
+npm i react-native-vector-icons
+npm i -D @types/react-native-vector-icons
+npx react-native link react-native-vector-icons
