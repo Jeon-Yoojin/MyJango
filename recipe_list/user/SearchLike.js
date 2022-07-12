@@ -58,7 +58,7 @@ export default function SearchLike(recipeName) {
     const fullWidth = Dimensions.get('window').width
 
     const Recipe_youtube_list = ()=>{
-        const YOUTUBE_API_KEY = 'AIzaSyBVl51FzCRwD5Jr4GBCXOui2bjhTmOereo';
+        const YOUTUBE_API_KEY = 'YOUR_API_KEY';
         const maxResults = 1;
         let videoList = [];
         const [thumbnailList, setthumbnailList] = useState([]);
