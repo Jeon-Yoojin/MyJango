@@ -8,7 +8,8 @@ ingredients_add/PeriodDropDown.js
 이 새 모달 적용 & 스타일 정리
 
 220714
-shoppingList/sho
+shoppingList
+장보기 리스트 다 완성 메인이랑 연결만 하면 됨
 
 
 
