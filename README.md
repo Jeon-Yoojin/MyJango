@@ -1,5 +1,19 @@
 # MyJango
 
+220715
+community/Community.js 
+ingredients_add/ingredient_add.js
+ingrediests_add/ingredient_modify.js 
+ingredients_add/PeriodDropDown.js 
+이 새 모달 적용 & 스타일 정리
+
+220714
+shoppingList/sho
+
+
+
+
+
 
 일단 제가 만든 거에서 설치해야 할 패키지 
 
