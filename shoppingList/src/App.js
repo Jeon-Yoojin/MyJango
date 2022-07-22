@@ -1,33 +1,23 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, StatusBar, Button, TouchableOpacity, Text, Alert } from 'react-native';
 import Modal from "react-native-modal";
 import SQLite from 'react-native-sqlite-storage';
 import Title from './components/Title';
 import Input from './components/Input';
 import Task from './components/Task';
-import { object } from 'prop-types';
 
 var db = SQLite.openDatabase({ name: 'recipe.db' });
 
 export default function App() {
+
     const [isModalVisible, setModalVisible] = useState(false);
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
 
-    const combined = () => {
-      toggleModal();
-      initData();
-
-    }
-
     const [newTask, setNewTask] = useState('');
     const [tasks, setTasks] = useState({});
-    const modifyTasks = useCallback((tempTask) => {
-      setTasks(tempTask);
-    }, []);
- 
-
+    
     const _addTask = () => {
       const ID = Date.now().toString();
       const newTaskObject = {
@@ -56,7 +46,7 @@ export default function App() {
     
       };
 
-      const _deleteTask = (id) => {
+    const _deleteTask = (id) => {
         const currentTasks = Object.assign({}, tasks);
         var temp = currentTasks[id].text;
 
@@ -74,7 +64,7 @@ export default function App() {
         setTasks(currentTasks);
       };
 
-      const _deleteAll = () => {
+    const _deleteAll = () => {
         const currentTasks = [];
         setTasks(currentTasks);
 
@@ -89,7 +79,7 @@ export default function App() {
       });
       }
 
-      const _toggleTask = (id) => {
+    const _toggleTask = (id) => {
         const currentTasks = Object.assign({}, tasks);
         var where = currentTasks[id].text;
         var completed;
@@ -110,7 +100,7 @@ export default function App() {
         setTasks(currentTasks);
       };
 
-      const _updateTask = (item) => {
+    const _updateTask = (item) => {
         const currentTasks = Object.assign({},tasks);
 
         var before = currentTasks[item.id].text;
@@ -133,20 +123,6 @@ export default function App() {
     const _handleTextChange = (text) => {
       setNewTask(text);
     };
-    
-    const viewData = () => {
-      db.transaction((tx) => {
-        tx.executeSql(`SELECT * FROM shoppingList;`, [], (tx, results) => {
-          const rows = results.rows;
-
-          for (let i = 0; i < rows.length; i++) {
-            console.log("this is from viewData        ",rows.item(i));
-          }
-        })
-      })
-
-      console.log("===========================================");
-    };
 
     const initData = () => {
       const temp={};
@@ -166,25 +142,19 @@ export default function App() {
             
 
             temp[ID] = newTaskObject;
-            console.log("===========================================");
-            console.log("this is initData speaking       temp is        ",temp);
-            modifyTasks(temp);
+            const hell = Object.assign({},temp);
+            setTasks(hell);
+      
           }
           
         })
-      })
-
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111");
-      console.log("this is initData speaking       tasks is        ",tasks);
-      
+      });
     };
 
 
     return (
         <View style={{ flex: 1 }}>
-            <Button title="both" onPress={combined}/>
-            <Button title="initData" onPress={initData}/>
-            <Button title="toggleModal" onPress={toggleModal}/>
+            <Button title="both" onPress={()=>{toggleModal(); initData();}}/>
             <Modal isVisible={isModalVisible} onRequestClose={() => setModalVisible(false)} transparent={true}>
             <TouchableOpacity style={styles.background} onPress={()=>setModalVisible(false)}/>
             <View style={styles.container}>
@@ -193,9 +163,6 @@ export default function App() {
                 <View style={styles.addview}>
                     <TouchableOpacity style={styles.red} onPress={_deleteAll}>
                         <Text style={styles.white}>전체삭제</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.red} onPress={viewData}>
-                        <Text style={styles.white}>viewData</Text>
                     </TouchableOpacity>
                     <Input value={newTask} onChangeText={_handleTextChange} onSubmitEditing={_addTask}/>
                 </View>
