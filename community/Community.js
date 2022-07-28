@@ -3,10 +3,8 @@ import { StyleSheet, Modal, Pressable, TouchableOpacity, Alert , SafeAreaView, V
 import { Colors } from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Mailer from 'react-native-mail';
-import SQLite from 'react-native-sqlite-storage';
-import Friends from './Friends';
+import ModalFriends from './ModalFriends';
 
-var db = SQLite.openDatabase({ name: 'recipe.db' });
 
 export const sendEmailWithMailer = (
   to = "",
@@ -35,50 +33,6 @@ export const sendEmailWithMailer = (
 const Community = () => {
 
   const childRef = useRef()
-
-  const addFriends = () => {
-    if(resultID!='' || searchNickname!=''){
-      db.transaction(function (tx) {
-        tx.executeSql(
-          'INSERT INTO test_member_friends (id, fr_id, fr_nickname, fr_status) VALUES (?,?,?,?)',
-          [resultID, 'eee@abc.com', '이', 1],
-          (tx, results) => {
-            console.log('Results', results.rowsAffected);
-          }
-        );
-      });
-
-    }
-  }
-
-  const [searchNickname,setSearchNickname] = useState('');
-  const [resultID, setResultID] = useState('');
-
-  const modifyResultID = useCallback((ID) => {
-    setResultID(ID);
-  }, []);
-
-  const searchWithNickname = () => {
-  
-    db.transaction(function (tx) {
-      tx.executeSql(
-        'SELECT id FROM test_member WHERE nickname = ?',
-        [searchNickname],
-        (tx, results) => {
-          const rows = results.rows;
-
-          for (let i = 0; i < rows.length; i++) {
-
-            console.log(rows.item(i));
-            modifyResultID(rows.item(i).id);
-            
-        }
- 
-      }
-      );
-    });
-
-  };
 
   const [color1, setcolor1] = useState("lightgrey");
   const [color2, setcolor2] = useState("lightgray");
@@ -155,84 +109,9 @@ const Community = () => {
     },
     textInputStyle: {
       width : 210, height : 40, borderWidth: 1, backgroundColor: "white", margin:2
-    },
-    View: {
-      height:'100%', backgroundColor:'white'
-    },
-    ScrollView: {
-      left:30, top:110,width:330, maxHeight:150, position:'relative'
-    },
-    modalTitleView: {
-      position:"relative", flexDirection:'row', left:14, top:90, justifyContent:'space-between', paddingRight:26
-    },
-    modalTitle: {
-      fontSize:22, position:"relative", fontWeight:'bold', color:'#121214'
-    },
-    modalButtonView: {
-      flexDirection:'row', paddingHorizontal:20, justifyContent:'space-between'
-    },
-    grey: {
-      marginVertical:6, width:319, height:38, borderRadius:10, backgroundColor: '#FCFCFC', flexDirection:"row", justifyContent:"space-between" 
-    },
-    grey02: {
-      paddingLeft:5, marginVertical:6, width:319, height:38, borderRadius:10, backgroundColor: '#FCFCFC', flexDirection:"row"
-    },
-    fr_mg: {
-      fontSize:13, fontWeight:'600', color:'#121214', margin:7
-    },
-    delete: {
-      width:38, height:38,borderRadius:10, backgroundColor: '#FFCCAF', paddingTop:1
-    },
-    red: {
-      width:71, height:38, borderRadius:5, position:'relative', backgroundColor: '#FF5454', padding:8, marginHorizontal:5
-    },
-    redDeleteReject: {
-      width:80, height:38, borderRadius:5, position:'relative', backgroundColor: '#FF5454', padding:8, marginHorizontal:5
-    },
-    green: {
-      width:115, height:38, borderRadius:5, position:'relative', backgroundColor: '#C7FFAD', padding:8, marginHorizontal:5
-    },
-    white: {
-      color:'white', fontSize:14, textAlign:"center"
-    },
-    black: {
-      color:'black', fontSize:14, textAlign:"center"
-    },
-    idname: {
-      fontSize:16, color:'#545454'
-    },
-    idnameView: {
-      flexDirection:'row', margin:6
-    },
-    seventeen: {
-      fontSize:17, color:'#121214'
-    },
-    fourteen: {
-      fontSize:14, color:'#121214', textAlign:"center"
-    },
-    cancelO: {
-      width:50, height:38,borderRadius:5, backgroundColor: '#EFEFEF', paddingTop:8, marginLeft:5
-    },
-    ResultView: {
-      position:'relative', left:30, top:195, width:320
-    },
-    addcan: {
-      flexDirection:'row',marginLeft:178, marginTop:20
     }
    });
-
-  const [isModalVisible, setModalVisible] = useState(false);
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-    setShowResult(false);
-  };
  
-  const[showResult,setShowResult] = useState(false);
- 
-  const toggleShowResult = () => {
-    setShowResult(!showResult);
-  };
 
   const [modalVisible2, setModalVisible2] = useState(false);
 
@@ -287,11 +166,7 @@ const save = () => {
   setText4(in4);
   setText5(in5);
 };
-const add_fr = () => {
-  setModalVisible(!modalVisible);
-  setText_e(to);
-  sendEmailWithMailer(to);
-};
+
 const [to, setText_e] = useState("");
 const [in1, setText01] = useState("감자");
 const [in2, setText02] = useState("당근");
@@ -350,55 +225,8 @@ useEffect(()=>{
  <SafeAreaView>
     <View style={styles.temp01}>
       <Text style = {styles.TitleText}>커뮤니티</Text>
-      <Modal animationType="slide" transparent={false} visible={isModalVisible}
-        onRequestClose={() => {
-          setModalVisible(!isModalVisible);
-        }}
-        onShow={()=>console.log("onShow")}>
-        <View style={styles.View}>
-          <View style={styles.modalTitleView}>
-            <Text style={styles.modalTitle}>친구 관리</Text>
-          </View>
-          
-          <ScrollView style={styles.ScrollView}>
-              <Friends ref={childRef}></Friends>
-          </ScrollView>
-          
-          <Text style={[styles.modalTitle, {left:14, top:155}]}>친구 추가</Text>
-          <View style={[styles.grey, {left:30, top:175}]}>
-            <TextInput style={[styles.idname, {width:250}]}
-            placeholder='친구 닉네임을 입력하세요' 
-            onFocus={()=>{setShowResult(false); modifyResultID('');}}
-            onEndEditing={()=> {toggleShowResult(); searchWithNickname();}}
-            onChangeText = {(text) => {console.log(text); setSearchNickname(text);}} ></TextInput>
-            <TouchableOpacity style={styles.red} onPress= {()=> {toggleShowResult(); searchWithNickname();}}>
-              <Text style={styles.white}>검색</Text>
-            </TouchableOpacity>
-          </View>
-          {showResult && <View style={styles.ResultView}>
-            <Text style={styles.seventeen}>검색 결과</Text>
-            <Text style={styles.seventeen}>_________________________________________</Text>
-            <View style={styles.idnameView}>
-              <Text style={styles.fourteen}>닉네임</Text>
-              <Text style={[styles.fourteen, {position:'relative', left:110}]}>아이디</Text>
-            </View>
-            <View style={styles.grey02}>
-              <Text style={styles.idname}>{searchNickname}</Text>
-              <Text style={[styles.idname, {position:'relative', left:104}]}>{resultID}</Text>
-            </View>
-            <View style={styles.addcan}>
-              <TouchableOpacity style={styles.red} onPress={()=>{toggleModal(); addFriends();}}>
-                <Text style={styles.white}>추가하기</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.cancelO}  onPress={toggleModal}>
-                <Text style={styles.fourteen}>취소</Text>
-              </TouchableOpacity>
-            </View>
-          </View> }
-        </View>
-      </Modal>
-     
-      <Pressable onPress={()=>{childRef.current.sayHi();}}>
+      <ModalFriends ref={childRef}></ModalFriends>
+      <Pressable onPress={()=>{childRef.current.toggleModal();}}>
         <Text style={{fontSize : 17, color:Colors.grey400, position:"absolute", left:150, top:25}}>친구 추가</Text>
       </Pressable>
 
