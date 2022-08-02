@@ -52,7 +52,7 @@ const Ingredients_modify = ({ route, navigation }) => {
     };
 
     const [alarmCycle, setAlarmCycle] = useState(0);
-    const [min, setMin] = useState('');
+    const [min, setMin] = useState(0);
 
     const [category, setCategory] = useState('');
     const selectCategory = useCallback((cg) => setCategory((category) => { category = cg; return category; }), []);
@@ -63,6 +63,8 @@ const Ingredients_modify = ({ route, navigation }) => {
 
     const [lastDate, setLastDate] = useState('          ');
     const selectLastDate = useCallback((sld) => setLastDate((lastDate) => { lastDate = sld; return lastDate; }), []);
+
+    const [detailInfo, setDetailInfo] = useState('');
 
     const [modalVisible, setModalVisible] = useState(false);
     const Confirm = () => {
@@ -209,8 +211,10 @@ const Ingredients_modify = ({ route, navigation }) => {
                                 like = true;
                                 updateStar("star");
                             }
-                            setAlarmCycle(results.rows.item(i).notify);
-                            if (results.rows.item(i).notify > 0) {
+                            setDetailInfo(results.rows.item(i).info);
+                            setAlarmCycle(results.rows.item(i).noti_int);
+                            setMin(results.rows.item(i).noti_qty)
+                            if (results.rows.item(i).noti_int > 0) {
                                 alarm = true;
                                 updateAlarm("bell-badge");
                             }
@@ -234,18 +238,17 @@ const Ingredients_modify = ({ route, navigation }) => {
 
 
     const updateData = () => {
-
-        db.transaction(function (tx) {
+        console.log('변경할 info', detailInfo)
+        db.transaction((tx)=> {
             tx.executeSql(
-                'UPDATE ingredients SET qty=?, expiration=?, category=?, bookmark=?, notify=? where name=?',
-                [quantity, lastDate, category, DbBookmark, alarmCycle, text],
+                'UPDATE ingredients SET qty=?, expiration=?, category=?, info=?, bookmark=?, noti_int=?, noti_qty=? where name=?',
+                [quantity, lastDate, category, detailInfo, DbBookmark, alarmCycle, min, text],
                 (tx, results) => {
                     console.log('Results', results.rowsAffected);
 
                     if (results.rowsAffected > 0) {
                         Alert.alert('재료 정보 수정이 완료되었습니다.');
                     } else Alert.alert('재료 정보를 수정하지 못했습니다.');
-
 
                 }
             );
@@ -375,10 +378,13 @@ const Ingredients_modify = ({ route, navigation }) => {
 
 
                 <View style={style.temp03}>
-                    <Text style={style.TitleText} onPress={() => { console.log("current DBbookmark is  ", DbBookmark, "  current AlarmCycle is   ", alarmCycle) }}>이미지</Text>
-                    <View style={style.cameraview}>
-                        <Icon name="camera" size={30} color={Colors.grey500} style={{ position: "absolute", left: 140, top: 120 }} onPress={() => { navigation.navigate('TESSERACT') }} />
-                    </View>
+                    <Text style={style.TitleText} onPress={() => { console.log("current DBbookmark is  ", DbBookmark, "  current AlarmCycle is   ", alarmCycle) }}>상세정보</Text>
+                    <TextInput style={[style.textInputStyle, { flex: 1, height: 300, flexShrink: 1, }]} multiline={true}
+                        value={detailInfo}
+                        onChangeText={setDetailInfo}
+                        onEndEditing={() => console.log("onEndEditing     " + text)}
+                        inputRef={inputRef}>
+                    </TextInput>
                 </View>
             </ScrollView>
 

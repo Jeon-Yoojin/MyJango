@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import YouTube from 'react-native-youtube';
 
 const GetThumbnail = (props)=>{
-    const YOUTUBE_API_KEY = 'YOUR_API_KEY';
+    const YOUTUBE_API_KEY = 'AIzaSyCZXGI-wPmE6TFf4UWHhBL60BaDdrMS8qU';
   
     console.log('videoId:', props.vId);
   //const vID = _getThumbnail('마라 마파두부');

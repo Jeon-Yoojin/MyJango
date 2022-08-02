@@ -18,6 +18,7 @@ const RecipeDetail = ({route, navigation}) => {
   const [detail, setDetail] = useState('');
   const [ingredient, setIngredient] = useState('');
   const [ingdList, setIngdList] = useState([]);
+  const [ItemList, setItemList] = useState([]);
 
   SQLite.DEBUG(true);
   //SQLite.enablePromise(true);
@@ -60,8 +61,31 @@ const RecipeDetail = ({route, navigation}) => {
     error => {
       console.error(error);
     }
-  )
-  },[]);
+    )
+
+    SQLite.openDatabase(
+      {
+        name: 'recipe.db',
+        createFromLocation: 1,
+      },
+      (DB) => {
+        console.log('success opening recipe.db')
+        db = DB;
+
+        db.transaction((tx) => {
+          tx.executeSql(`SELECT NAME FROM ingredients ORDER BY expiration;`,
+            [],
+            (tx, results) => {
+              var temp = [];
+              for (let i = 0; i < results.rows.length; ++i) {
+                temp.push(results.rows.item(i).name);
+              }
+              setItemList(temp);
+            }
+          );
+        });
+      })
+  }, []);
 
   useEffect(() => {
     loadDataCallback();
@@ -69,8 +93,8 @@ const RecipeDetail = ({route, navigation}) => {
 
   function LackIngd(){
     //배열 차집합 연산을 이용하여 부족한 재료를 리턴하는 함수
-    //console.log(arr1.filter(x => !arr2.includes(x)))
-
+    //필요한 재료-현재 가지고 있는 재료
+      return(ingdList.filter(x => !ItemList.includes(x)))
   }
 
   return (
@@ -106,10 +130,15 @@ const RecipeDetail = ({route, navigation}) => {
             </TouchableHighlight>
           </View>
 
-          <View style={styles.ingredientContainer}>
-            <IngredientIcon name={'당근'} />
-            <IngredientIcon name={'돼지고기'} />
-          </View>
+          <ScrollView horizontal={true} style={styles.ingredientContainer}>
+            {ingdList.filter(x => !ItemList.includes(x)).map((LackIngd, index)=>{
+              return(
+                LackIngd?
+                <IngredientIcon name={LackIngd}></IngredientIcon>:<Text>Loading</Text>
+              )
+            }
+            )}
+          </ScrollView>
         </View>
 
         <View style={{ flexDirection: 'column' }}>
@@ -119,11 +148,9 @@ const RecipeDetail = ({route, navigation}) => {
               <MaterialCommunityIcons name="clipboard-text" size={15} color={'#3A4EFE'} />
             </TouchableHighlight>
           </View>
-          <View style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height}}>
-            <ScrollView contentContainerStyle={{flexGrow:1}}>
+            <ScrollView>
               <Text style={[styles.detail, { flexShrink: 1 ,}]}>{detail.split(', ').join('\n')}</Text>
             </ScrollView>
-          </View>
         </View>
       </View>
     </>

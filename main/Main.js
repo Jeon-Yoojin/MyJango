@@ -32,7 +32,7 @@ const style = StyleSheet.create({
  expireddate4_1 : {textAlign : "center", width: 65, margin: 2, padding:3},
  expireddate4_2 : {backgroundColor: Colors.red400, width: 140, height: 150, borderRadius:20, padding: 10, marginRight: 10},
  expireddate4_3 : {backgroundColor: Colors.green500, width: 140, height: 150, borderRadius:20, padding: 10, marginRight: 10},
- expireddate5 : {color:"red", fontSize:45, textAlign : "center", backgroundColor: "white", shadowColor: Colors.black, alignContent:'center', alignItems:'center',
+ expireddate5 : {color:"red", fontSize:45, textAlign : "center", backgroundColor: "white", shadowColor: Colors.black, alignContent:'center', alignItems:'center', justifyContent:'center',
  shadowOffset: {
    width: 0,
    height: 2,
@@ -46,7 +46,15 @@ const style = StyleSheet.create({
  mainlogo:{height: 28, width: 170, margin: 20},
  Img1:{height: 35, width: 30, tintColor:'#3949AB'},
  Img2:{height: 35, width: 30, tintColor:'#FDD835'},
- Img3:{height: 35, width: 30, tintColor:'#9C27B0'}
+ Img3:{height: 35, width: 30, tintColor:'#9C27B0'},
+  Icon: {
+    backgroundColor: "white", shadowColor: Colors.black, alignContent: 'center', alignItems: 'center', justifyContent: 'center',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1, elevation: 5, width: 65, height: 65, borderRadius: 100, marginRight: 10
+  }
 }
 )
 
@@ -240,7 +248,7 @@ const Main = ({ navigation }) => {
   <Pressable onPress={() => navigation.navigate('INGREDIENTS_ADD')}><Text style={style.expireddate5}>+</Text></Pressable>
   </View> 
   <View style = {{position:"absolute", right:20, top:580}}>
-  <Pressable onPress={() => navigation.navigate('TESSERACT')}><MaterialCommunityIcons name="camera" style={[style.expireddate5]}/></Pressable>
+  <Pressable style={[{justifyContent:'center', alignItems:'center', alignContent:'center'}, style.expireddate5]} onPress={() => navigation.navigate('TESSERACT')}><MaterialCommunityIcons size={35} name="camera" style={[{justifyContent:'center', alignItems:'center', color:"red",}]}/></Pressable>
   </View> 
 
  </SafeAreaView>

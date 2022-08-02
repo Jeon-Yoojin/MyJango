@@ -56,7 +56,7 @@ export default function SearchDate({navigation}) {
     const fullWidth = Dimensions.get('window').width
 
     const Recipe_youtube_list = ()=>{
-        const YOUTUBE_API_KEY = 'YOUR_API_KEY';
+        const YOUTUBE_API_KEY = 'AIzaSyBBRIw7wYh9bXZhMOietmQgERKZZMwMzmU';
         const maxResults = 1;
         let videoList = [];
         const [thumbnailList, setthumbnailList] = useState([]);

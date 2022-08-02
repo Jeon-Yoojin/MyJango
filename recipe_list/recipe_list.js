@@ -8,7 +8,11 @@ import { useNavigation } from "@react-navigation/native";
 import { useCallback, useState, useEffect } from 'react';
 import SQLite from 'react-native-sqlite-storage';
 
+import Thumbnail from './components/Thumbnail';
+import SearchBar from './components/SearchBar';
+
 import { NavigationContainer } from '@react-navigation/native';
+import SearchScreen from './components/SearchScreen';
 //import SearchLike from './user/SearchLike';
 
 var db = SQLite.openDatabase({ name: 'recipe.db', createFromLocation:"~www/recipe.db"});
@@ -24,6 +28,12 @@ export default function Recipe_list({navigation}) {
   const [RecipeIdList, setRecipeIdList] = useState([]);
   const [GetThumbnail, setGetThumbnail] = useState('');
   const [finalIngList, setFinalIngList] = useState([]);
+  const [searchText,setSearchText] = useState("");
+
+  useEffect(() => {
+    console.log('바뀜! useEFfect 실행')
+    searchWith();
+  },[finalIngList]);
 
     const [SLselect, updateSL] = useState(searchLike ? Colors.red200 : Colors.white);
     const modifySL = useCallback(() => {
@@ -64,7 +74,7 @@ export default function Recipe_list({navigation}) {
     const fullWidth = Dimensions.get('window').width
 
     const Recipe_youtube_list = (RecipeIdList)=>{
-        const YOUTUBE_API_KEY = 'YOUR_API_KEY';
+        const YOUTUBE_API_KEY = 'AIzaSyCZXGI-wPmE6TFf4UWHhBL60BaDdrMS8qU';
         const maxResults = 1;
         let videoList = [];
         const [thumbnailList, setthumbnailList] = useState([]);
@@ -128,6 +138,7 @@ export default function Recipe_list({navigation}) {
 
       const getData = () => {
         videolist.then((val) => {
+            console.log('videolist~~~~~~~~~~~~~~~~~~~~~~~~~~')
             setthumbnailList(val);
         });
       };
@@ -137,13 +148,15 @@ export default function Recipe_list({navigation}) {
       },[]);
     
       console.log('thumbnailList', thumbnailList);
-      
      return(<View style={{alignItems:'center'}}>
        <ScrollView>
-       {thumbnailList.map((thumbnail, index)=>{
-                        return(thumbnailList[index] ? <TouchableOpacity onPress={()=>thumbnailClicked(thumbnail.vId, thumbnail.name, RecipeIdList[index])} key={index}><Image source={{uri: thumbnail.imguri}} key={index} style={{width: fullWidth, height: 240}}/></TouchableOpacity> : <Text>Loading</Text>)
-                    })
-        }
+         {(thumbnailList.length)?
+           thumbnailList.map((thumbnail, index) => {
+             return (thumbnailList[index] ? <TouchableOpacity onPress={() => thumbnailClicked(thumbnail.vId, thumbnail.name, RecipeIdList[index])} key={index}><Image source={{ uri: thumbnail.imguri }} key={index} style={{ width: fullWidth, height: 240 }} /></TouchableOpacity> : <Text>Loading</Text>)
+           })
+
+           : <><Thumbnail vId={'WoKo_p4lYmU'} title='제목입니다'/><Thumbnail vId={'WoKo_p4lYmU'} title='제목입니다'/><Thumbnail vId={'WoKo_p4lYmU'} title='제목입니다'/></>
+         }
        </ScrollView>
      </View>)
     };
@@ -197,7 +210,7 @@ export default function Recipe_list({navigation}) {
           setBMlist(bookmarks);
           //console.log('BMlist', BMlist);
           setFinalIngList(bookmarks);
-          searchWith();
+          //searchWith();
         }
       );
     });
@@ -217,16 +230,16 @@ export default function Recipe_list({navigation}) {
           }
           setExpired(expired);
           setFinalIngList(expired);
-          searchWith();
         }
       );
     });
+    //searchWith();
   }
 
   const searchWith = () => {
     let query = 'SELECT B.name, C.recipe_count, C.recipe_id FROM recipe B, (SELECT A.recipe_id, count(A.ingredient_name) AS recipe_count FROM recipe_ingredients A WHERE';
     for (let i = 0; i < finalIngList.length; ++i) {
-      console.log('finalinglist: ',finalIngList)
+      //console.log('finalinglist: ',finalIngList)
       query = query + " trim(A.ingredient_name) = "+"\'"+ finalIngList[i] +"\'";
       if (i != finalIngList.length - 1) {
         query = query + " OR";
@@ -263,19 +276,10 @@ export default function Recipe_list({navigation}) {
   //console.log('finalinglist', finalIngList)
   //console.log('EXPlist', expired);
     return (
+      /*
         <View style={styles.view}>
-            <View style={styles.magniview} >
-                <DelayInput style={styles.textInputStyle}
-                    value={text}
-                    onChangeText={setText}
-                    onEndEditing={() => console.log("onEndEditing     " + text)}
-                    inputRef={inputRef}
-                />
-          <TouchableOpacity onPress={searchWith}>
-            <Icon name="magnify" size={40} color={Colors.grey500} style={{ margin: 7, marginTop: 13 }} />
-          </TouchableOpacity>
+            <SearchBar searchText={searchText} setSearchText={setSearchText}/>
 
-            </View>
             <Text style={styles.recommendText} >레시피 추천 </Text>
             <View style={styles.buttonview}>
                 <TouchableOpacity style={[styles.button, { backgroundColor: SDselect }]} onPress={()=>{modifySD()}}>
@@ -289,6 +293,8 @@ export default function Recipe_list({navigation}) {
                 {Recipe_youtube_list(RecipeIdList)}
             </ScrollView>
         </View>
+      */
+     <SearchScreen/>
     );
 }
 
