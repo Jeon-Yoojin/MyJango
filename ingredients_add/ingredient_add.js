@@ -33,7 +33,7 @@ const Ingredients_add = ({ route, navigation }) => {
 
   const [alarmCycle, setAlarmCycle] = useState(0);
 
-  const [min, setMin] = useState(1);
+  const [min, setMin] = useState(0);
   const minUp = useCallback(()=>setMin((min) => {return min+1}), []);
   const minDown = useCallback(()=>setMin((min) => { 
     if(min >= 2 ) min = min-1;
@@ -49,16 +49,21 @@ const Ingredients_add = ({ route, navigation }) => {
   const selectLastDate = useCallback((sld) => setLastDate((lastDate) => { lastDate = sld; return lastDate; }), []);
 
   const [isModalVisible, setModalVisible] = useState(false);
+
+  const [detailInfo, setDetailInfo] = useState('');
+
   const Cancel = () => {
     setModalVisible(!isModalVisible);
     setAlarmCycle(0);
     setMin(1);
     setDbBookmark(0);
   }
+
   const Save = () => {
     if(selectedValue!=undefined){
       setModalVisible(!isModalVisible);
     }
+    modifyAlarm();
   };
 
   const [selectedValue, setSelectedValue] = useState();
@@ -154,11 +159,10 @@ const Ingredients_add = ({ route, navigation }) => {
     }
   }, []);
 
-
   const insertData = () => {
     db.transaction(function (tx) {
       tx.executeSql(
-        'CREATE TABLE if not exists ingredients (id INTEGER, name	TEXT NOT NULL, qty INTEGER, expiration TEXT, category INTEGER, bookmark INTEGER, notify INTEGER)',
+        'CREATE TABLE if not exists ingredients (id INTEGER, name	TEXT NOT NULL, qty INTEGER, expiration TEXT, category INTEGER, info TEXT, bookmark INTEGER, noti_int INTEGER, noti_qty INTEGER)',
         [],
         (tx, results) => {
         }
@@ -168,8 +172,8 @@ const Ingredients_add = ({ route, navigation }) => {
 
     db.transaction(function (tx) {
       tx.executeSql(
-        'INSERT INTO ingredients (name, qty, expiration, category, bookmark, notify) VALUES (?,?,?,?,?,?)',
-        [text, quantity, lastDate, category, DbBookmark, alarmCycle],
+        'INSERT INTO ingredients (name, qty, expiration, category, info, bookmark, noti_int, noti_qty) VALUES (?,?,?,?,?,?,?,?)',
+        [text, quantity, lastDate, category, detailInfo, DbBookmark, alarmCycle, min],
         (tx, results) => {
           console.log('Results', results.rowsAffected);
 
@@ -205,9 +209,9 @@ const Ingredients_add = ({ route, navigation }) => {
 
   return (
     <SafeAreaView>
-
-      <View style={styles.temp01}>
+      <View style={styles.addAndModify}>
         <Text style={styles.TitleText} >추가 및 수정 </Text>
+
         <Modal isVisible={isModalVisible}>
           <View style={styles.modalView}>
             <Text style={styles.modalTitle}>알림 설정</Text>
@@ -239,13 +243,13 @@ const Ingredients_add = ({ route, navigation }) => {
             </View>
           </View>
         </Modal>
+
         <TouchableOpacity style={{ position: "absolute", right: 12, top: 25 }} onPress={insertData}>
           <Text style={{ fontSize: 15 }}>저장</Text>
         </TouchableOpacity>
-
       </View>
 
-      <View style={styles.temp02}>
+      <View style={styles.alarmAndLike}>
         <TouchableOpacity onPress={() => { setModalVisible(true); modifyAlarm; }}>
           <Icon name={alarmImage} size={30} color={Colors.grey500} style={{ margin: 5 }} />
         </TouchableOpacity>
@@ -255,8 +259,7 @@ const Ingredients_add = ({ route, navigation }) => {
       </View>
 
       <ScrollView>
-
-        <View style={styles.temp03}>
+        <View style={styles.detail}>
           <Text style={styles.TitleText}>이름</Text>
           <DelayInput style={styles.textInputStyle}
             value={text}
@@ -266,10 +269,9 @@ const Ingredients_add = ({ route, navigation }) => {
           <TouchableOpacity style={{ position: "absolute", right: 25, top: 21 }} onPress={allClear}>
             <Icon name="close-circle" size={30} color={Colors.grey500} />
           </TouchableOpacity>
-
         </View>
 
-        <View style={styles.temp03}>
+        <View style={styles.detail}>
           <Text style={styles.TitleText}>보관         </Text>
           <TouchableOpacity style={{ backgroundColor: fridgeSelect }} onPress={modifyFridge}>
             <Text style={styles.TitleText}>냉장</Text>
@@ -280,10 +282,9 @@ const Ingredients_add = ({ route, navigation }) => {
           <TouchableOpacity style={{ backgroundColor: roomSelect }} onPress={modifyRoom}>
             <Text style={styles.TitleText}>실온</Text>
           </TouchableOpacity>
-
         </View>
 
-        <View style={styles.temp03}>
+        <View style={styles.detail}>
           <Text style={styles.TitleText}>수량                 </Text>
           <TouchableOpacity style={{ position: "absolute", right: 25, top: 21 }} onPress={qtyClear()}>
             <Icon name="close-circle" size={30} color={Colors.grey500} />
@@ -291,82 +292,64 @@ const Ingredients_add = ({ route, navigation }) => {
           <TouchableOpacity onPress={quantityDown}>
             <Text style={styles.TitleText}>-</Text>
           </TouchableOpacity>
-
           <Text style={styles.TitleText}>{quantity}</Text>
-
           <TouchableOpacity onPress={quantityUp}>
             <Text style={styles.TitleText}>+</Text>
           </TouchableOpacity>
-
         </View>
 
-
-
-        <View style={styles.temp03}>
+        <View style={styles.detail}>
           <Text style={styles.TitleText}>유통기한</Text>
           <View>
-
-
-
-
             <View style={styles.expireddate}>
               <Text style={{ fontSize: 20 }}>{lastDate}</Text>
               <TouchableOpacity onPress={changeShowCalendar}>
                 <Icon name="calendar-range" size={30} color={Colors.grey500} />
               </TouchableOpacity>
-
             </View>
-
             <View>
               {showCalendar && <Calendar
                 minDate={Date()}
                 onDayPress={(day) => { selectLastDate(day.dateString) }}
               />}
             </View>
-
-          </View>
-
-
-
-
-        </View>
-
-
-        <View style={styles.temp03}>
-          <Text style={styles.TitleText} onPress={() => { console.log("current DBbookmark is  ", DbBookmark, "  current AlarmCycle is   ", alarmCycle, "current Min is", min) }}>이미지</Text>
-          <View style={styles.cameraview}>
-            <Icon name="camera" size={30} color={Colors.grey500} style={{ position: "absolute", left: 140, top: 120 }} onPress={() => { navigation.navigate('TESSERACT') }} />
           </View>
         </View>
+
+        <View style={styles.detail}>
+          <Text style={styles.TitleText}>상세정보</Text>
+          <DelayInput style={[styles.textInputStyle, {flex: 1, height: 300, flexShrink:1,}]} multiline={true}
+            value={detailInfo}
+            onChangeText={setDetailInfo}
+            onEndEditing={() => console.log("onEndEditing     " + text)}
+            inputRef={inputRef}>
+          </DelayInput>
+        </View>
+
       </ScrollView>
-
-
     </SafeAreaView>
   );
 
 };
 
 const styles = StyleSheet.create({
-  temp01: { 
+  addAndModify: { 
     backgroundColor: 'white', alignContent: "center", flexDirection: "row", justifyContent: "center" 
   },
-  temp02: { 
+  alarmAndLike: { 
     backgroundColor: 'white', alignItems: 'flex-end', flexDirection: "row-reverse", padding: 5 
   },
-  temp03: { 
+  detail: { 
     backgroundColor: 'white', alignContent: "center", flexDirection: "row" 
   },
   expireddate: { 
     flexDirection: 'row', justifyContent: 'space-between', padding: 3, marginTop: 15, width: 260 
   },
-  cameraview: { 
-    width: 300, height: 300, backgroundColor: 'white' 
-  },
   TitleText: { 
     textAlign: "center", fontWeight: 'bold', margin: 20, fontSize: 20 
   },
   textInputStyle: { 
-    width: 210, height: 50, backgroundColor: "white", margin: 10 
+    color: "black", width: 210, backgroundColor: "white", margin: 10, fontSize: 18, borderRadius: 5 
   },
   modalView: {
     height:'75%', backgroundColor:'white'
