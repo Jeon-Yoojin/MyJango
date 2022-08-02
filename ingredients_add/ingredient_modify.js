@@ -1,19 +1,16 @@
 import React, { createRef, useEffect, useState, useCallback } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, ScrollView, TextInput } from 'react-native';
 import { Colors } from "react-native-paper";
-import DelayInput from 'react-native-debounce-input';
 import { Calendar } from 'react-native-calendars';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SQLite from 'react-native-sqlite-storage';
 import PeriodDropDown from './PeriodDropDown';
 import Modal from "react-native-modal";
 
 var db = SQLite.openDatabase({ name: 'recipe.db' });
 
-
 const Ingredients_modify = ({ route, navigation }) => {
     const {name} = route.params;
-    //console.log(name)
     viewIng(name);
 
     const [quantity, setQuantity] = useState(1);
@@ -25,14 +22,10 @@ const Ingredients_modify = ({ route, navigation }) => {
 
     const inputRef = createRef();
     const [text, setText] = useState('');
-    const allClear = () => {
-        setText('');
-        inputRef.current.clear();
-    };
 
     const [alarmCycle, setAlarmCycle] = useState(0);
 
-    const [min, setMin] = useState(1);
+    const [min, setMin] = useState(0);
     const minUp = useCallback(()=>setMin((min) => {return min+1}), []);
     const minDown = useCallback(()=>setMin((min) => { 
       if(min >= 2 ) min = min-1;
@@ -48,10 +41,13 @@ const Ingredients_modify = ({ route, navigation }) => {
     const selectLastDate = useCallback((sld) => setLastDate((lastDate) => { lastDate = sld; return lastDate; }), []);
 
     const [isModalVisible, setModalVisible] = useState(false);
+
+    const [detailInfo, setDetailInfo] = useState('');
+
     const Cancel = () => {
         setModalVisible(!isModalVisible);
         setAlarmCycle(0);
-        setMin(1);
+        setMin(0);
         setDbBookmark(0);
       }
 
@@ -59,6 +55,7 @@ const Ingredients_modify = ({ route, navigation }) => {
         if(selectedValue!=undefined){
             setModalVisible(!isModalVisible);
         }
+        modifyAlarm();
       };
     
     const [selectedValue, setSelectedValue] = useState();
@@ -153,7 +150,7 @@ const Ingredients_modify = ({ route, navigation }) => {
             selectCategory('room');
         }
     }, []);
-    const [users, setUsers] = useState([]);
+
 
     function viewIng(name) {
         useEffect(() => {
@@ -163,10 +160,9 @@ const Ingredients_modify = ({ route, navigation }) => {
                 [],
                 (tx, results) => {
                     var temp = [];
-                    let users = [];
+
                     for (let i = 0; i < results.rows.length; ++i) {
                         temp.push(results.rows.item(i));
-                        users.push(results.rows.item(i));
                         if (results.rows.item(i).name == name) {
                             console.log("matched with    ", name);
 
@@ -194,8 +190,10 @@ const Ingredients_modify = ({ route, navigation }) => {
                                 like = true;
                                 updateStar("star");
                             }
-                            setAlarmCycle(results.rows.item(i).notify);
-                            if (results.rows.item(i).notify > 0) {
+                            setDetailInfo(results.rows.item(i).info);
+                            setAlarmCycle(results.rows.item(i).noti_int);
+                            setMin(results.rows.item(i).noti_qty)
+                            if (results.rows.item(i).noti_int > 0) {
                                 alarm = true;
                                 updateAlarm("bell-badge");
                             }
@@ -206,10 +204,6 @@ const Ingredients_modify = ({ route, navigation }) => {
                     }
 
                     console.log(temp);
-                    setUsers(users);
-
-
-
                 }
 
             );
@@ -217,20 +211,18 @@ const Ingredients_modify = ({ route, navigation }) => {
     },[]);
     }
 
-
     const updateData = () => {
-
-        db.transaction(function (tx) {
+        console.log('변경할 info', detailInfo)
+        db.transaction((tx)=> {
             tx.executeSql(
-                'UPDATE ingredients SET qty=?, expiration=?, category=?, bookmark=?, notify=? where name=?',
-                [quantity, lastDate, category, DbBookmark, alarmCycle, text],
+                'UPDATE ingredients SET qty=?, expiration=?, category=?, info=?, bookmark=?, noti_int=?, noti_qty=? where name=?',
+                [quantity, lastDate, category, detailInfo, DbBookmark, alarmCycle, min, text],
                 (tx, results) => {
                     console.log('Results', results.rowsAffected);
 
                     if (results.rowsAffected > 0) {
                         Alert.alert('재료 정보 수정이 완료되었습니다.');
                     } else Alert.alert('재료 정보를 수정하지 못했습니다.');
-
 
                 }
             );
@@ -240,9 +232,9 @@ const Ingredients_modify = ({ route, navigation }) => {
 
     return (
         <SafeAreaView>
-
-            <View style={styles.temp01}>
-                <Text style={styles.TitleText} >추가 및 수정 </Text>
+            <View style={styles.addAndModify}>
+            <Text style={styles.TitleText} onPress={viewIng} >추가 및 수정 </Text>
+                
                 <Modal isVisible={isModalVisible}>
                     <View style={styles.modalView}>
                         <Text style={styles.modalTitle}>알림 설정</Text>
@@ -274,13 +266,13 @@ const Ingredients_modify = ({ route, navigation }) => {
                         </View>
                     </View>
                 </Modal>
+
                 <TouchableOpacity style={{ position: "absolute", right: 12, top: 25 }} onPress={updateData}>
                     <Text style={{ fontSize: 15 }}>완료</Text>
                 </TouchableOpacity>
-
             </View>
 
-            <View style={styles.temp02}>
+            <View style={styles.alarmAndLike}>
                 <TouchableOpacity onPress={() => { setModalVisible(true); modifyAlarm; }}>
                     <Icon name={alarmImage} size={30} color={Colors.grey500} style={{ margin: 5 }} />
                 </TouchableOpacity>
@@ -290,13 +282,12 @@ const Ingredients_modify = ({ route, navigation }) => {
             </View>
 
             <ScrollView>
-
-                <View style={styles.temp03}>
+                <View style={styles.detail}>
                     <Text style={styles.TitleText}>이름</Text>
-                        <Text style={styles.TitleText}>{text}</Text>
+                    <Text style={styles.TitleText}>{text}</Text>
                 </View>
 
-                <View style={styles.temp03}>
+                <View style={styles.detail}>
                     <Text style={styles.TitleText}>보관         </Text>
                     <TouchableOpacity style={{ backgroundColor: fridgeSelect }} onPress={modifyFridge}>
                         <Text style={styles.TitleText}>냉장</Text>
@@ -307,64 +298,48 @@ const Ingredients_modify = ({ route, navigation }) => {
                     <TouchableOpacity style={{ backgroundColor: roomSelect }} onPress={modifyRoom}>
                         <Text style={styles.TitleText}>실온</Text>
                     </TouchableOpacity>
-
                 </View>
 
-                <View style={styles.temp03}>
+                <View style={styles.detail}>
                     <Text style={styles.TitleText}>수량                 </Text>
                     <TouchableOpacity onPress={quantityDown}>
                         <Text style={styles.TitleText}>-</Text>
                     </TouchableOpacity>
-
                     <Text style={styles.TitleText}>{quantity}</Text>
-
                     <TouchableOpacity onPress={quantityUp}>
                         <Text style={styles.TitleText}>+</Text>
                     </TouchableOpacity>
-
                 </View>
 
-
-
-                <View style={styles.temp03}>
+                <View style={styles.detail}>
                     <Text style={styles.TitleText}>유통기한</Text>
                     <View>
-
-
-
-
                         <View style={styles.expireddate}>
                             <Text style={{ fontSize: 20 }}>{lastDate}</Text>
                             <TouchableOpacity onPress={changeShowCalendar}>
                                 <Icon name="calendar-range" size={30} color={Colors.grey500} />
                             </TouchableOpacity>
-
                         </View>
-
                         <View>
                             {showCalendar && <Calendar
                                 minDate={Date()}
                                 onDayPress={(day) => { selectLastDate(day.dateString) }}
                             />}
                         </View>
-
-                    </View>
-
-
-
-
-                </View>
-
-
-                <View style={styles.temp03}>
-                    <Text style={styles.TitleText} onPress={() => { console.log("current DBbookmark is  ", DbBookmark, "  current AlarmCycle is   ", alarmCycle, " current min is ", min) }}>이미지</Text>
-                    <View style={styles.cameraview}>
-                        <Icon name="camera" size={30} color={Colors.grey500} style={{ position: "absolute", left: 140, top: 120 }} onPress={() => { navigation.navigate('TESSERACT') }} />
                     </View>
                 </View>
+
+                <View style={styles.detail}>
+                    <Text style={styles.TitleText}>상세정보</Text>
+                    <TextInput style={[styles.textInputStyle, { flex: 1, height: 300, flexShrink: 1, }]} multiline={true}
+                        value={detailInfo}
+                        onChangeText={setDetailInfo}
+                        onEndEditing={() => console.log("onEndEditing     " + text)}
+                        inputRef={inputRef}>
+                    </TextInput>
+                </View>
+
             </ScrollView>
-
-
         </SafeAreaView>
     );
 
@@ -372,13 +347,13 @@ const Ingredients_modify = ({ route, navigation }) => {
 
 
 const styles = StyleSheet.create({
-    temp01: { 
+    addAndModify: { 
       backgroundColor: 'white', alignContent: "center", flexDirection: "row", justifyContent: "center" 
     },
-    temp02: { 
+    alarmAndLike: { 
       backgroundColor: 'white', alignItems: 'flex-end', flexDirection: "row-reverse", padding: 5 
     },
-    temp03: { 
+    detail: { 
       backgroundColor: 'white', alignContent: "center", flexDirection: "row" 
     },
     expireddate: { 
@@ -391,7 +366,7 @@ const styles = StyleSheet.create({
       textAlign: "center", fontWeight: 'bold', margin: 20, fontSize: 20 
     },
     textInputStyle: { 
-      width: 210, height: 50, backgroundColor: "white", margin: 10 
+      color: "black", width: 210, backgroundColor: "white", margin: 10, fontSize: 18, borderRadius: 5 
     },
     modalView: {
       height:'75%', backgroundColor:'white'
