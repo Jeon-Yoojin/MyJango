@@ -1,5 +1,5 @@
-import React, { useRef, useState, useImperativeHandle, forwardRef, useCallback } from 'react';
-import { Button, View, Modal, StyleSheet, Text, ScrollView, TouchableOpacity,TextInput , TouchableHighlight } from 'react-native';
+import React, { useState, useImperativeHandle, forwardRef, useCallback } from 'react';
+import { View, Modal, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
 import SQLite from 'react-native-sqlite-storage';
 import Friends from './Friends';
 
@@ -7,14 +7,11 @@ var db = SQLite.openDatabase({ name: 'recipe.db' });
 
 const ModalFriends = (props, ref) => {
     
-    const childRef = useRef()
-
   useImperativeHandle(ref, () => ({
-    // methods connected to `ref`
+
     toggleModal: () => { toggleModal(); }
 
   }))
-
 
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -82,13 +79,12 @@ const ModalFriends = (props, ref) => {
         <View style={styles.View}>
           <View style={styles.modalTitleView}>
             <Text style={styles.modalTitle}>친구 관리</Text>
-            <Button onPress={() => { childRef.current.getMutualFriends(); childRef.current.getRequestedFriends();}}
-            title="친구 불러오기"/>
+            <Text style={styles.description}>{'<<'}밀어서 관리하기</Text>
           </View>
           
-          <ScrollView style={styles.ScrollView}>
-              <Friends ref={childRef}></Friends>
-          </ScrollView>
+          <View style={styles.ScrollView}>
+              <Friends></Friends>
+          </View>
           
           <Text style={[styles.modalTitle, {left:14, top:155}]}>친구 추가</Text>
           <View style={[styles.grey, {left:30, top:175}]}>
@@ -134,13 +130,16 @@ const styles = StyleSheet.create({
       height:'100%', backgroundColor:'white'
     },
     ScrollView: {
-        left:30, top:110,width:330, maxHeight:150, position:'relative'
+      left:30, top:110, width:330, height:150, position:'relative'
     },
     modalTitleView: {
-      position:"relative", flexDirection:'row', left:14, top:90, justifyContent:'space-between', paddingRight:26
+      position:"relative", flexDirection:'row', left:14, top:90, justifyContent:'space-between'
     },
     modalTitle: {
       fontSize:22, position:"relative", fontWeight:'bold', color:'#121214'
+    },
+    description: {
+      fontSize:12, color:'#979797', textAlign:'right', right:47, top:30, position:'relative'
     },
     grey: {
       marginVertical:6, width:319, height:38, borderRadius:10, backgroundColor: '#FCFCFC', flexDirection:"row", justifyContent:"space-between" 
