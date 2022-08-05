@@ -113,9 +113,6 @@ const Community = () => {
       width : 210, height : 40, borderWidth: 1, backgroundColor: "white", margin:2
     }
    });
- 
-
-  const [modalVisible2, setModalVisible2] = useState(false);
 
   const share1 = () => {
     Alert.alert("공유","친구에게 재료를 공유했습니다.",
@@ -158,15 +155,6 @@ const action7 = () => {
 };
 const action8 = () => {
   setcolor8("skyblue");
-};
-
-const save = () => {
-  setModalVisible2(!modalVisible2);
-  setText1(in1);
-  setText2(in2);
-  setText3(in3);
-  setText4(in4);
-  setText5(in5);
 };
 
 const [to, setText_e] = useState("");
