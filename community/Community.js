@@ -4,6 +4,7 @@ import { Colors } from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Mailer from 'react-native-mail';
 import ModalFriends from './ModalFriends';
+import ModalPresentCondition from './present_condition/ModalPresentCondition'
 
 
 export const sendEmailWithMailer = (
@@ -32,7 +33,8 @@ export const sendEmailWithMailer = (
 
 const Community = () => {
 
-  const childRef = useRef()
+  const child1Ref = useRef();
+  const child2Ref = useRef();
 
   const [color1, setcolor1] = useState("lightgrey");
   const [color2, setcolor2] = useState("lightgray");
@@ -225,10 +227,10 @@ useEffect(()=>{
  <SafeAreaView>
     <View style={styles.temp01}>
       <Text style = {styles.TitleText}>커뮤니티</Text>
-      <ModalFriends ref={childRef}></ModalFriends>
-      <Pressable onPress={()=>{childRef.current.toggleModal();}}>
+      <ModalFriends ref={child1Ref}></ModalFriends>
+      <TouchableOpacity onPress={()=>{child1Ref.current.toggleModal();}}>
         <Text style={{fontSize : 17, color:Colors.grey400, position:"absolute", left:150, top:25}}>친구 추가</Text>
-      </Pressable>
+      </TouchableOpacity>
 
     </View>
 
@@ -251,64 +253,11 @@ useEffect(()=>{
   <TouchableHighlight style={styles.expireddate01}>
     <Text style={styles.expireddate0}>{inde5}</Text></TouchableHighlight>
         
-<Modal
-  animationType="slide"
-  transparent={false}
-  visible={modalVisible2}  
-  onShow={()=>console.log("onShow")}>
-  <View style={styles.temp}>
-  <Text style = {{fontSize: 23, fontWeight: 'bold', margin: 20}}>재료 수정</Text>
-  </View>
-  <View style={styles.temp}>
-    <Text style={styles.TitleTextip}>부족한 재료</Text>
-  </View>
-  <View style={styles.temp}>
-    <Text style={styles.TitleTextip}>재료1 </Text>
-    <TextInput style = {styles.textInputStyle}
-    defaultValue = {inde1}
-    keyboardType = "default"
-    onChangeText = {(text) => setText01(text)}
-    ></TextInput>
-  </View>
-  <View style={styles.temp}>
-    <Text style={styles.TitleTextip}>재료2 </Text>
-    <TextInput style = {styles.textInputStyle}
-    defaultValue = {inde2}
-    keyboardType = "default"
-    onChangeText = {(text) => setText02(text)}></TextInput>
-  </View>
-  <View style={styles.temp}>
-    <Text style={styles.TitleTextip}>재료3 </Text>
-    <TextInput style = {styles.textInputStyle}
-    defaultValue = {inde3}
-    keyboardType = "default"
-    onChangeText = {(text) => setText03(text)}></TextInput>
-  </View>
-
-  <View style={styles.temp}>
-    <Text style={styles.TitleTextip}>{'\n'}넉넉한 재료</Text>
-  </View>
-  <View style={styles.temp}>
-    <Text style={styles.TitleTextip}>재료1 </Text>
-    <TextInput style = {styles.textInputStyle}
-    defaultValue = {inde4}
-    keyboardType = "default"
-    onChangeText = {(text) => setText04(text)}></TextInput>
-  </View>
-  <View style={styles.temp}>
-    <Text style={styles.TitleTextip}>재료2 </Text>
-    <TextInput style = {styles.textInputStyle}
-    defaultValue = {inde5}
-    keyboardType = "default"
-    onChangeText = {(text) => setText05(text)}></TextInput>
-  </View>
-  <Button title="저장" onPress={save}></Button>
-  <Button title="닫기" onPress={() => setModalVisible2(!modalVisible2)}></Button>
-</Modal>
-  <Pressable
-  onPress={() => setModalVisible2(true)}>  
+  <ModalPresentCondition ref={child2Ref} ></ModalPresentCondition>
+  <TouchableOpacity onPress={()=>{child2Ref.current.toggleModal(); 
+    child2Ref.current.initToMeData();}} >  
   <Icon name="pencil" size={30} color={Colors.black} style={styles.edittext}/>
-  </Pressable>
+  </TouchableOpacity>
 </View>
 </View>
 
