@@ -1,12 +1,10 @@
 import React, { useState, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { View, Modal, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
-import SQLite from 'react-native-sqlite-storage';
 import Friends from './Friends';
-
-var db = SQLite.openDatabase({ name: 'recipe.db' });
+import firestore from '@react-native-firebase/firestore';
 
 const ModalFriends = (props, ref) => {
-    
+
   useImperativeHandle(ref, () => ({
 
     toggleModal: () => { toggleModal(); }
@@ -26,48 +24,36 @@ const ModalFriends = (props, ref) => {
     setShowResult(!showResult);
   };
 
-  const addFriends = () => {
-    if(resultID!='' || searchNickname!=''){
-      db.transaction(function (tx) {
-        tx.executeSql(
-          'INSERT INTO test_member_friends (id, fr_id, fr_nickname, fr_status) VALUES (?,?,?,?)',
-          [resultID, 'eee@abc.com', '이', 1],
-          (tx, results) => {
-            console.log('Results', results.rowsAffected);
-          }
-        );
-      });
-
-    }
-  }
-
   const [searchNickname,setSearchNickname] = useState('');
   const [resultID, setResultID] = useState('');
+  const modifyResultID = useCallback((ID) => { setResultID(ID); }, []);
 
-  const modifyResultID = useCallback((ID) => {
-    setResultID(ID);
-  }, []);
-
-  const searchWithNickname = () => {
+  const member = firestore().collection('member');
+  const memberFriends = firestore().collection('memberFriends');
   
-    db.transaction(function (tx) {
-      tx.executeSql(
-        'SELECT id FROM test_member WHERE nickname = ?',
-        [searchNickname],
-        (tx, results) => {
-          const rows = results.rows;
-
-          for (let i = 0; i < rows.length; i++) {
-
-            console.log(rows.item(i));
-            modifyResultID(rows.item(i).id);
-            
-        }
- 
-      }
-      );
-    });
-
+  const addFriends = () => {
+    if(resultID!='' || searchNickname!=''){
+      memberFriends.add({
+        id: resultID,
+        friendsId: 'aaa@abc.com',
+        friendsNickname: '에이',
+        friendsMutual: false
+      })
+      .then(() => {
+        console.log('added!');
+      });
+    }
+  }
+  
+  const searchWithNickname = () => {
+    member.where('nickname', '==', searchNickname).get()
+    .then(querySnapshot => {
+    querySnapshot.forEach(documentSnapshot => {
+      console.log('UserFriends: ', documentSnapshot.data().id);
+      modifyResultID(documentSnapshot.data().id);
+    }
+    );
+  });
   };
 
   return (
