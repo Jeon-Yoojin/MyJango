@@ -5,6 +5,9 @@ import firestore from '@react-native-firebase/firestore';
 
 const ModalFriends = (props, ref) => {
 
+  var myId = 'bbb@abc.com'
+  var myNickname = 'b'
+
   useImperativeHandle(ref, () => ({
 
     toggleModal: () => { toggleModal(); }
@@ -24,36 +27,34 @@ const ModalFriends = (props, ref) => {
     setShowResult(!showResult);
   };
 
+  const member = firestore().collection('member');
+
   const [searchNickname,setSearchNickname] = useState('');
   const [resultID, setResultID] = useState('');
   const modifyResultID = useCallback((ID) => { setResultID(ID); }, []);
 
-  const member = firestore().collection('member');
-  const memberFriends = firestore().collection('memberFriends');
-  
+  const searchWithNickname = () => {
+    member.where('nickname', '==', searchNickname).get()
+    .then(querySnapshot => {
+    querySnapshot.forEach(documentSnapshot => {
+      modifyResultID(documentSnapshot.data().id);
+    }
+    );
+  });
+  };
+
   const addFriends = () => {
     if(resultID!='' || searchNickname!=''){
-      memberFriends.add({
-        id: resultID,
-        friendsId: 'aaa@abc.com',
-        friendsNickname: '에이',
+      member.doc(resultID).collection('friends')
+      .doc(myId).set({
+        friendsId: myId,
+        friendsNickname: myNickname,
         friendsMutual: false
       })
       .then(() => {
         console.log('added!');
       });
     }
-  }
-  
-  const searchWithNickname = () => {
-    member.where('nickname', '==', searchNickname).get()
-    .then(querySnapshot => {
-    querySnapshot.forEach(documentSnapshot => {
-      console.log('UserFriends: ', documentSnapshot.data().id);
-      modifyResultID(documentSnapshot.data().id);
-    }
-    );
-  });
   };
 
   return (
