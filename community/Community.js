@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { StyleSheet, TouchableOpacity, Alert , SafeAreaView, View, Text, ScrollView, TouchableHighlight } from 'react-native';
 import { Colors } from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,7 +7,7 @@ import Mailer from 'react-native-mail';
 import ModalFriends from './ModalFriends';
 import ModalPresentCondition from './present_condition/ModalPresentCondition'
 import InButton from './InButton';
-
+import firestore from '@react-native-firebase/firestore';
 
 export const sendEmailWithMailer = (
   to = "",
@@ -35,6 +35,9 @@ export const sendEmailWithMailer = (
 
 const Community = () => {
 
+  var myId = 'aaa@abc.com'
+  var myNickname = 'a'
+
   const child1Ref = useRef();
   const child2Ref = useRef();
 
@@ -50,7 +53,44 @@ const Community = () => {
     setColor("lightgray");``
   }
 
-  const [myToMe, setMyToMe] = useState(["감자","당근","김","asdfa","asdfas"])
+  const [myToMe, setMyToMe] = useState([]);
+  const modifyMyToMe = useCallback((t) => { setMyToMe(t); }, []);
+
+  const [myFromMe, setMyFromMe] = useState([]);
+  const modifyMyFromMe = useCallback((t) => { setMyFromMe(t); }, []);
+
+  const member = firestore().collection('member');
+  
+  useEffect (
+    getMyToMes = () => {
+      const temp={};
+      member.doc(myId).collection('communityIngredients').where('toMe','==',true).get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(documentSnapshot => {
+          temp[documentSnapshot.id] = 
+          { id:documentSnapshot.id, text: documentSnapshot.data().item }  
+        }
+        );
+        modifyMyToMe(temp);
+      });
+  },[]);
+
+  useEffect(
+    getMyFromMes = () => {
+      const temp={};
+       member.doc(myId).collection('communityIngredients').where('toMe','==',false).get()
+       .then(querySnapshot => {
+         querySnapshot.forEach(documentSnapshot => {
+          temp[documentSnapshot.id] = 
+          { id:documentSnapshot.id, text: documentSnapshot.data().item }  
+         }
+         );
+         modifyMyFromMe(temp);
+       });
+   },[]);
+
+   
+
 
 inde = {
   data: ["감자","당근","김"]
@@ -120,7 +160,8 @@ fri = {
   return (
   <SafeAreaView>
     <View style={styles.temp01}>
-      <Text style = {styles.TitleText} onPress={()=>{console.log("current searchId  ",searchId)}} >커뮤니티</Text>
+    <Text style = {styles.TitleText}>커뮤니티</Text>
+ 
       <ModalFriends ref={child1Ref}></ModalFriends>
       <TouchableOpacity onPress={()=>{child1Ref.current.toggleModal();}}>
         <Text style={{fontSize : 17, color:Colors.grey400, position:"absolute", left:150, top:25}}>친구 추가</Text>
@@ -136,28 +177,28 @@ fri = {
       <View style={styles.myIng}>
 
       <View style={styles.myToMe}> 
-        {myToMe.map((item,index)=>{
+        {Object.values(myToMe).map((item)=>{
           return (
-            <TouchableHighlight key={index} style={{backgroundColor: 'rgb(' +
+            <TouchableHighlight key={item.id} style={{backgroundColor: 'rgb(' +
               Math.floor(Math.random() * 256) +
               ',' + Math.floor(Math.random() * 256) +
               ',' + Math.floor(Math.random() * 256) +
               ')', borderRadius: 10, margin: 10, padding:3}}>
-            <Text style={styles.expireddate0}>{item}</Text></TouchableHighlight>
+            <Text style={styles.expireddate0}>{item.text}</Text></TouchableHighlight>
   
           )
         })}
       </View>
 
       <View style={styles.myFromMe}>
-        {ind.data.map((item,index)=>{
+        {Object.values(myFromMe).map((item)=>{
           return (
-            <TouchableHighlight key={index} style={{backgroundColor: 'rgb(' +
+            <TouchableHighlight key={item.id} style={{backgroundColor: 'rgb(' +
               Math.floor(Math.random() * 256) +
               ',' + Math.floor(Math.random() * 256) +
               ',' + Math.floor(Math.random() * 256) +
               ')', borderRadius: 10, margin: 10, padding:3}}>
-            <Text style={styles.expireddate0}>{item}</Text></TouchableHighlight>
+            <Text style={styles.expireddate0}>{item.text}</Text></TouchableHighlight>
   
           )
         })} 
@@ -166,9 +207,9 @@ fri = {
       </View>
 
       <View style={styles.modifyMine}>
-      <ModalPresentCondition ref={child2Ref} ></ModalPresentCondition>
-        <TouchableOpacity onPress={()=>{child2Ref.current.toggleModal();
-          child2Ref.current.initFromMeData(); child2Ref.current.initToMeData();}}>  
+      <ModalPresentCondition ref={child2Ref} myToMe={myToMe} modifyMyToMe={modifyMyToMe} 
+      myFromMe={myFromMe} modifyMyFromMe={modifyMyFromMe}></ModalPresentCondition>
+        <TouchableOpacity onPress={()=>{child2Ref.current.toggleModal();}}>  
           <Icon name="pencil" size={30} color={Colors.black} style={styles.edittext}/>
         </TouchableOpacity>
       </View>
