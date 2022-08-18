@@ -1,13 +1,17 @@
-import React, { useState, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, StatusBar, Button, TouchableOpacity, Text, Alert } from 'react-native';
 import Modal from "react-native-modal";
-import SQLite from 'react-native-sqlite-storage';
-import Input from './Input'
-import Task from './Task'
+import firestore from '@react-native-firebase/firestore';
+import Input from './Input';
+import ToMe from './ToMe';
+import FromMe from './FromMe';
 
-var db = SQLite.openDatabase({ name: 'recipe.db' });
 
 const ModalPresentCondition = (props, ref) => {
+
+  var myId = 'aaa@abc.com'
+  var myNickname = 'a'
+
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -15,122 +19,139 @@ const ModalPresentCondition = (props, ref) => {
 
   useImperativeHandle(ref, () => ({
     toggleModal: () => { toggleModal(); },
-    initToMeData: () => { initToMeData() }
   }))
 
   const [newToMe, setNewToMe] = useState('');
-  const [toMes, setToMes] = useState({});
-    
+  const [newFromMe, setNewFromMe] = useState('');
+
+  const member = firestore().collection('member');
+
   const _addToMe = () => {
-    const ID = Date.now().toString();
+    const ID = newToMe;
       const newToMeObject = {
         [ID]: { id: ID, text: newToMe },
       };
       setNewToMe('');
-      setToMes({ ...toMes, ...newToMeObject });
-      db.transaction(function (tx) {
-        tx.executeSql(
-          'CREATE TABLE if not exists to_me (item TEXT)',
-          [],(tx, results) => {
-          }
-        );
-    
+      props.modifyMyToMe({ ...props.myToMe, ...newToMeObject });
+
+      member.doc(myId).collection('communityIngredients')
+      .doc(newToMe).set({
+        item: newToMe,
+        toMe: true
       })
-    
-        db.transaction(function (tx) {
-          tx.executeSql(
-            'INSERT INTO to_me (item) VALUES (?)',
-            [newToMe],
-            (tx, results) => {
-              console.log('Results', results.rowsAffected);
-            }
-          );
-        });
-    
-      };
+      .then(() => {
+        console.log('added!');
+      });  
+  };
+
+  const _addFromMe = () => {
+    const ID = newFromMe;
+    const newFromMeObject = {
+      [ID]: { id: ID, text: newFromMe },
+    };
+    setNewFromMe('');
+    props.modifyMyFromMe({ ...props.myFromMe, ...newFromMeObject });
+
+    member.doc(myId).collection('communityIngredients')
+    .doc(newFromMe).set({
+      item: newFromMe,
+      toMe: false
+    })
+    .then(() => {
+      console.log('added!');
+    });
+  };
 
 
 
   const _deleteToMe = (id) => {
-        const currentToMes = Object.assign({}, toMes);
+        const currentToMes = Object.assign({}, props.myToMe);
         var temp = currentToMes[id].text;
-
-        db.transaction((tx) => {
-          tx.executeSql(
-              'DELETE FROM to_me where item=?',
-              [temp],
-              (tx, results) => {
-                  console.log('Results', results.rowsAffected);
-              }
-          );
-      });
-
+        member.doc(myId).collection('communityIngredients').doc(temp).delete().then(() => {
+          console.log('deleted!');
+        });
         delete currentToMes[id];
-        setToMes(currentToMes);
+        props.modifyMyToMe(currentToMes);
       };
-      
+    
+  const _deleteFromMe = (id) => {
+    const currentFromMes = Object.assign({}, props.myFromMe);
+    var temp = currentFromMes[id].text;
+    member.doc(myId).collection('communityIngredients').doc(temp).delete().then(() => {
+      console.log('deleted!');
+    });
+    delete currentFromMes[id];
+    props.modifyMyFromMe(currentFromMes);
+  }
+
   const _updateToMe = (item) => {
-    const currentToMes = Object.assign({},toMes);
+    const currentToMes = Object.assign({},props.myToMe);
     
     var before = currentToMes[item.id].text;
     var after = item.text;
 
-    db.transaction(function (tx) {
-      tx.executeSql(
-        'UPDATE to_me SET item=? where item=?',[after,before],
-        (tx, results) => {
-          console.log('Results', results.rowsAffected);
-        }
-      );
+    member.doc(myId).collection('communityIngredients').doc(before).delete().then(() => {
+      console.log('deleted!');
     });
-  
+
+    member.doc(myId).collection('communityIngredients').doc(after).set({ 
+      item: after, toMe: true }).then(() => {
+      console.log('added!');
+    });
+
     currentToMes[item.id]=item;
-    setToMes(currentToMes);
+    props.modifyMyToMe(currentToMes);
+  };
+
+  const _updateFromMe = (item) => {
+    const currentFromMes = Object.assign({},props.myFromMe);
+    
+    var before = currentFromMes[item.id].text;
+    var after = item.text;
+
+    member.doc(myId).collection('communityIngredients').doc(before).delete().then(() => {
+      console.log('deleted!');
+    });
+
+    member.doc(myId).collection('communityIngredients').doc(after).set({ 
+      item: after, toMe: false }).then(() => {
+      console.log('added!');
+    });
+
+    currentFromMes[item.id]=item;
+    props.modifyMyFromMe(currentFromMes);
   };
 
   const _handleToMeTextChange = (text) => {
     setNewToMe(text);
   };
 
-  const initToMeData = () => {
-    const temp={};
-    db.transaction((tx) => {
-      tx.executeSql(`SELECT * FROM to_me;`, [], (tx, results) => {
-        const rows = results.rows;
-        for (let i = 0; i < rows.length; i++) {
-          const ID = Date.now().toString();
-          const newToMeObject = {
-            id: ID, text: rows.item(i).item };
-          temp[ID] = newToMeObject;
-          const final = Object.assign({},temp);
-            setToMes(final);
-          }
-        })
-      });
-    };
-
-
-    return (
+  const _handleFromMeTextChange = (text) => {
+    setNewFromMe(text);
+  };
+  
+  return (
     <Modal isVisible={isModalVisible} onRequestClose={() => setModalVisible(false)} transparent={true}>
             <View style={styles.container}>
                 <StatusBar style="auto" />
                 <Text style={styles.modalTitle}>재료 수정</Text>
+
                 <View style={styles.inAndTaskView}>
                   <Text style={styles.category}>부족한 재료</Text>
                     <Input value={newToMe} onChangeText={_handleToMeTextChange} onSubmitEditing={_addToMe}/>
                     <ScrollView style={styles.ScrollView}>
-                      {Object.values(toMes).reverse().map((item) => (
-                        <Task key={item.id} item={item} deleteToMe={_deleteToMe} updateToMe={_updateToMe}/>
+                      {Object.values(props.myToMe).reverse().map((item) => (
+                        <ToMe key={item.id} item={item} deleteToMe={_deleteToMe} updateToMe={_updateToMe}/>
                     ))}
                     </ScrollView>
                 </View>
 
                 <View style={styles.inAndTaskView}>
                   <Text style={styles.category}>넉넉한 재료</Text>
-                    <Input value={newToMe} onChangeText={_handleToMeTextChange} onSubmitEditing={_addToMe}/>
+                    <Input value={newFromMe} onChangeText={_handleFromMeTextChange} onSubmitEditing={_addFromMe}/>
                     <ScrollView style={styles.ScrollView}>
-                      {Object.values(toMes).reverse().map((item) => (
-                        <Task key={item.id} item={item} deleteToMe={_deleteToMe} updateToMe={_updateToMe}/>
+                      {Object.values(props.myFromMe).reverse().map((item) => (
+                        <FromMe key={item.id} item={item} deleteFromMe={_deleteFromMe} updateFromMe={_updateFromMe}/>
                     ))}
                     </ScrollView>
                 </View>
