@@ -1,0 +1,10 @@
+  const addDB = () => {
+    member.doc(아이디 변수).set({
+      id: 아이디 변수,
+      nickname: 닉네임 변수,
+      password: 비밀번호 변수
+    })
+    .then(() => {
+      console.log('added!');
+    });
+  }
