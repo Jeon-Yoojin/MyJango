@@ -56,6 +56,10 @@ const Community = () => {
   const [myToMe, setMyToMe] = useState([]);
   const modifyMyToMe = useCallback((t) => { setMyToMe(t); }, []);
 
+  const [friendsToMe, setfriendsToMe] = useState([]);
+  const modifyFriendsToMe = useCallback((t) => { setfriendsToMe(t); }, []);
+
+
   const [myFromMe, setMyFromMe] = useState([]);
   const modifyMyFromMe = useCallback((t) => { setMyFromMe(t); }, []);
 
@@ -89,8 +93,47 @@ const Community = () => {
        });
    },[]);
 
-   
 
+  useEffect(
+    double = () => {
+    const temp=[];
+    member.doc(myId).collection('friends').where('friendsMutual', '==', true).get()
+    .then(querySnapshot => {
+      
+      querySnapshot.forEach(documentSnapshot => {
+
+      const id = documentSnapshot.data().friendsId
+      console.log('why: ', id );
+
+      member.doc(id).collection('communityIngredients').where('toMe', '==', true).get()
+      .then(querySnapshot => {
+
+        const ingTemp=[];
+        
+        querySnapshot.forEach(documentSnapshot => {
+
+          ingTemp.push(documentSnapshot.data().item)
+          
+        });
+
+        temp.push([documentSnapshot.data().friendsNickname, ingTemp]);
+
+
+      });
+
+
+
+
+
+    });
+
+    modifyFriendsToMe(temp);
+  });
+
+   },[]);
+
+
+  
 
 inde = {
   data: ["감자","당근","김"]
@@ -98,70 +141,63 @@ inde = {
 ind = {
   data: ["돼지고기","파"]
 };
-fri = {
-  data: ["냉장고", "털이범","ㄱㄴㄷ","a","b","c","ds"]
-};
+fri = [ ["냉장고", [1,2,3],[11,22,33,44,55,66,77,88] ] , ["털이범",  [0,9,8],[0,99,88] ] ,
+  ["ㄱㄴㄷ", [4,5,6] , [44,55,66]] ] 
 
 
 
 
   const styles = StyleSheet.create({
-    temp01 : {
+    titleView : {
       alignContent:"center", flexDirection: "row"
     },
     myPresentCondition : {
-      borderColor:'green', borderWidth:1, backgroundColor:Colors.grey300, alignContent:"center", margin: 20, borderRadius: 10
+      backgroundColor:Colors.grey300, alignContent:"center", margin: 20, borderRadius: 10
     },
     myText : {
-      borderColor:'red', borderWidth:1, backgroundColor:Colors.grey300, alignContent:"center", flexDirection: "row", borderRadius: 10
+      backgroundColor:Colors.grey300, alignContent:"center", flexDirection: "row", borderRadius: 10
     },
-    myIng : {
-      flexDirection:'row',borderWidth:1, borderColor:'red', alignContent:'space-between'
+    ing : {
+      flexDirection:'row', alignContent:'space-between'
     },  
-    myToMe : {
-      borderWidth:1, borderRadius: 10, flex:1
-    },
-    myFromMe : {
-      borderWidth:1, borderColor:'blue', borderRadius: 10, flex:1
+    ingHalf : {
+      borderRadius: 10, flexWrap:'wrap', flexDirection:'row', flex:1
     },
     modifyMine : {
-      borderWidth:1, alignItems:"flex-end"
+      alignItems:"flex-end", padding:10
     },
-    temp3 : {
+    friendsPresentCondition : {
       backgroundColor:Colors.grey200, alignContent:"center", margin: 20, borderRadius: 10
     },
-    temp03 : {
+    friendsText : {
       backgroundColor:Colors.grey200, alignContent:"center", flexDirection: "row", borderRadius: 10
     },
-    temp03_1 : {
-      position:"relative", left: 5, alignContent:"center", flexDirection: "row", borderRadius: 10
+    friendsZone : {
+      backgroundColor:Colors.grey200, alignContent:"center", flexDirection: "row", borderRadius: 10
     },
-    temp03_2 : {
-      position:"relative", left: 185, top: -50, alignContent:"center", flexDirection: "row", borderRadius: 10, marginBottom: -50
-    },
-    expireddate0 : {
+    expiredDate : {
       fontSize: 18, color: 'white'
     },
-    TitleText: {
+    titleText: {
       textAlign : "left", fontWeight : 'bold', margin : 20, marginRight:40, fontSize: 25
     },
-    sharetext: {
+    shareText: {
       position: "relative", left:130, margin: 10
     },
-    deletetext: {
+    deleteText: {
       position:"relative", left:150, margin: 10
     },
     scrollView: {
-      maxHeight:400
+      maxHeight:350
     }
    });
 
   
   return (
   <SafeAreaView>
-    <View style={styles.temp01}>
-    <Text style = {styles.TitleText}>커뮤니티</Text>
- 
+    <View style={styles.titleView}>
+    <Text style = {styles.titleText}>커뮤니티</Text>
+  
       <ModalFriends ref={child1Ref}></ModalFriends>
       <TouchableOpacity onPress={()=>{child1Ref.current.toggleModal();}}>
         <Text style={{fontSize : 17, color:Colors.grey400, position:"absolute", left:150, top:25}}>친구 추가</Text>
@@ -174,23 +210,23 @@ fri = {
         <Text style = {{fontSize: 18, fontWeight: 'bold', margin: 15}}>넉넉</Text>
       </View>
 
-      <View style={styles.myIng}>
+      <View style={styles.ing}>
 
-      <View style={styles.myToMe}> 
+      <View style={styles.ingHalf}> 
         {Object.values(myToMe).map((item)=>{
           return (
             <TouchableHighlight key={item.id} style={{backgroundColor: 'rgb(' +
               Math.floor(Math.random() * 256) +
               ',' + Math.floor(Math.random() * 256) +
               ',' + Math.floor(Math.random() * 256) +
-              ')', borderRadius: 10, margin: 10, padding:3}}>
-            <Text style={styles.expireddate0}>{item.text}</Text></TouchableHighlight>
+              ')', borderRadius: 10, margin: 10, padding:3, height:30}}>
+            <Text style={styles.expiredDate}>{item.text}</Text></TouchableHighlight>
   
           )
         })}
       </View>
 
-      <View style={styles.myFromMe}>
+      <View style={styles.ingHalf}>
         {Object.values(myFromMe).map((item)=>{
           return (
             <TouchableHighlight key={item.id} style={{backgroundColor: 'rgb(' +
@@ -198,7 +234,7 @@ fri = {
               ',' + Math.floor(Math.random() * 256) +
               ',' + Math.floor(Math.random() * 256) +
               ')', borderRadius: 10, margin: 10, padding:3}}>
-            <Text style={styles.expireddate0}>{item.text}</Text></TouchableHighlight>
+            <Text style={styles.expiredDate}>{item.text}</Text></TouchableHighlight>
   
           )
         })} 
@@ -216,43 +252,47 @@ fri = {
 
     </View>
 
-    <View style={styles.temp01}> 
+    <View style={styles.titleView}> 
       <Text style = {{fontSize: 23, fontWeight: 'bold', margin: 20}}>친구</Text>
     </View>
 
     <ScrollView style={styles.scrollView}>
-      {fri.data.map((item, index)=>{
+      {fri.map((item, index)=>{
         return (
-          <View style={styles.temp3} key={index}>
-            <View style={styles.temp03}>  
-              <Text style = {{fontSize: 18, fontWeight: 'bold', margin: 20}}>부족                        </Text>
-              <Text style = {{fontSize: 18, fontWeight: 'bold', margin: 20}}>넉넉</Text>
+          <View style={styles.friendsPresentCondition} key={index}>
+            <View style={styles.friendsText}>  
+              <Text style = {{fontSize: 18, fontWeight: 'bold', margin: 15}}>부족                           </Text>
+              <Text style = {{fontSize: 18, fontWeight: 'bold', margin: 15}}>넉넉</Text>
             </View>
 
-            <View style={styles.temp03_1}>
-              {ind.data.map((item,index)=>{
+            <View style={styles.ing}>
+
+            <View style={styles.ingHalf}>
+              {fri[index][1].map((item,index)=>{
                 return (
                   <InButton key={index} text={item} style={{backgroundColor: color}}/>
                 )
               })}
             </View>
 
-            <View style={styles.temp03_2}>
-              {inde.data.map((item, index)=>{
+            <View style={styles.ingHalf}>
+              {fri[index][2].map((item, index)=>{
                 return (
                   <InButton key={index} text={item} style={{backgroundColor: color}}/>
                 )
               })}
             </View>
 
-            <View style={styles.temp03}> 
+            </View>
+
+            <View style={styles.friendsZone}> 
               <Icon name="account" size={30} color={Colors.black} style={{margin: 5}}/>
-              <Text style = {{fontSize: 18, margin: 10}}>{item}</Text>
+              <Text style = {{fontSize: 18, margin: 10}}>{item[0]}</Text>
               <TouchableOpacity onPress = {share1}> 
-                <Icon name="share" size={30} color={Colors.black} style={styles.sharetext}/>
+                <Icon name="share" size={30} color={Colors.black} style={styles.shareText}/>
               </TouchableOpacity> 
               <TouchableOpacity onPress = {delete1}> 
-                <Icon2 name="refresh" size={30} color={Colors.black} style={styles.deletetext}/>
+                <Icon2 name="refresh" size={30} color={Colors.black} style={styles.deleteText}/>
               </TouchableOpacity> 
             </View>
           </View>
