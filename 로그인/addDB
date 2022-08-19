@@ -1,3 +1,10 @@
+import firestore from '@react-native-firebase/firestore';
+  
+  
+  
+  
+  const member = firestore().collection('member');
+  
   const addDB = () => {
     member.doc(아이디 변수).set({
       id: 아이디 변수,
