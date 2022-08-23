@@ -1,82 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, TouchableOpacity, TouchableHighlight, View } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import SQLite from 'react-native-sqlite-storage';
-
-var db = SQLite.openDatabase({ name: 'recipe.db' });
+import firestore from '@react-native-firebase/firestore';
 
 const Friends = () => {
 
+  var myId = 'aaa@abc.com'
+  var myNickname = 'a'
+
+  const member = firestore().collection('member');
+
   const [friendsListData, setFriendsListData] = useState();
-  
+  const modifyFriends = useCallback((t) => { setFriendsListData(t); }, []);
+
   useEffect(
     getFriends = () => {
       const temp=[];
-      db.transaction((tx) => {
-        tx.executeSql(`SELECT * FROM test_member_friends where id = ? ORDER BY fr_status DESC`, ['bbb@abc.com'], (tx, results) => {
-        const rows = results.rows;
-          
-        for (let i = 0; i < rows.length; i++) {
-          if( rows.item(i).fr_status == 1 )
-            temp.push({key: `${i}`, fr_id: rows.item(i).fr_id, fr_nickname: rows.item(i).fr_nickname, fr_requested: true});
-          else
-            temp.push({key: `${i}`, fr_id: rows.item(i).fr_id, fr_nickname: rows.item(i).fr_nickname, fr_requested: false});
+      member.doc(myId).collection('friends').orderBy('friendsMutual').get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(documentSnapshot => {
+          temp.push({
+            key: documentSnapshot.id , 
+            friendsId: documentSnapshot.data().friendsId, 
+            friendsNickname: documentSnapshot.data().friendsNickname, 
+            friendsMutual: documentSnapshot.data().friendsMutual });
         }
-        setFriendsListData(temp);
-      })
-      })
-          
+        );
+        modifyFriends(temp);
+      });
   },[]); 
 
+  
   const deleteMutualFriends = (item) => {
+    member.doc(item.friendsId).collection('friends').doc(myId).delete().then(() => {
+      console.log('deleted!');
+    });
 
-    db.transaction((tx) => {
-      tx.executeSql(`Delete FROM test_member_friends where id=? AND fr_id=?`, ["aaa@abc.com",item.fr_id], (tx, results) => {
-        console.log('Results', results.rowsAffected);
-
-      })
-    })
-
-    db.transaction((tx) => {
-      tx.executeSql(`Delete FROM test_member_friends where id=? AND fr_id=?`, [item.fr_id,"aaa@abc.com"], (tx, results) => {
-        console.log('Results', results.rowsAffected);
-
-      })
-    })
-
-  };
+    member.doc(myId).collection('friends').doc(item.friendsId).delete().then(() => {
+      console.log('deleted!');
+    });
+  } 
 
   const deleteRequestedFriends = (item) => {
-
-    db.transaction((tx) => {
-      tx.executeSql(`Delete FROM test_member_friends where id=? AND fr_id=?`, ["aaa@abc.com",item.fr_id], (tx, results) => {
-        console.log('Results', results.rowsAffected);
-
-      })
-    })
-  };
+    member.doc(myId).collection('friends').doc(item.friendsId).delete().then(() => {
+      console.log('deleted!');
+    });
+  }
 
   const acceptRequest = (item) => {
-
-    db.transaction(function (tx) {
-      tx.executeSql(
-        'INSERT INTO test_member_friends (id, fr_id, fr_nickname, fr_status) VALUES (?,?,?,?)',
-        [item.fr_id, "aaa@abc.com", "에이", 0],
-        (tx, results) => {
-          console.log('Results', results.rowsAffected);
-        }
-      );
+    member.doc(myId).collection('friends').doc(item.friendsId).update({ friendsMutual: true }).then(() => {
+      console.log('updated!');
     });
-    
-      db.transaction(function (tx) {
-        tx.executeSql(
-          'UPDATE test_member_friends SET fr_status = 0 where id = ? AND fr_id = ?',
-          ["aaa@abc.com", item.fr_id],
-          (tx, results) => {
-            console.log('Results', results.rowsAffected);
-          }
-        );
-      });
+
+    member.doc(item.friendsId).collection('friends').doc(myId).set({
+      friendsId: myId,
+      friendsNickname: myNickname,
+      friendsMutual: true
+    }).then(() => { console.log('updated!'); });
   }
 
   const closeRow = (rowMap, rowKey) => {
@@ -101,18 +81,26 @@ const Friends = () => {
   const renderItem = data => (
     <TouchableHighlight
         onPress={() => console.log('You touched me')}
-        style={ data.item.fr_requested ? styles.rowFrontRequested : styles.rowFront}
+        style={ data.item.friendsMutual ? styles.rowFront : styles.rowFrontRequested}
         underlayColor={'#AAA'}
     >
         <View style={styles.commonView}>
-            <Text style={styles.fr_mg}>{data.item.fr_nickname}</Text>
-            <Text style={[styles.fr_mg,{left:100, position:'absolute'}]}>{data.item.fr_id}</Text>
-             { data.item.fr_requested && <Text style={styles.fr_mg_waiting}>대기중</Text> }
+            <Text style={styles.fr_mg}>{data.item.friendsNickname}</Text>
+            <Text style={[styles.fr_mg,{left:100, position:'absolute'}]}>{data.item.friendsId}</Text>
+             { !(data.item.friendsMutual) && <Text style={styles.fr_mg_waiting}>대기중</Text> }
         </View>
     </TouchableHighlight>
 );
   const renderHiddenItem = (data, rowMap) => (
-    data.item.fr_requested ? (
+    data.item.friendsMutual ?  (
+      <View style={styles.rowBack}>
+        <TouchableOpacity
+          style={[styles.backRightBtn, styles.backRightBtnRight]}
+          onPress={() => {deleteRow(rowMap, data.item.key); deleteMutualFriends(data.item);}}>
+          <Text style={styles.backTextWhite}>삭제</Text>
+        </TouchableOpacity>
+      </View>
+    ) : (
       <View style={styles.rowBack}>
         <TouchableOpacity
           style={[styles.backRightBtn, styles.backRightBtnLeft]}
@@ -126,14 +114,6 @@ const Friends = () => {
         </TouchableOpacity>
       </View>
     
-  ) : (
-    <View style={styles.rowBack}>
-      <TouchableOpacity
-        style={[styles.backRightBtn, styles.backRightBtnRight]}
-        onPress={() => {deleteRow(rowMap, data.item.key); deleteMutualFriends(data.item);}}>
-        <Text style={styles.backTextWhite}>삭제</Text>
-      </TouchableOpacity>
-    </View>
   )
 );
   return (
