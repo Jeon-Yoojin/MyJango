@@ -56,93 +56,52 @@ const Community = () => {
   const [myToMe, setMyToMe] = useState([]);
   const modifyMyToMe = useCallback((t) => { setMyToMe(t); }, []);
 
-  const [friendsToMe, setfriendsToMe] = useState([]);
-  const modifyFriendsToMe = useCallback((t) => { setfriendsToMe(t); }, []);
-
-
   const [myFromMe, setMyFromMe] = useState([]);
   const modifyMyFromMe = useCallback((t) => { setMyFromMe(t); }, []);
+  
+  const [friendsIng, setFriendsIng]= useState([]);
+  const modifyFriendsIng = useCallback((t) => { setFriendsIng(t); }, []);
 
   const member = firestore().collection('member');
   
-  useEffect (
-    getMyToMes = () => {
-      const temp={};
-      member.doc(myId).collection('communityIngredients').where('toMe','==',true).get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(documentSnapshot => {
-          temp[documentSnapshot.id] = 
-          { id:documentSnapshot.id, text: documentSnapshot.data().item }  
-        }
-        );
-        modifyMyToMe(temp);
-      });
+  useEffect( () => {
+    async function getMine() {
+      const myToMeTemp={};
+      const myFromMeTemp={};
+
+      let getMyFromMes = await member.doc(myId).collection('communityIngredients').get();
+      
+      for(const doc of getMyFromMes.docs){
+        if (doc.data().toMe)  myToMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
+        else  myFromMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
+      }
+      modifyMyFromMe(myFromMeTemp);
+      modifyMyToMe(myToMeTemp);
+   } 
+   getMine();
   },[]);
 
-  useEffect(
-    getMyFromMes = () => {
-      const temp={};
-       member.doc(myId).collection('communityIngredients').where('toMe','==',false).get()
-       .then(querySnapshot => {
-         querySnapshot.forEach(documentSnapshot => {
-          temp[documentSnapshot.id] = 
-          { id:documentSnapshot.id, text: documentSnapshot.data().item }  
-         }
-         );
-         modifyMyFromMe(temp);
-       });
-   },[]);
 
-
-  useEffect(
-    double = () => {
-    const temp=[];
-    member.doc(myId).collection('friends').where('friendsMutual', '==', true).get()
-    .then(querySnapshot => {
+  useEffect (() => {
+    async function getFriends() {
+      const temp = [];
+      let getFriends = await member.doc(myId).collection('friends').where('friendsMutual', '==', true).get();
       
-      querySnapshot.forEach(documentSnapshot => {
+      for(const doc of getFriends.docs) {
+        const toMeTemp = [];
+        const fromMeTemp = [];
+        let getFriendsIng = await member.doc(doc.id).collection('communityIngredients').get();
 
-      const id = documentSnapshot.data().friendsId
-      console.log('why: ', id );
-
-      member.doc(id).collection('communityIngredients').where('toMe', '==', true).get()
-      .then(querySnapshot => {
-
-        const ingTemp=[];
-        
-        querySnapshot.forEach(documentSnapshot => {
-
-          ingTemp.push(documentSnapshot.data().item)
-          
-        });
-
-        temp.push([documentSnapshot.data().friendsNickname, ingTemp]);
-
-
-      });
-
-
-
-
-
-    });
-
-    modifyFriendsToMe(temp);
-  });
-
-   },[]);
-
-
-  
-
-inde = {
-  data: ["감자","당근","김"]
-};
-ind = {
-  data: ["돼지고기","파"]
-};
-fri = [ ["냉장고", [1,2,3],[11,22,33,44,55,66,77,88] ] , ["털이범",  [0,9,8],[0,99,88] ] ,
-  ["ㄱㄴㄷ", [4,5,6] , [44,55,66]] ] 
+        for(const doc2 of getFriendsIng.docs) {
+          if(doc2.data().toMe)  toMeTemp.push(doc2.data().item);
+          else  fromMeTemp.push(doc2.data().item);
+        }
+        temp.push([doc.data().friendsNickname, toMeTemp, fromMeTemp]);
+      }
+    modifyFriendsIng(temp);
+    } 
+    getFriends();
+  },[]);
 
 
 
@@ -194,15 +153,17 @@ fri = [ ["냉장고", [1,2,3],[11,22,33,44,55,66,77,88] ] , ["털이범",  [0,9,
 
   
   return (
+
   <SafeAreaView>
-    <View style={styles.titleView}>
-    <Text style = {styles.titleText}>커뮤니티</Text>
-  
+
+    <View style={styles.titleView}> 
+    <Text style={styles.titleText}>커뮤니티</Text>
+
       <ModalFriends ref={child1Ref}></ModalFriends>
       <TouchableOpacity onPress={()=>{child1Ref.current.toggleModal();}}>
         <Text style={{fontSize : 17, color:Colors.grey400, position:"absolute", left:150, top:25}}>친구 추가</Text>
       </TouchableOpacity>
-    </View>
+    </View> 
 
     <View style={styles.myPresentCondition}>
       <View style={styles.myText}>  
@@ -252,12 +213,13 @@ fri = [ ["냉장고", [1,2,3],[11,22,33,44,55,66,77,88] ] , ["털이범",  [0,9,
 
     </View>
 
-    <View style={styles.titleView}> 
-      <Text style = {{fontSize: 23, fontWeight: 'bold', margin: 20}}>친구</Text>
-    </View>
+
+    <View style={styles.titleView}>
+      <Text style={styles.titleText}>친구</Text>
+    </View> 
 
     <ScrollView style={styles.scrollView}>
-      {fri.map((item, index)=>{
+      {friendsIng.map((item, index)=>{
         return (
           <View style={styles.friendsPresentCondition} key={index}>
             <View style={styles.friendsText}>  
@@ -268,7 +230,7 @@ fri = [ ["냉장고", [1,2,3],[11,22,33,44,55,66,77,88] ] , ["털이범",  [0,9,
             <View style={styles.ing}>
 
             <View style={styles.ingHalf}>
-              {fri[index][1].map((item,index)=>{
+              {item[1].map((item,index)=>{
                 return (
                   <InButton key={index} text={item} style={{backgroundColor: color}}/>
                 )
@@ -276,7 +238,7 @@ fri = [ ["냉장고", [1,2,3],[11,22,33,44,55,66,77,88] ] , ["털이범",  [0,9,
             </View>
 
             <View style={styles.ingHalf}>
-              {fri[index][2].map((item, index)=>{
+              {item[2].map((item, index)=>{
                 return (
                   <InButton key={index} text={item} style={{backgroundColor: color}}/>
                 )
@@ -297,9 +259,11 @@ fri = [ ["냉장고", [1,2,3],[11,22,33,44,55,66,77,88] ] , ["털이범",  [0,9,
             </View>
           </View>
         )})}
-    </ScrollView>
+    </ScrollView> 
 
-</SafeAreaView> 
+</SafeAreaView>  
+
+
  );
 };
 
