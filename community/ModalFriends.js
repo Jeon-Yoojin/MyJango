@@ -1,12 +1,12 @@
 import React, { useState, useImperativeHandle, forwardRef, useCallback } from 'react';
-import { View, Modal, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
+import { Alert, View, Modal, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
 import Friends from './Friends';
 import firestore from '@react-native-firebase/firestore';
 
 const ModalFriends = (props, ref) => {
 
-  var myId = 'bbb@abc.com'
-  var myNickname = 'b'
+  var myId = 'aaa@abc.com'
+  var myNickname = 'a'
 
   useImperativeHandle(ref, () => ({
 
@@ -41,10 +41,30 @@ const ModalFriends = (props, ref) => {
     }
     );
   });
+
+  member.doc(myId).collection('friends').where('friendsNickname', '==', searchNickname).get()
+  .then(querySnapshot => {     querySnapshot.forEach(documentSnapshot => {
+    modifyFriendsOrNot(true);
+  }
+  ); });
+
+
   };
 
+  const [friendsOrNot, setFriendsOrNot] = useState(false);
+  const modifyFriendsOrNot = useCallback((TF) => { setFriendsOrNot(TF); }, []);
+
   const addFriends = () => {
-    if(resultID!='' || searchNickname!=''){
+
+
+
+    if (resultID == '') {
+      Alert.alert("Alert","존재하지 않습니다");
+    }
+    else if (friendsOrNot == true) {
+      Alert.alert("Alert","이미 친구입니다");
+    } 
+    else if(resultID!='' || searchNickname!=''){
       member.doc(resultID).collection('friends')
       .doc(myId).set({
         friendsId: myId,
@@ -89,11 +109,11 @@ const ModalFriends = (props, ref) => {
             <Text style={styles.seventeen}>_________________________________________</Text>
             <View style={styles.idnameView}>
               <Text style={styles.fourteen}>닉네임</Text>
-              <Text style={[styles.fourteen, {position:'relative', left:110}]}>아이디</Text>
+              <Text style={[styles.fourteen, {position:'absolute', left:110}]}>아이디</Text>
             </View>
             <View style={styles.grey02}>
               <Text style={styles.idname}>{searchNickname}</Text>
-              <Text style={[styles.idname, {position:'relative', left:104}]}>{resultID}</Text>
+              <Text style={[styles.idname, {position:'absolute', left:115}]}>{resultID}</Text>
             </View>
             <View style={styles.addcan}>
               <TouchableOpacity style={styles.red} onPress={()=>{toggleModal(); addFriends();}}>
