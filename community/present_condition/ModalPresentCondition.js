@@ -10,7 +10,6 @@ import FromMe from './FromMe';
 const ModalPresentCondition = (props, ref) => {
 
   var myId = 'aaa@abc.com'
-  var myNickname = 'a'
 
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = () => {
