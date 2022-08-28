@@ -36,7 +36,6 @@ export const sendEmailWithMailer = (
 const Community = () => {
 
   var myId = 'aaa@abc.com'
-  var myNickname = 'a'
 
   const child1Ref = useRef();
   const child2Ref = useRef();
