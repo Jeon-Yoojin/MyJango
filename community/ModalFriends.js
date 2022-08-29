@@ -1,24 +1,16 @@
-import React, { useState, useImperativeHandle, forwardRef, useCallback } from 'react';
-import { Alert, View, Modal, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { Alert, View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
 import Friends from './Friends';
 import firestore from '@react-native-firebase/firestore';
 
-const ModalFriends = (props, ref) => {
+const ModalFriends = ( { navigation }) => {
 
   var myId = 'aaa@abc.com'
   var myNickname = 'a'
 
-  useImperativeHandle(ref, () => ({
-
-    toggleModal: () => { toggleModal(); }
-
-  }))
-
-  const [isModalVisible, setModalVisible] = useState(false);
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-    setShowResult(false);
+  const Save = () => {
+    navigation.canGoBack() && navigation.goBack();
+    addFriends();
   };
 
   const[showResult,setShowResult] = useState(false);
@@ -55,9 +47,7 @@ const ModalFriends = (props, ref) => {
   const modifyFriendsOrNot = useCallback((TF) => { setFriendsOrNot(TF); }, []);
 
   const addFriends = () => {
-
-
-
+  
     if (resultID == '') {
       Alert.alert("Alert","존재하지 않습니다");
     }
@@ -78,11 +68,6 @@ const ModalFriends = (props, ref) => {
   };
 
   return (
-    <Modal animationType="slide" transparent={false} visible={isModalVisible}
-        onRequestClose={() => {
-          setModalVisible(!isModalVisible);
-        }}
-        onShow={()=>console.log("onShow")}>
         <View style={styles.View}>
           <View style={styles.modalTitleView}>
             <Text style={styles.modalTitle}>친구 관리</Text>
@@ -116,21 +101,21 @@ const ModalFriends = (props, ref) => {
               <Text style={[styles.idname, {position:'absolute', left:115}]}>{resultID}</Text>
             </View>
             <View style={styles.addcan}>
-              <TouchableOpacity style={styles.red} onPress={()=>{toggleModal(); addFriends();}}>
+              <TouchableOpacity style={styles.red} onPress={Save}>
                 <Text style={styles.white}>추가하기</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.cancelO}  onPress={toggleModal}>
+              <TouchableOpacity style={styles.cancelO}  onPress={()=>{navigation.canGoBack() && navigation.goBack()}}>
                 <Text style={styles.fourteen}>취소</Text>
               </TouchableOpacity>
             </View>
           </View> }
         </View>
-      </Modal>
+      
     
   )
 }
 
-export default forwardRef(ModalFriends);
+export default ModalFriends;
 
 const styles = StyleSheet.create({
     View: {
