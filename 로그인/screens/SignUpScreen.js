@@ -30,9 +30,10 @@ const SignUpScreen = ({navigation}) => {
         justifyContent: 'flex-start',
         padding: 20,
     }}>
+        <View style={{borderBottomWidth: 1, borderColor: COLORS.gray, padding: 15, fontSize: 20}}><Text onPress={()=>navigation.navigate('SignInScreen')}>{'<'}</Text></View>
         <Text style={{
             fontSize: 24,
-            color: COLORS.black,
+            color: COLORS.black,                
             fontWeight: 'bold',
             marginVertical: 32,
         }}>회원 가입</Text>
@@ -67,6 +68,11 @@ const SignUpScreen = ({navigation}) => {
         <FormButton labelText="회원 가입"
         handleOnPress={handleOnSubmit}
         style={{width: '100%'}}/>
+
+        <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 20, justifyContent: 'center'}}>
+                <Text style={{marginLeft: 4, color: COLORS.gray}}
+                onPress={() => navigation.navigate('SignInScreen')}>로그인하기</Text>
+        </View>
     </SafeAreaView>
  );
 };
