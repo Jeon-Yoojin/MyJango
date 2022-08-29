@@ -27,6 +27,6 @@ export const signOut = () => {
     auth()
       .signOut()
       .then(() => {
-        ToastAndroid.show('Signed Out', ToastAndroid.SHORT);
+        ToastAndroid.show('로그아웃', ToastAndroid.SHORT);
       });
   };
