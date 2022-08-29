@@ -4,7 +4,7 @@ import { Colors } from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import Mailer from 'react-native-mail';
-import ModalFriends from './ModalFriends';
+import { useIsFocused } from '@react-navigation/native';
 import ModalPresentCondition from './present_condition/ModalPresentCondition'
 import InButton from './InButton';
 import firestore from '@react-native-firebase/firestore';
@@ -33,12 +33,13 @@ export const sendEmailWithMailer = (
   );
 };
 
-const Community = () => {
+const Community = ({ navigation }) => {
 
   var myId = 'aaa@abc.com'
-
-  const child1Ref = useRef();
+  
   const child2Ref = useRef();
+
+  const isFocused = useIsFocused();
 
   const [color, setColor] = useState("");
 
@@ -82,7 +83,8 @@ const Community = () => {
 
 
   useEffect (() => {
-    async function getFriends() {
+    const getFriends = async () => {
+
       const temp = [];
       let getFriends = await member.doc(myId).collection('friends').where('friendsMutual', '==', true).get();
       
@@ -100,7 +102,7 @@ const Community = () => {
     modifyFriendsIng(temp);
     } 
     getFriends();
-  },[]);
+  },[isFocused]);
 
 
 
@@ -158,8 +160,7 @@ const Community = () => {
     <View style={styles.titleView}> 
     <Text style={styles.titleText}>커뮤니티</Text>
 
-      <ModalFriends ref={child1Ref}></ModalFriends>
-      <TouchableOpacity onPress={()=>{child1Ref.current.toggleModal();}}>
+      <TouchableOpacity onPress={() => navigation.navigate('MODAL_FRIENDS')}>
         <Text style={{fontSize : 17, color:Colors.grey400, position:"absolute", left:150, top:25}}>친구 추가</Text>
       </TouchableOpacity>
     </View> 
