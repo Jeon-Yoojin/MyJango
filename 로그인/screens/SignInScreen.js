@@ -3,7 +3,7 @@ import {View, Text, SafeAreaView} from "react-native";
 import FormButton from "../components/shared/FormButton";
 import FormInput from "../components/shared/FormInput";
 import {COLORS} from '../constants/theme';
-import { singIn } from "../utils/auth";
+import { signOut, singIn } from "../utils/auth";
 
 const SignInScreen = ({navigation}) => {
 
@@ -15,6 +15,9 @@ const SignInScreen = ({navigation}) => {
             singIn(email, password);
         }
     };
+    const handleOnSubmit1 = () => {
+        signOut();
+    };
 
  return (
     <SafeAreaView
@@ -25,6 +28,10 @@ const SignInScreen = ({navigation}) => {
             justifyContent: 'flex-start',
             padding:20,
         }}>
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+                <Text style={{marginLeft: 4, color: COLORS.gray}}
+                onPress={handleOnSubmit1}>로그아웃{'('}임시{')'}</Text>
+            </View>
             <Text style={{
                 fontSize: 24,
                 color: COLORS.black,
