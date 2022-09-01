@@ -26,7 +26,7 @@ const ModalPresentCondition = (props, ref) => {
   const member = firestore().collection('member');
 
   const _addToMe = () => {
-   const ID = Date.now().toString();
+    const ID = Date.now().toString();
       const newToMeObject = {
         [ID]: { id: ID, text: newToMe },
       };
