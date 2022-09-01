@@ -1,15 +1,16 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, StatusBar, Button, TouchableOpacity, Text, Alert } from 'react-native';
+import React, { useState, useImperativeHandle, forwardRef } from 'react';
+import { StyleSheet, View, ScrollView, StatusBar, TouchableOpacity, Text } from 'react-native';
 import Modal from "react-native-modal";
 import firestore from '@react-native-firebase/firestore';
 import Input from './Input';
 import ToMe from './ToMe';
 import FromMe from './FromMe';
+import { useIdContext } from '../../IdProvider';
 
 
 const ModalPresentCondition = (props, ref) => {
 
-  var myId = 'aaa@abc.com'
+  const me = useIdContext();
 
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = () => {
@@ -33,7 +34,7 @@ const ModalPresentCondition = (props, ref) => {
       setNewToMe('');
       props.modifyMyToMe({ ...props.myToMe, ...newToMeObject });
 
-      member.doc(myId).collection('communityIngredients')
+      member.doc(me.myId).collection('communityIngredients')
       .doc(newToMe).set({
         item: newToMe,
         toMe: true
@@ -51,7 +52,7 @@ const ModalPresentCondition = (props, ref) => {
     setNewFromMe('');
     props.modifyMyFromMe({ ...props.myFromMe, ...newFromMeObject });
 
-    member.doc(myId).collection('communityIngredients')
+    member.doc(me.myId).collection('communityIngredients')
     .doc(newFromMe).set({
       item: newFromMe,
       toMe: false
@@ -66,7 +67,7 @@ const ModalPresentCondition = (props, ref) => {
   const _deleteToMe = (id) => {
         const currentToMes = Object.assign({}, props.myToMe);
         var temp = currentToMes[id].text;
-        member.doc(myId).collection('communityIngredients').doc(temp).delete().then(() => {
+        member.doc(me.myId).collection('communityIngredients').doc(temp).delete().then(() => {
           console.log('deleted!');
         });
         delete currentToMes[id];
@@ -76,7 +77,7 @@ const ModalPresentCondition = (props, ref) => {
   const _deleteFromMe = (id) => {
     const currentFromMes = Object.assign({}, props.myFromMe);
     var temp = currentFromMes[id].text;
-    member.doc(myId).collection('communityIngredients').doc(temp).delete().then(() => {
+    member.doc(me.myId).collection('communityIngredients').doc(temp).delete().then(() => {
       console.log('deleted!');
     });
     delete currentFromMes[id];
@@ -89,11 +90,11 @@ const ModalPresentCondition = (props, ref) => {
     var before = currentToMes[item.id].text;
     var after = item.text;
 
-    member.doc(myId).collection('communityIngredients').doc(before).delete().then(() => {
+    member.doc(me.myId).collection('communityIngredients').doc(before).delete().then(() => {
       console.log('deleted!');
     });
 
-    member.doc(myId).collection('communityIngredients').doc(after).set({ 
+    member.doc(me.myId).collection('communityIngredients').doc(after).set({ 
       item: after, toMe: true }).then(() => {
       console.log('added!');
     });
@@ -108,11 +109,11 @@ const ModalPresentCondition = (props, ref) => {
     var before = currentFromMes[item.id].text;
     var after = item.text;
 
-    member.doc(myId).collection('communityIngredients').doc(before).delete().then(() => {
+    member.doc(me.myId).collection('communityIngredients').doc(before).delete().then(() => {
       console.log('deleted!');
     });
 
-    member.doc(myId).collection('communityIngredients').doc(after).set({ 
+    member.doc(me.myId).collection('communityIngredients').doc(after).set({ 
       item: after, toMe: false }).then(() => {
       console.log('added!');
     });
