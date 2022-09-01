@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, TouchableOpacity, TouchableHighlight, View } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import firestore from '@react-native-firebase/firestore';
+import { useIdContext } from '../IdProvider';
 
 const Friends = () => {
 
-  var myId = 'aaa@abc.com'
-  var myNickname = 'a'
+  const me = useIdContext();
 
   const member = firestore().collection('member');
 
@@ -16,7 +16,7 @@ const Friends = () => {
   useEffect(
     getFriends = () => {
       const temp=[];
-      member.doc(myId).collection('friends').orderBy('friendsMutual').get()
+      member.doc(me.myId).collection('friends').orderBy('friendsMutual').get()
       .then(querySnapshot => {
         querySnapshot.forEach(documentSnapshot => {
           temp.push({
@@ -32,29 +32,29 @@ const Friends = () => {
 
   
   const deleteMutualFriends = (item) => {
-    member.doc(item.friendsId).collection('friends').doc(myId).delete().then(() => {
+    member.doc(item.friendsId).collection('friends').doc(me.myId).delete().then(() => {
       console.log('deleted!');
     });
 
-    member.doc(myId).collection('friends').doc(item.friendsId).delete().then(() => {
+    member.doc(me.myId).collection('friends').doc(item.friendsId).delete().then(() => {
       console.log('deleted!');
     });
   } 
 
   const deleteRequestedFriends = (item) => {
-    member.doc(myId).collection('friends').doc(item.friendsId).delete().then(() => {
+    member.doc(me.myId).collection('friends').doc(item.friendsId).delete().then(() => {
       console.log('deleted!');
     });
   }
 
   const acceptRequest = (item) => {
-    member.doc(myId).collection('friends').doc(item.friendsId).update({ friendsMutual: true }).then(() => {
+    member.doc(me.myId).collection('friends').doc(item.friendsId).update({ friendsMutual: true }).then(() => {
       console.log('updated!');
     });
 
-    member.doc(item.friendsId).collection('friends').doc(myId).set({
-      friendsId: myId,
-      friendsNickname: myNickname,
+    member.doc(item.friendsId).collection('friends').doc(me.myId).set({
+      friendsId: me.myId,
+      friendsNickname: me.myNickname,
       friendsMutual: true
     }).then(() => { console.log('updated!'); });
   }
