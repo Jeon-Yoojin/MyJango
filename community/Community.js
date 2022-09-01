@@ -8,6 +8,8 @@ import { useIsFocused } from '@react-navigation/native';
 import ModalPresentCondition from './present_condition/ModalPresentCondition'
 import InButton from './InButton';
 import firestore from '@react-native-firebase/firestore';
+import { useIdContext } from '../IdProvider';
+
 
 export const sendEmailWithMailer = (
   to = "",
@@ -35,9 +37,9 @@ export const sendEmailWithMailer = (
 
 const Community = ({ navigation }) => {
 
-  var myId = 'aaa@abc.com'
+  const myId = useIdContext();
   
-  const child2Ref = useRef();
+  const childRef = useRef();
 
   const isFocused = useIsFocused();
 
@@ -63,49 +65,49 @@ const Community = ({ navigation }) => {
   const modifyFriendsIng = useCallback((t) => { setFriendsIng(t); }, []);
 
   const member = firestore().collection('member');
-  
-  useEffect( () => {
-    async function getMine() {
-      const myToMeTemp={};
-      const myFromMeTemp={};
-
-      let getMyFromMes = await member.doc(myId).collection('communityIngredients').get();
-      
-      for(const doc of getMyFromMes.docs){
-        if (doc.data().toMe)  myToMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
-        else  myFromMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
-      }
-      modifyMyFromMe(myFromMeTemp);
-      modifyMyToMe(myToMeTemp);
-   } 
-   getMine();
-  },[]);
-
 
   useEffect (() => {
-    const getFriends = async () => {
+    const init = async () => {
+      await getMine();
+      await getFriends();
+    }
+    init();
 
-      const temp = [];
-      let getFriends = await member.doc(myId).collection('friends').where('friendsMutual', '==', true).get();
-      
-      for(const doc of getFriends.docs) {
-        const toMeTemp = [];
-        const fromMeTemp = [];
-        let getFriendsIng = await member.doc(doc.id).collection('communityIngredients').get();
-
-        for(const doc2 of getFriendsIng.docs) {
-          if(doc2.data().toMe)  toMeTemp.push(doc2.data().item);
-          else  fromMeTemp.push(doc2.data().item);
-        }
-        temp.push([doc.data().friendsNickname, toMeTemp, fromMeTemp]);
-      }
-    modifyFriendsIng(temp);
-    } 
-    getFriends();
   },[isFocused]);
 
 
+  const getMine = async () => {
+    const myToMeTemp={};
+    const myFromMeTemp={};
 
+    let getMyFromMes = await member.doc(myId.myId).collection('communityIngredients').get();
+    
+    for(const doc of getMyFromMes.docs){
+      if (doc.data().toMe)  myToMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
+      else  myFromMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
+    }
+    modifyMyFromMe(myFromMeTemp);
+    modifyMyToMe(myToMeTemp);
+ } 
+
+  const getFriends = async () => {
+
+    const temp = [];
+    let getFriends = await member.doc(myId.myId).collection('friends').where('friendsMutual', '==', true).get();
+    
+    for(const doc of getFriends.docs) {
+      const toMeTemp = [];
+      const fromMeTemp = [];
+      let getFriendsIng = await member.doc(doc.id).collection('communityIngredients').get();
+
+      for(const doc2 of getFriendsIng.docs) {
+        if(doc2.data().toMe)  toMeTemp.push(doc2.data().item);
+        else  fromMeTemp.push(doc2.data().item);
+      }
+      temp.push([doc.data().friendsNickname, toMeTemp, fromMeTemp]);
+    }
+  modifyFriendsIng(temp);
+  }
 
   const styles = StyleSheet.create({
     titleView : {
@@ -204,9 +206,9 @@ const Community = ({ navigation }) => {
       </View>
 
       <View style={styles.modifyMine}>
-      <ModalPresentCondition ref={child2Ref} myToMe={myToMe} modifyMyToMe={modifyMyToMe} 
+      <ModalPresentCondition ref={childRef} myToMe={myToMe} modifyMyToMe={modifyMyToMe} 
       myFromMe={myFromMe} modifyMyFromMe={modifyMyFromMe}></ModalPresentCondition>
-        <TouchableOpacity onPress={()=>{child2Ref.current.toggleModal();}}>  
+        <TouchableOpacity onPress={()=>{childRef.current.toggleModal();}}>  
           <Icon name="pencil" size={30} color={Colors.black} style={styles.edittext}/>
         </TouchableOpacity>
       </View>
