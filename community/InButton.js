@@ -16,7 +16,6 @@ const InButton = (Props) => {
             backgroundColor: color, borderRadius: 10, margin: 10, fontSize: 18, padding:3
           }
         });
-    
     const [isPress, setIsPress] = useState(false);
     const touchProps = {
   
