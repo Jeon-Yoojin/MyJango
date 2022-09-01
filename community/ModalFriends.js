@@ -2,11 +2,11 @@ import React, { useState, useCallback } from 'react';
 import { Alert, View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
 import Friends from './Friends';
 import firestore from '@react-native-firebase/firestore';
+import { useIdContext } from '../IdProvider';
 
 const ModalFriends = ( { navigation }) => {
 
-  var myId = 'aaa@abc.com'
-  var myNickname = 'a'
+  const me = useIdContext();
 
   const Save = () => {
     navigation.canGoBack() && navigation.goBack();
@@ -34,7 +34,7 @@ const ModalFriends = ( { navigation }) => {
     );
   });
 
-  member.doc(myId).collection('friends').where('friendsNickname', '==', searchNickname).get()
+  member.doc(me.myId).collection('friends').where('friendsNickname', '==', searchNickname).get()
   .then(querySnapshot => {     querySnapshot.forEach(documentSnapshot => {
     modifyFriendsOrNot(true);
   }
@@ -56,9 +56,9 @@ const ModalFriends = ( { navigation }) => {
     } 
     else if(resultID!='' || searchNickname!=''){
       member.doc(resultID).collection('friends')
-      .doc(myId).set({
-        friendsId: myId,
-        friendsNickname: myNickname,
+      .doc(me.myId).set({
+        friendsId: me.myId,
+        friendsNickname: me.myNickname,
         friendsMutual: false
       })
       .then(() => {
