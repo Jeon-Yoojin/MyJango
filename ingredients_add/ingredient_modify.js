@@ -233,7 +233,7 @@ const Ingredients_modify = ({ route, navigation }) => {
     return (
         <SafeAreaView>
             <View style={styles.addAndModify}>
-            <Text style={styles.TitleText} onPress={viewIng} >추가 및 수정 </Text>
+            <Text style={styles.TitleText}>추가 및 수정 </Text>
                 
                 <Modal isVisible={isModalVisible}>
                     <View style={styles.modalView}>
