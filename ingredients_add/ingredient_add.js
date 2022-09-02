@@ -1,5 +1,5 @@
 import React, { createRef, useEffect, useState, useCallback } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, ScrollView, TextInput } from 'react-native';
 import { Colors } from "react-native-paper";
 import { Calendar } from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,6 +20,7 @@ const Ingredients_add = ({ route, navigation }) => {
     if (quantity >= 2) quantity = quantity - 1;
     return quantity
   }), []);
+  const quantityClear = useCallback(() => setQuantity(1), []);
 
   const inputRef = createRef();
   const [text, setText] = useState(name ? name : '');
@@ -27,9 +28,7 @@ const Ingredients_add = ({ route, navigation }) => {
     setText('');
     inputRef.current.clear();
   };
-  function qtyClear(){
-    useEffect(()=>{setQuantity(1);},[])
-  };
+
 
   const [alarmCycle, setAlarmCycle] = useState(0);
 
@@ -264,6 +263,7 @@ const Ingredients_add = ({ route, navigation }) => {
           <DelayInput style={styles.textInputStyle}
             value={text}
             onChangeText={setText}
+            onEndEditing={() => console.log("onEndEditing     " + text)}
             inputRef={inputRef}>
           </DelayInput>
           <TouchableOpacity style={{ position: "absolute", right: 25, top: 21 }} onPress={allClear}>
@@ -286,7 +286,7 @@ const Ingredients_add = ({ route, navigation }) => {
 
         <View style={styles.detail}>
           <Text style={styles.TitleText}>수량                 </Text>
-          <TouchableOpacity style={{ position: "absolute", right: 25, top: 21 }} onPress={qtyClear()}>
+          <TouchableOpacity style={{ position: "absolute", right: 25, top: 21 }} onPress={quantityClear}>
             <Icon name="close-circle" size={30} color={Colors.grey500} />
           </TouchableOpacity>
           <TouchableOpacity onPress={quantityDown}>
@@ -318,12 +318,12 @@ const Ingredients_add = ({ route, navigation }) => {
 
         <View style={styles.detail}>
           <Text style={styles.TitleText}>상세정보</Text>
-          <DelayInput style={[styles.textInputStyle, {flex: 1, height: 300, flexShrink:1,}]} multiline={true}
+          <TextInput style={[styles.textInputStyle, {flex: 1, height: 300, flexShrink:1,}]} multiline={true}
             value={detailInfo}
             onChangeText={setDetailInfo}
             onEndEditing={() => console.log("onEndEditing     " + text)}
             inputRef={inputRef}>
-          </DelayInput>
+          </TextInput>
         </View>
 
       </ScrollView>
