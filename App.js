@@ -21,10 +21,15 @@ const App = () => {
   const member = firestore().collection('member');
   
   const onAuthStateChanged = async user => {
-    setCurrentUser(user);
-    setIsLoading(false);
-    modifyMyId(user.email);
-    getMyNickname(user.email);
+    try {
+      setCurrentUser(user);
+      setIsLoading(false);
+      modifyMyId(user.email);
+      await getMyNickname(user.email);
+      
+    } catch( error ) {
+      console.log( 'error : ', error );
+      }
    };
 
   const getMyNickname = async (id) => {
@@ -34,7 +39,7 @@ const App = () => {
   }
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged)
     return subscriber;
    }, []);
    
