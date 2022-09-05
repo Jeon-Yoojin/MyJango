@@ -3,37 +3,12 @@ import { StyleSheet, TouchableOpacity, Alert , SafeAreaView, View, Text, ScrollV
 import { Colors } from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
-import Mailer from 'react-native-mail';
 import { useIsFocused } from '@react-navigation/native';
 import ModalPresentCondition from './present_condition/ModalPresentCondition'
 import InButton from './InButton';
 import firestore from '@react-native-firebase/firestore';
 import { useIdContext } from '../IdProvider';
-
-
-export const sendEmailWithMailer = (
-  to = "",
-) => {
-  Mailer.mail(
-    {
-      subject: 'My JangGo 친구 추가',
-      recipients: [to],
-      body: 'My JangGo에서 친구 추가를 받았습니다.',
-      isHTML: false,
-    },
-    (error, event) => {
-        Alert.alert(
-          error,
-          event,
-          [
-            {text: 'Ok', onPress: () => console.log('OK: Email Error Response')},
-            {text: 'Cancel', onPress: () => console.log('CANCEL: Email Error Response')}
-          ],
-          { cancelable: true }
-        )
-      },
-  );
-};
+import NotificationService from '../FCM/NotificationService';
 
 const Community = ({ navigation }) => {
 
@@ -67,12 +42,10 @@ const Community = ({ navigation }) => {
   const member = firestore().collection('member');
 
   useEffect (() => {
-    const init = async () => {
-      await getMine();
-      await getFriends();
-    }
-    init();
-
+    getMine();
+    getFriends();
+    
+    return () => console.log("success"); 
   },[isFocused]);
 
 
@@ -252,7 +225,7 @@ const Community = ({ navigation }) => {
             <View style={styles.friendsZone}> 
               <Icon name="account" size={30} color={Colors.black} style={{margin: 5}}/>
               <Text style = {{fontSize: 18, margin: 10}}>{item[0]}</Text>
-              <TouchableOpacity onPress = {share1}> 
+              <TouchableOpacity onPress = {()=>{NotificationService.sendSingleDeviceNotification('감자');}}> 
                 <Icon name="share" size={30} color={Colors.black} style={styles.shareText}/>
               </TouchableOpacity> 
               <TouchableOpacity onPress = {delete1}> 
