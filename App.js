@@ -34,7 +34,10 @@ const App = () => {
 
   const getMyNickname = async (id) => {
     member.doc(id).onSnapshot(documentSnapshot => {
-      modifyMyNickname(documentSnapshot.data().nickname);
+      if(documentSnapshot != null)
+        modifyMyNickname(documentSnapshot.data().nickname);
+      else 
+        modifyMyNickname('');
     });
   }
 
