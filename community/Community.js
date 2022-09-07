@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useStateIfMounted } from 'react';
 import { StyleSheet, TouchableOpacity, Alert , SafeAreaView, View, Text, ScrollView, TouchableHighlight } from 'react-native';
 import { Colors } from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -41,46 +41,50 @@ const Community = ({ navigation }) => {
 
   const member = firestore().collection('member');
 
-  useEffect (() => {
-    getMine();
-    getFriends();
-    
-    return () => console.log("success"); 
-  },[isFocused]);
+  useEffect(() => {
+    let isMounted = true;
 
-
-  const getMine = async () => {
-    const myToMeTemp={};
-    const myFromMeTemp={};
-
-    let getMyFromMes = await member.doc(myId.myId).collection('communityIngredients').get();
-    
-    for(const doc of getMyFromMes.docs){
-      if (doc.data().toMe)  myToMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
-      else  myFromMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
-    }
-    modifyMyFromMe(myFromMeTemp);
-    modifyMyToMe(myToMeTemp);
- } 
-
-  const getFriends = async () => {
-
-    const temp = [];
-    let getFriends = await member.doc(myId.myId).collection('friends').where('friendsMutual', '==', true).get();
-    
-    for(const doc of getFriends.docs) {
-      const toMeTemp = [];
-      const fromMeTemp = [];
-      let getFriendsIng = await member.doc(doc.id).collection('communityIngredients').get();
-
-      for(const doc2 of getFriendsIng.docs) {
-        if(doc2.data().toMe)  toMeTemp.push(doc2.data().item);
-        else  fromMeTemp.push(doc2.data().item);
+    const getMine = async () => {
+      const myToMeTemp={};
+      const myFromMeTemp={};
+  
+      let getMyFromMes = await member.doc(myId.myId).collection('communityIngredients').get();
+      
+      for(const doc of getMyFromMes.docs){
+        if (doc.data().toMe)  myToMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
+        else  myFromMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
       }
-      temp.push([doc.data().friendsNickname, toMeTemp, fromMeTemp]);
+      if ( isMounted ) {
+        modifyMyFromMe(myFromMeTemp);
+        modifyMyToMe(myToMeTemp);
+      }
+
     }
-  modifyFriendsIng(temp);
-  }
+   
+    const getFriends = async () => {
+      const temp = [];
+      let getFriends = await member.doc(myId.myId).collection('friends').where('friendsMutual', '==', true).get();
+    
+      for(const doc of getFriends.docs) {
+        const toMeTemp = [];
+        const fromMeTemp = [];
+        let getFriendsIng = await member.doc(doc.id).collection('communityIngredients').get();
+
+        for(const doc2 of getFriendsIng.docs) {
+          if(doc2.data().toMe)  toMeTemp.push(doc2.data().item);
+          else  fromMeTemp.push(doc2.data().item);
+        }
+        temp.push([doc.data().friendsNickname, toMeTemp, fromMeTemp]);
+        }
+        if ( isMounted ) modifyFriendsIng(temp);
+      }
+
+      getFriends();
+      getMine();
+
+      return () => { isMounted = false; };
+
+  }, [isFocused]);
 
   const styles = StyleSheet.create({
     titleView : {
