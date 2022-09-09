@@ -3,46 +3,37 @@ import { DrawerActions, NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import {View, Text, Button} from 'react-native';
 
+import ModalFriends from '../community/ModalFriends';
+import Main from '../main/Main';
+import CustomDrawer from './CustomDrawer';
+
 const Drawer = createDrawerNavigator();
 
-function DrawerNavigation({navigation}){
+function ShoppingList(){
   return(
     <View>
-      <Text>Home</Text>
-      <Button title="Drawer 열기" onPress={()=>navigation.openDrawer()}></Button>
-      <Button
-        title="Setting 열기"
-        onPress={()=>navigation.navigate('Setting')}
-      />
-    </View>
-  )
-}
-
-function SettingScreen({navigation}){
-  return(
-    <View>
-      <Text>Setting</Text>
+      <Text>장보기 리스트</Text>
       <Button title="뒤로가기" onPress={()=>navigation.goBack()}></Button>
     </View>
   )
 }
 
-function App(){
+function DrawerNavigation(){
   return (
-  <NavigationContainer>
     <Drawer.Navigator
-      initialRouteName='Home'
+    drawerContent={props=><CustomDrawer {...props} />}
       drawerPosition='left'
       backBehavior='history'
       screenOptions={{
         drawerActiveBackgroundColor: '#fb8c00',
         drawerActiveTintColor: 'white',
+        headerTransparent: true
       }}
     >
-      <Drawer.Screen name="Home" component={HomeScreen} options={{title: '홈'}}/>
-      <Drawer.Screen name="Setting" component={SettingScreen} options={{title: '설정'}}/>
+      <Drawer.Screen name="Main" component={Main} options={{title: 'Home', headerTitle: ''}}/>
+      <Drawer.Screen name="ModalFriends" component={ModalFriends} options={{title: '친구관리', headerShown: false}}/>
+      <Drawer.Screen name="ShoppingList" component={ShoppingList} options={{title: '장보기 리스트', headerShown: false}}/>
     </Drawer.Navigator>
-  </NavigationContainer>
   );
 }
 
