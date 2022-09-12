@@ -87,3 +87,31 @@ const Ver_pf = ({navigation}) => {
 };
 
 export default Ver_pf;
+
+
+/*
+auth.js 에 
+
+export const ver_pf = (nickname) => {
+    member.doc(email).update({
+      nickname: nickname
+    })
+    .then(() => {
+      console.log('verify!');
+    });
+  };
+
+  export const sendPw = (email) => {
+    auth()
+      .sendPasswordResetEmail(email)
+      .then(() => {
+        ToastAndroid.show('이메일 전송', ToastAndroid.SHORT);
+      })
+      .catch(err => {
+        ToastAndroid.show('이메일 오류, 다시 입력하세요', ToastAndroid.SHORT);
+      });;
+  };
+  
+
+  추가
+*/
