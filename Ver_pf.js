@@ -66,7 +66,7 @@ export default Ver_pf;
 /*
 auth.js 에 
 
-export const ver_pf = (nickname) => {
+export const verify = (nickname) => {
     member.doc(email).update({
       nickname: nickname
     })
