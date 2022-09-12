@@ -64,7 +64,7 @@ export default Ver_pf;
 
 
 /*
-auth.js 에 
+auth.js 맨 밑줄에
 
 export const verify = (nickname) => {
     member.doc(email).update({
