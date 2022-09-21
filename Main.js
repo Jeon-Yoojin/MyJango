@@ -10,6 +10,7 @@ import { useIsFocused } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FindRecipe from '../recipe_list/FindRecipe';
 import LinearGradient from 'react-native-linear-gradient';
+//npm install react-native-linear-gradient --save
 
 const MainLogo = require('../../android/app/src/main/assets/images/MainLogo.png');
 
