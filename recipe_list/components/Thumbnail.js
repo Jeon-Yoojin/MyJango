@@ -15,7 +15,7 @@ const Thumbnail = (props) => {
 
     return(
         <View style={styles.container}>
-            <Pressable style={styles.pressContainer} onPress={() => {/*goto source*/ }}>
+            <Pressable style={styles.pressContainer} onPress={() => { console.log(props) }}>
                 {/* image */}
                 <Image source={{
                     uri: urlToImg

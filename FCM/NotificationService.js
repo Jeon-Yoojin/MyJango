@@ -1,5 +1,26 @@
-const sendSingleDeviceNotification = (data) => {
+import firestore from '@react-native-firebase/firestore';
+
+const searchTokenById =  (searchId) => {
+    const member = firestore().collection('member');
+
+    member.where('id', '==', searchId).get()
+        .then(querySnapshot => {
+            querySnapshot.forEach(documentSnapshot => {
+                console.log(documentSnapshot)
+                const token = documentSnapshot.data().fcmtoken ?? '';
+                console.log(token)
+                return (token)
+            }
+            );
+        })
+        .catch(error => alert(error))
+};
+
+const sendSingleDeviceNotification = (data, id) => {
     var myHeaders = new Headers();
+    var token = searchTokenById(id)
+    //console.log(token)
+
     myHeaders.append("Authorization", "key=AAAAU8z9fPg:APA91bEz1F4MeMqld7I6nd6L-p6MieaRoCgs3TdqGuRWC0xbimWbDNDqw07K70bSssBQmd-Eq8x_EBkQVSy83L8rplud30F4JbXqzB6O2eoG3L-7M-HD5ZX3asYSLXCqcB5k34y5dSDE");
     myHeaders.append("Content-Type", "application/json");
 

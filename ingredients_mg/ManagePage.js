@@ -5,10 +5,11 @@ import DropDown from './DropDown';
 import IngredientClickIcon from './IngredientClickIcon';
 import IngredientList from './IngredientList';
 import { useIsFocused } from '@react-navigation/native';
-
-const user_name = '마이장고'
+import { useIdContext } from '../../IdProvider';
 
 const ManagePage = ({navigation})=>{
+    const user_name = useIdContext();
+
     const isFocused = useIsFocused()
     const [selectedValue, setSelectedValue] = useState();
     const [ItemList, setItemList] = useState([]);
@@ -40,7 +41,7 @@ const ManagePage = ({navigation})=>{
     return(
         <View>
             <View style={{marginTop:32}}>
-                <Text style={styles.guide}>{user_name}님,{"\n"}식품을 확인해보세요!👀</Text>
+                <Text style={styles.guide}>{user_name.myNickname}님,{"\n"}식품을 확인해보세요!👀</Text>
             </View>
             <ScrollView horizontal={true} style={styles.ingredeintContainer}>
             {ItemList.map((Item, index)=>{

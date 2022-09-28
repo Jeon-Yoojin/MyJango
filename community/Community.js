@@ -9,6 +9,7 @@ import ModalPresentCondition from './present_condition/ModalPresentCondition'
 import InButton from './InButton';
 import firestore from '@react-native-firebase/firestore';
 import NotificationService from '../FCM/NotificationService';
+import { useIdContext } from '../../IdProvider';
 
 export const sendEmailWithMailer = (
   to = "",
@@ -34,9 +35,10 @@ export const sendEmailWithMailer = (
   );
 };
 
+
 const Community = ({ navigation }) => {
 
-  var myId = 'aaa@abc.com'
+  const myId = useIdContext();
   
   const child2Ref = useRef();
 
@@ -63,50 +65,128 @@ const Community = ({ navigation }) => {
   const [friendsIng, setFriendsIng]= useState([]);
   const modifyFriendsIng = useCallback((t) => { setFriendsIng(t); }, []);
 
+  const setSelect = (select) =>{
+    const newData = 
+      {
+        ...select,
+      }
+    
+    //console.log(newData, 'new data')    
+
+    const nextData = friendsIng.map((item)=>{
+      for (var ing of item[1]) {
+        if (ing.ingredient === newData.ingredient) {
+          ing.selected = !ing.selected
+        }
+      }
+      return [...item]
+    }
+
+    )
+
+    modifyFriendsIng(nextData)
+  }
+
   const member = firestore().collection('member');
   
-  useEffect( () => {
-    async function getMine() {
-      const myToMeTemp={};
-      const myFromMeTemp={};
-
-      let getMyFromMes = await member.doc(myId).collection('communityIngredients').get();
-      
-      for(const doc of getMyFromMes.docs){
-        if (doc.data().toMe)  myToMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
-        else  myFromMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
-      }
-      modifyMyFromMe(myFromMeTemp);
-      modifyMyToMe(myToMeTemp);
-   } 
-   getMine();
-  },[]);
-
-
   useEffect (() => {
-    const getFriends = async () => {
+    const init = async () => {
+      await getMine();
+      await getFriends();
+    }
+    init();
 
-      const temp = [];
-      let getFriends = await member.doc(myId).collection('friends').where('friendsMutual', '==', true).get();
-      
-      for(const doc of getFriends.docs) {
-        const toMeTemp = [];
-        const fromMeTemp = [];
-        let getFriendsIng = await member.doc(doc.id).collection('communityIngredients').get();
-
-        for(const doc2 of getFriendsIng.docs) {
-          if(doc2.data().toMe)  toMeTemp.push(doc2.data().item);
-          else  fromMeTemp.push(doc2.data().item);
-        }
-        temp.push([doc.data().friendsNickname, toMeTemp, fromMeTemp]);
-      }
-    modifyFriendsIng(temp);
-    } 
-    getFriends();
   },[isFocused]);
 
+  const searchTokenById = async (searchId) => {
+    member.where('id', '==', searchId).get()
+      .then(querySnapshot => {
+        console.log('querysnapshot', querySnapshot)
+        querySnapshot.forEach(documentSnapshot => {
+          const token = documentSnapshot.data().fcmtoken ?? '';
+          console.log(token)
+          return (token)
+        }
+        );
+      })
+      .catch(error=>alert(error))
+  };
+  
+  const getSelectedItem = (user)=>{
+    let temp = [];
 
+    friendsIng.map(item=>{
+      for(var i of item[1]){
+        if (user === item[0] && i.selected) {
+          temp.push(i.ingredient)
+          console.log(i.ingredient)
+        }
+      }
+    })
 
+    return temp;
+  }
+
+  const handleShareButton = (item)=>{
+    NotificationService.sendSingleDeviceNotification(getSelectedItem(item), item);
+  }
+
+  const getMine = async () => {
+    const myToMeTemp={};
+    const myFromMeTemp={};
+
+    let getMyFromMes = await member.doc(myId.myId).collection('communityIngredients').get();
+    
+    for(const doc of getMyFromMes.docs){
+      if (doc.data().toMe)  myToMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
+      else  myFromMeTemp[doc.id] = { id:doc.id, text: doc.data().item }
+    }
+    modifyMyFromMe(myFromMeTemp);
+    modifyMyToMe(myToMeTemp);
+ } 
+
+   const getFriends = async () => {
+
+    const temp = [];
+    let getFriends = await member.doc(myId.myId).collection('friends').where('friendsMutual', '==', true).get();
+    //console.log(myfriend)
+    //let fcmtoken = data._data.fcmtoken;
+    
+    for(const doc of getFriends.docs) {
+      const friendsIng = [];
+      const friendsId = doc._data.friendsId;
+
+      
+      //const friendsToken = searchTokenById(friendsId).then(token=>{
+      //}
+      //);
+      
+      //console.log('ftoken:', friendsToken)
+      
+
+      let getFriendsIng = await member.doc(doc.id).collection('communityIngredients').get();
+      
+      getFriendsIng.docs.forEach(function (item, index) {
+        var data = {};
+        //data['id'] = index;
+        data['nickname'] = doc.data().friendsNickname;
+        data['ingredient'] = item.data().item;
+        data['selected'] = false;
+
+        if (item.data().toMe) {
+          data['type'] = 'lack';
+          //toMeTemp.push(data)
+        }
+        else {
+          data['type'] = 'enough';
+          //fromMeTemp.push(data)
+        }
+        friendsIng.push(data)
+      })
+      temp.push([doc.data().friendsNickname, friendsIng]);
+      }
+  modifyFriendsIng(temp);
+  }
 
   const styles = StyleSheet.create({
     titleView : {
@@ -230,20 +310,8 @@ const Community = ({ navigation }) => {
 
             <View style={styles.ing}>
 
-            <View style={styles.ingHalf}>
-              {item[1].map((item,index)=>{
-                return (
-                  <InButton key={index} text={item} style={{backgroundColor: color}}/>
-                )
-              })}
-            </View>
-
-            <View style={styles.ingHalf}>
-              {item[2].map((item, index)=>{
-                return (
-                  <InButton key={index} text={item} style={{backgroundColor: color}}/>
-                )
-              })}
+              <View style={styles.ingHalf}>
+                <InButton elements={item} color={color} setSelect={setSelect}/>
             </View>
 
             </View>
@@ -251,7 +319,10 @@ const Community = ({ navigation }) => {
             <View style={styles.friendsZone}> 
               <Icon name="account" size={30} color={Colors.black} style={{margin: 5}}/>
               <Text style = {{fontSize: 18, margin: 10}}>{item[0]}</Text>
-              <TouchableOpacity onPress = {()=>{NotificationService.sendSingleDeviceNotification('감자');}}> 
+              <TouchableOpacity onPress = {()=>{
+                handleShareButton(item[0])
+                {/* 해당 user의 selected된 아이템 가져오도록 */}
+                }}> 
                 <Icon name="share" size={30} color={Colors.black} style={styles.shareText}/>
               </TouchableOpacity> 
               <TouchableOpacity onPress = {delete1}> 

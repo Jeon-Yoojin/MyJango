@@ -1,39 +1,16 @@
-import React, { createRef, useEffect } from 'react';
-import DelayInput from 'react-native-debounce-input';
-import { SafeAreaView, View, Text, TouchableOpacity, Modal, TextInput, Button, Alert, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import React, { createRef, useEffect, useState, useCallback } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, ScrollView, TextInput } from 'react-native';
 import { Colors } from "react-native-paper";
-import { StyleSheet } from "react-native";
-import { useState, useCallback, useMemo } from 'react';
 import { Calendar } from 'react-native-calendars';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SQLite from 'react-native-sqlite-storage';
+import PeriodDropDown from './PeriodDropDown';
+import Modal from "react-native-modal";
 
 var db = SQLite.openDatabase({ name: 'recipe.db' });
 
-const style = StyleSheet.create({
-    mainViewStyle: {
-        flex: 1, backgroundColor: "cyan", justifyContent:
-            "center"
-    },
-    view: { flex: 1, alignItems: 'center', backgroundColor: Colors.amber100 },
-    scrollview: { flex: 1, backgroundColor: Colors.indigo200 },
-    infoView: { borderWidth: 1, width: 400 },
-    temp01: { backgroundColor: Colors.indigo200, alignContent: "center", flexDirection: "row", justifyContent: "center" },
-    temp02: { backgroundColor: Colors.red200, alignItems: 'flex-end', flexDirection: "row-reverse", padding: 5 },
-    temp03: { alignContent: "center", flexDirection: "row" },
-    expireddate: { flexDirection: 'row', justifyContent: 'space-between', padding: 3, marginTop: 15, width: 260 },
-
-
-    cameraview: { width: 300, height: 300, backgroundColor: Colors.amber200 },
-    TitleText: { textAlign: "center", fontWeight: 'bold', margin: 20, fontSize: 20 },
-    SubTitleText:{textAlign: "center", margin: 20, fontSize: 14 },
-    textInputStyle: { color: "green", width: 210, height: 50, borderWidth: 1, backgroundColor: "white", margin: 10 },
-    ModaltextInputStyle: { width: 50, height: 50, borderWidth: 1, backgroundColor: "white", margin: 10 }
-})
-
 const Ingredients_modify = ({ route, navigation }) => {
     const {name} = route.params;
-    //console.log(name)
     viewIng(name);
 
     const [quantity, setQuantity] = useState(1);
@@ -44,19 +21,18 @@ const Ingredients_modify = ({ route, navigation }) => {
     }), []);
 
     const inputRef = createRef();
-
     const [text, setText] = useState('');
-    const allClear = () => {
-        setText('');
-        inputRef.current.clear();
-    };
 
     const [alarmCycle, setAlarmCycle] = useState(0);
-    const [min, setMin] = useState(0);
 
+    const [min, setMin] = useState(0);
+    const minUp = useCallback(()=>setMin((min) => {return min+1}), []);
+    const minDown = useCallback(()=>setMin((min) => { 
+      if(min >= 2 ) min = min-1;
+      return min}), []);
+  
     const [category, setCategory] = useState('');
     const selectCategory = useCallback((cg) => setCategory((category) => { category = cg; return category; }), []);
-
 
     const [showCalendar, setShowCalendar] = useState(false);
     const changeShowCalendar = useCallback(() => setShowCalendar((showCalendar) => { return !showCalendar }), []);
@@ -64,25 +40,29 @@ const Ingredients_modify = ({ route, navigation }) => {
     const [lastDate, setLastDate] = useState('          ');
     const selectLastDate = useCallback((sld) => setLastDate((lastDate) => { lastDate = sld; return lastDate; }), []);
 
+    const [isModalVisible, setModalVisible] = useState(false);
+
     const [detailInfo, setDetailInfo] = useState('');
 
-    const [modalVisible, setModalVisible] = useState(false);
-    const Confirm = () => {
-        if (alarmCycle > 0 && min > 0) {
-            setModalVisible(!modalVisible);
-            alarm = true;
-            updateAlarm("bell-badge");
-        }
-        else {
-            setModalVisible(!modalVisible);
-            alarm = false;
-            updateAlarm("bell-badge-outline");
-        }
-
-    };
     const Cancel = () => {
-        setModalVisible(!modalVisible);
-    }
+        setModalVisible(!isModalVisible);
+        setAlarmCycle(0);
+        setMin(0);
+        setDbBookmark(0);
+      }
+
+    const Save = () => {
+        if(selectedValue!=undefined){
+            setModalVisible(!isModalVisible);
+        }
+        modifyAlarm();
+      };
+    
+    const [selectedValue, setSelectedValue] = useState();
+    const setSelectValue = (selectvalue)=>{
+        setSelectedValue(selectvalue);
+        setAlarmCycle(selectvalue);
+      }
 
     let like = false;
     const [DbBookmark, setDbBookmark] = useState(0);
@@ -170,7 +150,7 @@ const Ingredients_modify = ({ route, navigation }) => {
             selectCategory('room');
         }
     }, []);
-    const [users, setUsers] = useState([]);
+
 
     function viewIng(name) {
         useEffect(() => {
@@ -180,10 +160,9 @@ const Ingredients_modify = ({ route, navigation }) => {
                 [],
                 (tx, results) => {
                     var temp = [];
-                    let users = [];
+
                     for (let i = 0; i < results.rows.length; ++i) {
                         temp.push(results.rows.item(i));
-                        users.push(results.rows.item(i));
                         if (results.rows.item(i).name == name) {
                             console.log("matched with    ", name);
 
@@ -225,17 +204,12 @@ const Ingredients_modify = ({ route, navigation }) => {
                     }
 
                     console.log(temp);
-                    setUsers(users);
-
-
-
                 }
 
             );
         });
     },[]);
     }
-
 
     const updateData = () => {
         console.log('변경할 info', detailInfo)
@@ -258,50 +232,47 @@ const Ingredients_modify = ({ route, navigation }) => {
 
     return (
         <SafeAreaView>
+            <View style={styles.addAndModify}>
+            <Text style={styles.TitleText}>추가 및 수정 </Text>
+                
+                <Modal isVisible={isModalVisible}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalTitle}>알림 설정</Text>
+                        <Text style={styles.explaination}>재고가 몇 개 미만 일때 며칠마다 알림을 받을지 설정합니다.</Text>
+                        <Text style={[styles.seventeen, {left:22, top:165}]}>재고 개수</Text>
 
-            <View style={style.temp01}>
-                <Text style={style.TitleText} >추가 및 수정 </Text>
-                <Modal
-                    animationType="slide"
-                    transparent={false}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        setModalVisible(!modalVisible);
-                    }}
-                    onShow={() => console.log("onShow")}
-                >
-                    <View>
-                        <Text style={{ fontSize: 23, fontWeight: 'bold', margin: 20 }}>알림 설정</Text>
+                        <View style={styles.grey}>
+                            <TouchableOpacity onPress={minDown}>
+                                <Text style={styles.min}>-</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.min}>{min}</Text>
+                            <TouchableOpacity onPress={minUp}>
+                                <Text style={styles.min}>+</Text>
+                            </TouchableOpacity>
+                        </View>
+     
+                        <Text style={[styles.seventeen, {left:22, top:165}]}>기간</Text>
+                        <View style={styles.dropdownview}>
+                            <PeriodDropDown setSelectValue={setSelectValue}></PeriodDropDown>
+                        </View>
+      
+                        <View style={styles.addcan}>
+                            <TouchableOpacity style={styles.red} onPress={Save}>
+                                <Text style={styles.white}>저장하기</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.cancelO} onPress={Cancel}>
+                                <Text style={styles.fourteen}>취소</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ fontSize: 20, textAlignVertical: "center" }}>재고가 </Text>
-                        <TextInput style={style.ModaltextInputStyle}
-                            onChangeText={(yourMin) => setMin(yourMin)}
-                        />
-                        <Text style={{ fontSize: 20, textAlignVertical: "center" }}>개 미만일 경우,    </Text>
-
-                    </View>
-                    <View style={{ flexDirection: 'row' }}>
-
-                        <TextInput style={style.ModaltextInputStyle}
-                            onChangeText={(period) => setAlarmCycle(period)}
-                        />
-                        <Text style={{ fontSize: 20, textAlignVertical: "center" }}>일 마다 알림 설정 </Text>
-
-                    </View>
-                    <Button title="확인" onPress={Confirm}></Button>
-                    <Button title="취소" onPress={Cancel}></Button>
-
-
-
                 </Modal>
+
                 <TouchableOpacity style={{ position: "absolute", right: 12, top: 25 }} onPress={updateData}>
                     <Text style={{ fontSize: 15 }}>완료</Text>
                 </TouchableOpacity>
-
             </View>
 
-            <View style={style.temp02}>
+            <View style={styles.alarmAndLike}>
                 <TouchableOpacity onPress={() => { setModalVisible(true); modifyAlarm; }}>
                     <Icon name={alarmImage} size={30} color={Colors.grey500} style={{ margin: 5 }} />
                 </TouchableOpacity>
@@ -311,86 +282,128 @@ const Ingredients_modify = ({ route, navigation }) => {
             </View>
 
             <ScrollView>
-
-                <View style={style.temp03}>
-                    <Text style={style.TitleText} onPress={() => { console.log("current text is   ", text) }}>이름</Text>
-                        <Text style={style.TitleText}>{text}</Text>
+                <View style={styles.detail}>
+                    <Text style={styles.TitleText}>이름</Text>
+                    <Text style={styles.TitleText}>{text}</Text>
                 </View>
 
-                <View style={style.temp03}>
-                    <Text style={style.TitleText} onPress={() => { console.log("current category is    ", category); }}>보관         </Text>
+                <View style={styles.detail}>
+                    <Text style={styles.TitleText}>보관         </Text>
                     <TouchableOpacity style={{ backgroundColor: fridgeSelect }} onPress={modifyFridge}>
-                        <Text style={style.TitleText}>냉장</Text>
+                        <Text style={styles.TitleText}>냉장</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={{ backgroundColor: freezerSelect }} onPress={modifyFreezer}>
-                        <Text style={style.TitleText}>냉동</Text>
+                        <Text style={styles.TitleText}>냉동</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={{ backgroundColor: roomSelect }} onPress={modifyRoom}>
-                        <Text style={style.TitleText}>실온</Text>
+                        <Text style={styles.TitleText}>실온</Text>
                     </TouchableOpacity>
-
                 </View>
 
-                <View style={style.temp03}>
-                    <Text style={style.TitleText}>수량                 </Text>
+                <View style={styles.detail}>
+                    <Text style={styles.TitleText}>수량                 </Text>
                     <TouchableOpacity onPress={quantityDown}>
-                        <Text style={style.TitleText}>-</Text>
+                        <Text style={styles.TitleText}>-</Text>
                     </TouchableOpacity>
-
-                    <Text style={style.TitleText}>{quantity}</Text>
-
+                    <Text style={styles.TitleText}>{quantity}</Text>
                     <TouchableOpacity onPress={quantityUp}>
-                        <Text style={style.TitleText}>+</Text>
+                        <Text style={styles.TitleText}>+</Text>
                     </TouchableOpacity>
-
                 </View>
 
-
-
-                <View style={style.temp03}>
-                    <Text style={style.TitleText}>유통기한</Text>
+                <View style={styles.detail}>
+                    <Text style={styles.TitleText}>유통기한</Text>
                     <View>
-
-
-
-
-                        <View style={style.expireddate}>
+                        <View style={styles.expireddate}>
                             <Text style={{ fontSize: 20 }}>{lastDate}</Text>
                             <TouchableOpacity onPress={changeShowCalendar}>
                                 <Icon name="calendar-range" size={30} color={Colors.grey500} />
                             </TouchableOpacity>
-
                         </View>
-
                         <View>
                             {showCalendar && <Calendar
                                 minDate={Date()}
                                 onDayPress={(day) => { selectLastDate(day.dateString) }}
                             />}
                         </View>
-
                     </View>
-
-
-
-
                 </View>
 
-
-                <View style={style.temp03}>
-                    <Text style={style.TitleText} onPress={() => { console.log("current DBbookmark is  ", DbBookmark, "  current AlarmCycle is   ", alarmCycle) }}>상세정보</Text>
-                    <TextInput style={[style.textInputStyle, { flex: 1, height: 300, flexShrink: 1, }]} multiline={true}
+                <View style={styles.detail}>
+                    <Text style={styles.TitleText}>상세정보</Text>
+                    <TextInput style={[styles.textInputStyle, { flex: 1, height: 300, flexShrink: 1, }]} multiline={true}
                         value={detailInfo}
                         onChangeText={setDetailInfo}
                         onEndEditing={() => console.log("onEndEditing     " + text)}
                         inputRef={inputRef}>
                     </TextInput>
                 </View>
+
             </ScrollView>
-
-
         </SafeAreaView>
     );
 
 };
+
+
+const styles = StyleSheet.create({
+    addAndModify: { 
+      backgroundColor: 'white', alignContent: "center", flexDirection: "row", justifyContent: "center" 
+    },
+    alarmAndLike: { 
+      backgroundColor: 'white', alignItems: 'flex-end', flexDirection: "row-reverse", padding: 5 
+    },
+    detail: { 
+      backgroundColor: 'white', alignContent: "center", flexDirection: "row" 
+    },
+    expireddate: { 
+      flexDirection: 'row', justifyContent: 'space-between', padding: 3, marginTop: 15, width: 260 
+    },
+    cameraview: { 
+      width: 300, height: 300, backgroundColor: 'white' 
+    },
+    TitleText: { 
+      textAlign: "center", fontWeight: 'bold', margin: 20, fontSize: 20 
+    },
+    textInputStyle: { 
+      color: "black", width: 210, backgroundColor: "white", margin: 10, fontSize: 18, borderRadius: 5 
+    },
+    modalView: {
+      height:'75%', backgroundColor:'white'
+    },
+    modalTitle: {
+      fontSize:22, position:"relative", fontWeight:'bold', color:'#121214', left:22, top:100
+    },
+    explaination: {
+      fontSize:17, position:"relative", left:37, top:135, width:278, color:'#545454'
+    },
+    grey: {
+     paddingHorizontal:50, paddingVertical:6, position:"relative", left:111, top:130, marginVertical:6, width:230, height:38, borderRadius:10, backgroundColor: '#FCFCFC', flexDirection:"row", justifyContent:"space-between" 
+    },
+    dropdownview: {
+      position:'relative', left:111, top:130, width:217
+    },
+    min: {
+      fontSize:17, color:'#545454'
+    },
+    seventeen: {
+      fontSize:17, color:'#121214', position:'relative'
+    },
+    fourteen: {
+      fontSize:14, color:'#121214', textAlign:"center"
+    },
+    cancelO: {
+      width:50, height:38,borderRadius:5, backgroundColor: '#EFEFEF', paddingTop:8, marginLeft:20
+    },
+    addcan: {
+      flexDirection:'row',marginLeft:178, marginTop:20, position:'relative', left:20, top:150,
+    },
+    red: {
+      width:71, height:38, borderRadius:5, position:'relative', backgroundColor: '#FF5454', padding:8
+    },
+    white: {
+      color:'white', fontSize:14, textAlign:"center"
+    }
+  });
+
 export default Ingredients_modify;
