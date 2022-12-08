@@ -8,6 +8,7 @@ import Icon2 from 'react-native-vector-icons/Feather';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import LinearGradient from 'react-native-linear-gradient';
 
 const MainLogo = require('../../android/app/src/main/assets/images/MainLogo.png');
 
@@ -27,10 +28,10 @@ const style = StyleSheet.create({
   expireddate1: { textAlign: "center", backgroundColor: Colors.blue50, width: 100, height: 65, margin: 10, borderRadius: 20 },
   expireddate2: { textAlign: "center", backgroundColor: Colors.yellow50, width: 100, height: 65, margin: 10, borderRadius: 20 },
   expireddate3: { textAlign: "center", backgroundColor: Colors.purple50, width: 100, height: 65, margin: 10, borderRadius: 20 },
-  expireddate4: { backgroundColor: Colors.yellow600, width: 140, height: 150, borderRadius: 20, padding: 10, marginRight: 10 },
+  expireddate4: { position: 'relative', right: 140, width: 140, height: 150, borderRadius: 20, padding: 10, marginRight: 10 },
   expireddate4_1: { textAlign: "center", width: 65, margin: 2, padding: 3 },
-  expireddate4_2: { backgroundColor: Colors.red400, width: 140, height: 150, borderRadius: 20, padding: 10, marginRight: 10 },
-  expireddate4_3: { backgroundColor: Colors.green500, width: 140, height: 150, borderRadius: 20, padding: 10, marginRight: 10 },
+  expireddate4_2: { position: 'relative', right: 270, width: 140, height: 150, borderRadius: 20, padding: 10, marginRight: 10 },
+  expireddate4_3: { position: 'relative', right: 400, width: 140, height: 150, borderRadius: 20, padding: 10, marginRight: 10 },
   expireddate5: {
     color: "red", fontSize: 45, textAlign: "center", backgroundColor: "white", shadowColor: Colors.black, alignContent: 'center', alignItems: 'center',
     shadowOffset: {
@@ -145,104 +146,112 @@ console.log(RecipeList)
     return day;
   }
   return (
-      <SafeAreaView>
-        <View style={style.mainViewStyle}>
-          <Text style={style.TitleText}><Image style={style.mainlogo} source={MainLogo} /></Text>
-        </View>
+    <SafeAreaView>
+      <View style={style.mainViewStyle}>
+        <Text style={style.TitleText}><Image style={style.mainlogo} source={MainLogo} /></Text>
+      </View>
 
-        <View style={style.temp02}>
-          <Icon2 name="search" size={35} color={Colors.red100} style={{ position: "relative", top: 28 }} />
-          <TextInput style={style.textInputStyle}
-            placeholder="원하는 레시피를 검색해보세요."
-            onChangeText={(text) => { console.log(text); }}
-            onFocus={() => { console.log("On Focus"); }}
-            onBlur={() => { console.log("On Blur"); }}
-            keyboardType="default" />
-        </View>
+      <View style={style.temp02}>
+        <Icon2 name="search" size={35} color={Colors.red100} style={{ position: "relative", top: 28 }} />
+        <TextInput style={style.textInputStyle}
+          placeholder="원하는 레시피를 검색해보세요."
+          onChangeText={(text) => { console.log(text); }}
+          onFocus={() => { console.log("On Focus"); }}
+          onBlur={() => { console.log("On Blur"); }}
+          keyboardType="default" />
+      </View>
 
-        <View style={style.temp03}>
-          <Pressable onPress={() => navigation.navigate('MANAGE')}><Text style={style.expireddate1}><Image style={style.Img1} source={FridgeFillPath} /></Text></Pressable>
-          <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.expireddate2}> <Image style={style.Img2} source={LightbulbFillPath} /></Text></Pressable>
-          <Pressable onPress={() => navigation.navigate('COMMUNITY')}><Text style={style.expireddate3}><Image style={style.Img3} source={ChatFillPath} /></Text></Pressable>
-        </View>
-        <View style={style.temp03}>
-          <Text style={style.menutext}>재료 관리</Text>
-          <Text style={style.menutext}>레시피 추천</Text>
-          <Text style={style.menutext}>커뮤니티</Text>
-        </View>
-
-
-        <View style={style.temp04}>
-          <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.TitleText2}>유통기한 임박{'>'}</Text></Pressable>
-        </View>
-
-        <View style={style.temp04}>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <View style={style.expireddate4}>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{NearItemList[0] ? NearItemList[0].name : ''}</Text>
-              <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(NearItemList[0] ? NearItemList[0].expiration : 0)}</Text>
-              <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
-            </View>
-
-            <View style={style.expireddate4_2}>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{NearItemList[1] ? NearItemList[1].name : ''}</Text>
-              <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(NearItemList[1] ? NearItemList[1].expiration : 0)}</Text>
-              <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
-            </View>
-            <View style={style.expireddate4_3}>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{NearItemList[2] ? NearItemList[2].name : ''}</Text>
-              <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(NearItemList[2] ? NearItemList[2].expiration : 0)}</Text>
-              <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
-            </View>
-          </ScrollView>
-        </View>
+      <View style={style.temp03}>
+        <Pressable onPress={() => navigation.navigate('MANAGE')}><Text style={style.expireddate1}><Image style={style.Img1} source={FridgeFillPath} /></Text></Pressable>
+        <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.expireddate2}> <Image style={style.Img2} source={LightbulbFillPath} /></Text></Pressable>
+        <Pressable onPress={() => navigation.navigate('COMMUNITY')}><Text style={style.expireddate3}><Image style={style.Img3} source={ChatFillPath} /></Text></Pressable>
+      </View>
+      <View style={style.temp03}>
+        <Text style={style.menutext}>재료 관리</Text>
+        <Text style={style.menutext}>레시피 추천</Text>
+        <Text style={style.menutext}>커뮤니티</Text>
+      </View>
 
 
-        <View style={style.temp04}>
-          <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.TitleText2}>즐겨찾는 재료{'>'}</Text></Pressable>
-        </View>
+      <View style={style.temp04}>
+        <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.TitleText2}>유통기한 임박{'>'}</Text></Pressable>
+      </View>
+
+      <View style={style.temp04}>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          <View style={style.temp04}>
-            <View style={style.expireddate4}>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{BMItemList[0] ? BMItemList[0].name : ''}</Text>
-              <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(BMItemList[0] ? BMItemList[0].expiration : 0)}</Text>
-              <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
-            </View>
+          <Image source={{ uri: "https://i.ibb.co/JKvqXQw/2022-09-21-173622.png" }} style={{ width: 140, height: 150, borderRadius: 20 }} />
+          <LinearGradient style={style.expireddate4} colors={['rgba(255,251,237,0.3)', 'rgba(255,224,130,0.8)', '#EFBC22']}>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{NearItemList[0] ? NearItemList[0].name : ''}</Text>
+            <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(NearItemList[0] ? NearItemList[0].expiration : 0)}</Text>
+            <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
+          </LinearGradient>
 
+          <Image source={{ uri: "https://i.ibb.co/zxBCvKZ/2022-09-21-172717.png" }} style={{ position: 'relative', right: 130, width: 140, height: 150, borderRadius: 20 }} />
+          <LinearGradient style={style.expireddate4_2} colors={['rgba(255,223,209,0.3)', 'rgba(255,156,114,0.8)', '#F08454']}>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{NearItemList[1] ? NearItemList[1].name : ''}</Text>
+            <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(NearItemList[1] ? NearItemList[1].expiration : 0)}</Text>
+            <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
+          </LinearGradient>
 
-            <View style={style.expireddate4_2}>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{BMItemList[1] ? BMItemList[1].name : ''}</Text>
-              <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(BMItemList[1] ? BMItemList[1].expiration : 0)}</Text>
-              <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
-            </View>
-            <View style={style.expireddate4_3}>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={style.expireddate4_1}></Text>
-              <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{BMItemList[2] ? BMItemList[2].name : ''}</Text>
-              <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(BMItemList[2] ? BMItemList[2].expiration : 0)}</Text>
-              <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
-            </View>
-          </View>
+          <Image source={{ uri: "https://i.ibb.co/mRYVqhh/2022-09-21-173123.png" }} style={{ position: 'relative', right: 260, width: 140, height: 150, borderRadius: 20 }} />
+          <LinearGradient style={style.expireddate4_3} colors={['rgba(187,255,158,0.3)', 'rgba(122,228,77,0.8)', '#4ECA14']}>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{NearItemList[2] ? NearItemList[2].name : ''}</Text>
+            <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(NearItemList[2] ? NearItemList[2].expiration : 0)}</Text>
+            <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
+          </LinearGradient>
         </ScrollView>
+      </View>
 
-        <View style={{ position: "absolute", right: 20, top: 650 }}>
-          <Pressable onPress={() => navigation.navigate('INGREDIENTS_ADD')}><Text style={style.expireddate5}>+</Text></Pressable>
-        </View>
-        <View style={{ position: "absolute", right: 20, top: 580 }}>
-          <Pressable style={[{ justifyContent: 'center', alignItems: 'center', alignContent: 'center' }, style.expireddate5]} onPress={() => navigation.navigate('TESSERACT')}><MaterialCommunityIcons size={35} name="camera" style={[{ justifyContent: 'center', alignItems: 'center', color: "red", }]} /></Pressable>
-        </View>
 
-      </SafeAreaView>
+      <View style={style.temp04}>
+        <Pressable onPress={() => navigation.navigate('RECIPE_LIST')}><Text style={style.TitleText2}>즐겨찾는 재료{'>'}</Text></Pressable>
+      </View>
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+        <View style={style.temp04}>
+          <Image source={{ uri: "https://i.ibb.co/G9RWGrF/2022-09-21-173802.png" }} style={{ width: 140, height: 150, borderRadius: 20 }} />
+          <LinearGradient style={style.expireddate4} colors={['rgba(255,251,237,0.3)', 'rgba(255,224,130,0.8)', '#EFBC22']}>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{BMItemList[0] ? BMItemList[0].name : ''}</Text>
+            <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(BMItemList[0] ? BMItemList[0].expiration : 0)}</Text>
+            <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
+          </LinearGradient>
+
+
+          <Image source={{ uri: "https://i.ibb.co/NjvszC1/2022-09-21-174042.png" }} style={{ position: 'relative', right: 130, width: 140, height: 150, borderRadius: 20 }} />
+          <LinearGradient style={style.expireddate4_2} colors={['rgba(255,223,209,0.3)', 'rgba(255,156,114,0.8)', '#F08454']}>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{BMItemList[1] ? BMItemList[1].name : ''}</Text>
+            <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(BMItemList[1] ? BMItemList[1].expiration : 0)}</Text>
+            <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
+          </LinearGradient>
+
+          <Image source={{ uri: "https://i.ibb.co/x5BbyXy/2022-09-21-174148.png" }} style={{ position: 'relative', right: 260, width: 140, height: 150, borderRadius: 20 }} />
+          <LinearGradient style={style.expireddate4_3} colors={['rgba(187,255,158,0.3)', 'rgba(122,228,77,0.8)', '#4ECA14']}>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={style.expireddate4_1}></Text>
+            <Text style={{ fontSize: 20, color: "white", fontWeight: 'bold', marginTop: 10 }}>{BMItemList[2] ? BMItemList[2].name : ''}</Text>
+            <Text style={{ fontSize: 18, color: "white" }}>D-{getDday(BMItemList[2] ? BMItemList[2].expiration : 0)}</Text>
+            <Icon name="triangle-right" size={50} color={Colors.white} style={style.triangle} />
+          </LinearGradient>
+        </View>
+      </ScrollView>
+
+      <View style={{ position: "absolute", right: 20, top: 650 }}>
+        <Pressable onPress={() => navigation.navigate('INGREDIENTS_ADD')}><Text style={style.expireddate5}>+</Text></Pressable>
+      </View>
+      <View style={{ position: "absolute", right: 20, top: 580 }}>
+        <Pressable style={[{ justifyContent: 'center', alignItems: 'center', alignContent: 'center' }, style.expireddate5]} onPress={() => navigation.navigate('TESSERACT')}><MaterialCommunityIcons size={35} name="camera" style={[{ justifyContent: 'center', alignItems: 'center', color: "red", }]} /></Pressable>
+      </View>
+
+    </SafeAreaView>
   );
 };
 export default Main;

@@ -13,7 +13,11 @@ const Search = ({searchText}) => {
     });
     const [thumbnailList, setthumbnailList] = useState([]);
 
-    useEffect(() => { searchRecipe() }, [])
+    useEffect(() => { searchRecipe(); console.log('searchrecipe 실행') }, [searchText])
+    
+    useEffect(() => {
+        getThumbnail(recipeList);
+    }, [recipeList])
 
     {/* searchtext로 레시피 이름 검색 -> recipeList저장*/}
     const searchRecipe = () => {
@@ -37,7 +41,7 @@ const Search = ({searchText}) => {
             );
         });
         console.log(recipeList)
-        getThumbnail(recipeList)
+        //임시 getThumbnail(recipeList)
     }
 
     {/* 해당 레시피 이름으로 유튜브에 정보 요청 ;(recipeList)->(thumbnailList)*/ }
@@ -103,7 +107,7 @@ const Search = ({searchText}) => {
         <ScrollView>
             {(thumbnailList.length) ?
                 thumbnailList.map((thumbnail, index) => {
-                    return (thumbnailList[index] ? <Thumbnail key={index} vId={thumbnail.vId} title={thumbnail.name} rId={recipeList[index]} imguri={thumbnail.imguri}/> : <Text>Loading</Text>)
+                    return (thumbnailList[index] ? <Thumbnail key={index} vId={thumbnail.vId} title={thumbnail.name} rId={recipeList.id[index]} imguri={thumbnail.imguri}/> : <Text>Loading</Text>)
                 })
 
                 : <Text>해당하는 영상이 없습니다.</Text>

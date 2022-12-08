@@ -156,11 +156,10 @@ const Expiration = () => {
 
     return (
         <>
-            <Text>Expiration</Text>
             <ScrollView>
                 {(!isLoading) ?
                     thumbnailList.map((thumbnail, index) => {
-                        return (<Thumbnail key={index} vId={thumbnail.vId} title={thumbnail.name} rId={recipeList[index]} imguri={thumbnail.imguri} />)
+                        return (<Thumbnail key={index} vId={thumbnail.vId} title={thumbnail.name} rId={recipeList.id[index]} imguri={thumbnail.imguri} />)
                     })
 
                     : <Text>로딩중</Text>

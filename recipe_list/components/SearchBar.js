@@ -1,16 +1,17 @@
-import React from "react";
+import React, {useState} from "react";
 import { View, StyleSheet, TextInput, TouchableOpacity, Dimensions } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const SearchBar = (props)=>{
+    const [text, setText] = useState("");
 
     return(
         <View style={styles.container} >
             <TextInput style={styles.textInputStyle}
                 placeholder='원하는 재료명을 입력하세요.'
-                value={props.searchText}
-                onChangeText={(text)=>props.setSearchText(text)}
-                onEndEditing={() => console.log("onEndEditing     ")}
+                value={text}
+                onChangeText={(text)=>setText(text)}
+                onEndEditing={props.setSearchText(text)}
                 onSubmitEditing={props.onSubmit}
             />
             <TouchableOpacity onPress={()=>{}}>

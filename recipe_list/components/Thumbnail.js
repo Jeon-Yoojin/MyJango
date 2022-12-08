@@ -1,12 +1,17 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { View, StyleSheet, Text, Pressable, Image, TouchableOpacity, Dimensions } from "react-native";
 
 const Thumbnail = (props) => {
+    const navigation = useNavigation();
+
     const vId = props.vId;
     const urlToImg = 'https://i.ytimg.com/vi/' + vId + '/hqdefault.jpg';
 
     const goToSource = (vId, name, rId)=>{
-        props.navigation.navigate('RECIPE_DETAIL', {
+        console.log(vId);
+        
+        navigation.navigate('RECIPE_DETAIL', {
           recipeName: name,
           vId: vId,
           rId: rId
@@ -15,7 +20,9 @@ const Thumbnail = (props) => {
 
     return(
         <View style={styles.container}>
-            <Pressable style={styles.pressContainer} onPress={() => { console.log(props) }}>
+            <Pressable style={styles.pressContainer} onPress={() => {
+                goToSource(props.vId, props.title, props.rId)
+            }}>
                 {/* image */}
                 <Image source={{
                     uri: urlToImg
